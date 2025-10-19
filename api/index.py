@@ -23,22 +23,37 @@ ENABLE_SMS = False
 @app.route('/')
 def home():
     from flask import Response
-    try:
-        # For Vercel, the working directory is /var/task
-        html_path = '/var/task/frontend/index.html'
-        
-        # Fallback paths
-        if not os.path.exists(html_path):
-            html_path = 'frontend/index.html'
-        
-        with open(html_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
-        return Response(content, mimetype='text/html')
-    except FileNotFoundError:
-        return Response("Frontend not found. Deployment may still be processing.", status=404)
-    except Exception as e:
-        return Response(f"Error: {str(e)}", status=500)
+    import os
+    
+    # Try ALL possible paths where Vercel might store the file
+    possible_paths = [
+        '/var/task/frontend/index.html',  # Vercel Lambda path
+        'frontend/index.html',  # Relative path
+        '../frontend/index.html',  # Parent directory
+        os.path.join(os.path.dirname(__file__), '..', 'frontend', 'index.html'),  # Calculated path
+        '/var/task/src/frontend/index.html',  # Another possible Vercel path
+        './frontend/index.html',  # Current directory
+    ]
+    
+    html_content = None
+    found_path = None
+    
+    for file_path in possible_paths:
+        try:
+            if os.path.exists(file_path):
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    html_content = f.read()
+                    found_path = file_path
+                    break
+        except Exception:
+            continue
+    
+    if html_content:
+        return Response(html_content, mimetype='text/html')
+    else:
+        # Debug message showing what paths were tried
+        return Response(f"Frontend file not found. Tried paths: {', '.join(possible_paths)}", status=404)
+
 
 
 # ========== LOAD DATA FILES ==========
