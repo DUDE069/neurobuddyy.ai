@@ -19,25 +19,10 @@ FAST2SMS_API_KEY = "YOUR_API_KEY_HERE"
 ENABLE_SMS = False
 
 # ========== SERVE FRONTEND ==========
+# ========== SERVE FRONTEND ==========
 @app.route('/')
 def home():
-    try:
-        # Get the absolute path to frontend/index.html
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        html_file = os.path.join(base_dir, 'frontend', 'index.html')
-        
-        with open(html_file, 'r', encoding='utf-8') as f:
-            html_content = f.read()
-        
-        return html_content
-    except FileNotFoundError as e:
-        return jsonify({
-            "error": "Frontend HTML not found",
-            "path": html_file,
-            "message": "Please check if frontend/index.html exists"
-        }), 404
-    except Exception as e:
-        return jsonify({"error": str(e), "type": type(e).__name__}), 500
+    return send_from_directory('../frontend', 'index.html')
 
 
 # ========== LOAD DATA FILES ==========
