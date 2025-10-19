@@ -22,8 +22,14 @@ ENABLE_SMS = False
 # ========== SERVE FRONTEND ==========
 @app.route('/')
 def home():
-    return send_from_directory('../frontend', 'index.html')
-
+    try:
+        import os
+        # Get absolute path to HTML file
+        file_path = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'index.html')
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except Exception as e:
+        return f"Error loading page: {str(e)}", 500
 
 # ========== LOAD DATA FILES ==========
 def load_greetings():
