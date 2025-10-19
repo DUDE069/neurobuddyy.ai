@@ -53,7 +53,7 @@ def chat():
 def test():
     return jsonify({
         "message": "NEUROBUDDYY.AI API is working!",
-        "developer": "0DAYCODERS",
+        "developer": "ZERODAYCODERS",
         "status": "success"
     })
 
