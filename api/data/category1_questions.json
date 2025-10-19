@@ -1,0 +1,304 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What causes migraine headaches?",
+      "answer": "Migraines are caused by genetic factors, stress, hormonal changes, and certain food triggers like chocolate and cheese.",
+      "category": "headache"
+    },
+    {
+      "id": 2,
+      "question": "What are the symptoms of migraine?",
+      "answer": "Migraine symptoms include severe throbbing pain on one side of the head, nausea, vomiting, and sensitivity to light and sound.",
+      "category": "headache"
+    },
+    {
+      "id": 3,
+      "question": "What is epilepsy?",
+      "answer": "Epilepsy is a neurological disorder characterized by recurrent seizures caused by abnormal electrical activity in the brain.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 4,
+      "question": "What are the main causes of epilepsy?",
+      "answer": "Epilepsy can be caused by genetic factors, brain injury, infections, or developmental disorders.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 5,
+      "question": "What is Parkinson’s disease?",
+      "answer": "Parkinson’s disease is a progressive neurological disorder that affects movement due to the loss of dopamine-producing neurons.",
+      "category": "parkinson"
+    },
+    {
+      "id": 6,
+      "question": "What are early signs of Parkinson’s disease?",
+      "answer": "Early signs include tremors, slow movement, stiffness, and difficulty with balance and coordination.",
+      "category": "parkinson"
+    },
+    {
+      "id": 7,
+      "question": "What is Alzheimer’s disease?",
+      "answer": "Alzheimer’s disease is a neurodegenerative disorder that leads to memory loss, confusion, and cognitive decline.",
+      "category": "alzheimer"
+    },
+    {
+      "id": 8,
+      "question": "What causes Alzheimer’s disease?",
+      "answer": "It is caused by abnormal accumulation of amyloid plaques and tau tangles in the brain, leading to neuron damage.",
+      "category": "alzheimer"
+    },
+    {
+      "id": 9,
+      "question": "What are the risk factors for Alzheimer’s disease?",
+      "answer": "Risk factors include age, family history, genetics, head injury, and lifestyle factors such as poor diet and lack of exercise.",
+      "category": "alzheimer"
+    },
+    {
+      "id": 10,
+      "question": "What is multiple sclerosis?",
+      "answer": "Multiple sclerosis (MS) is an autoimmune disorder where the immune system attacks the protective covering of nerve fibers in the central nervous system.",
+      "category": "multiple_sclerosis"
+    },
+    {
+      "id": 11,
+      "question": "What are common symptoms of multiple sclerosis?",
+      "answer": "Symptoms include fatigue, vision problems, muscle weakness, coordination issues, and numbness.",
+      "category": "multiple_sclerosis"
+    },
+    {
+      "id": 12,
+      "question": "What is a stroke?",
+      "answer": "A stroke occurs when blood flow to part of the brain is blocked or a blood vessel bursts, causing brain cells to die.",
+      "category": "stroke"
+    },
+    {
+      "id": 13,
+      "question": "What are the warning signs of a stroke?",
+      "answer": "Warning signs include sudden weakness, speech difficulties, facial drooping, vision loss, and confusion.",
+      "category": "stroke"
+    },
+    {
+      "id": 14,
+      "question": "What is a brain tumor?",
+      "answer": "A brain tumor is an abnormal growth of cells within the brain or surrounding structures.",
+      "category": "brain_tumor"
+    },
+    {
+      "id": 15,
+      "question": "Are all brain tumors cancerous?",
+      "answer": "No, brain tumors can be benign (non-cancerous) or malignant (cancerous). Both can still cause symptoms due to pressure on brain tissue.",
+      "category": "brain_tumor"
+    },
+    {
+      "id": 16,
+      "question": "What are the symptoms of a brain tumor?",
+      "answer": "Symptoms include headaches, seizures, vision problems, memory issues, and changes in speech or balance.",
+      "category": "brain_tumor"
+    },
+    {
+      "id": 17,
+      "question": "What is meningitis?",
+      "answer": "Meningitis is an inflammation of the membranes (meninges) surrounding the brain and spinal cord, usually caused by infection.",
+      "category": "meningitis"
+    },
+    {
+      "id": 18,
+      "question": "What are symptoms of meningitis?",
+      "answer": "Symptoms include fever, headache, neck stiffness, nausea, and sensitivity to light.",
+      "category": "meningitis"
+    },
+    {
+      "id": 19,
+      "question": "What is encephalitis?",
+      "answer": "Encephalitis is inflammation of the brain itself, typically caused by a viral infection.",
+      "category": "encephalitis"
+    },
+    {
+      "id": 20,
+      "question": "What are symptoms of encephalitis?",
+      "answer": "Symptoms include fever, seizures, confusion, weakness, and sometimes hallucinations.",
+      "category": "encephalitis"
+    },
+    {
+      "id": 21,
+      "question": "What is neuropathy?",
+      "answer": "Neuropathy refers to nerve damage that causes numbness, tingling, or pain, often in the hands and feet.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 22,
+      "question": "What causes peripheral neuropathy?",
+      "answer": "Causes include diabetes, vitamin deficiencies, infections, toxins, and certain medications.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 23,
+      "question": "What is cerebral palsy?",
+      "answer": "Cerebral palsy is a group of disorders affecting movement and muscle tone caused by brain damage during early development.",
+      "category": "cerebral_palsy"
+    },
+    {
+      "id": 24,
+      "question": "Can cerebral palsy be cured?",
+      "answer": "Cerebral palsy cannot be cured, but therapy, medication, and assistive technology can improve quality of life.",
+      "category": "cerebral_palsy"
+    },
+    {
+      "id": 25,
+      "question": "What is Huntington’s disease?",
+      "answer": "Huntington’s disease is a genetic disorder that causes the progressive breakdown of nerve cells in the brain.",
+      "category": "huntington"
+    },
+    {
+      "id": 26,
+      "question": "What are symptoms of Huntington’s disease?",
+      "answer": "Symptoms include involuntary movements, cognitive decline, and mood disturbances.",
+      "category": "huntington"
+    },
+    {
+      "id": 27,
+      "question": "What is dementia?",
+      "answer": "Dementia is a group of symptoms affecting memory, thinking, and social abilities that interfere with daily functioning.",
+      "category": "dementia"
+    },
+    {
+      "id": 28,
+      "question": "What are common types of dementia?",
+      "answer": "Common types include Alzheimer’s disease, vascular dementia, Lewy body dementia, and frontotemporal dementia.",
+      "category": "dementia"
+    },
+    {
+      "id": 29,
+      "question": "What is traumatic brain injury?",
+      "answer": "Traumatic brain injury (TBI) is caused by an external force that damages the brain, such as a blow to the head.",
+      "category": "tbi"
+    },
+    {
+      "id": 30,
+      "question": "What are symptoms of mild traumatic brain injury?",
+      "answer": "Symptoms include headache, dizziness, confusion, memory problems, and sensitivity to light or noise.",
+      "category": "tbi"
+    },
+    {
+      "id": 31,
+      "question": "What is a concussion?",
+      "answer": "A concussion is a mild form of traumatic brain injury that temporarily affects brain function.",
+      "category": "tbi"
+    },
+    {
+      "id": 32,
+      "question": "What is neuroinflammation?",
+      "answer": "Neuroinflammation refers to inflammation of the nervous tissue, often linked to diseases like Alzheimer’s, MS, and Parkinson’s.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 33,
+      "question": "What is the function of the cerebellum?",
+      "answer": "The cerebellum controls balance, coordination, and fine motor movements.",
+      "category": "neuroanatomy"
+    },
+    {
+      "id": 34,
+      "question": "What is the function of the hippocampus?",
+      "answer": "The hippocampus is essential for memory formation and learning.",
+      "category": "neuroanatomy"
+    },
+    {
+      "id": 35,
+      "question": "What is neural plasticity?",
+      "answer": "Neural plasticity is the brain’s ability to reorganize and form new neural connections throughout life.",
+      "category": "neurobiology"
+    },
+    {
+      "id": 36,
+      "question": "What are common causes of brain inflammation?",
+      "answer": "Brain inflammation can result from infections, autoimmune reactions, or chronic stress.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 37,
+      "question": "What are the symptoms of brain inflammation?",
+      "answer": "Symptoms include headache, fever, confusion, seizures, and sensitivity to light.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 38,
+      "question": "What is neurodegeneration?",
+      "answer": "Neurodegeneration refers to the progressive loss of structure or function of neurons, leading to diseases like Alzheimer’s and Parkinson’s.",
+      "category": "neurobiology"
+    },
+    {
+      "id": 39,
+      "question": "What is a neurotoxin?",
+      "answer": "A neurotoxin is a substance that damages or kills nerve cells, potentially leading to neurological disorders.",
+      "category": "neurotoxicology"
+    },
+    {
+      "id": 40,
+      "question": "What is the role of dopamine in the brain?",
+      "answer": "Dopamine helps regulate movement, emotion, motivation, and pleasure.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 41,
+      "question": "How does lack of sleep affect brain health?",
+      "answer": "Lack of sleep impairs memory, focus, decision-making, and increases risk of Alzheimer’s and mood disorders.",
+      "category": "neuro_health"
+    },
+    {
+      "id": 42,
+      "question": "How does stress impact the brain?",
+      "answer": "Chronic stress damages brain cells, shrinks the hippocampus, and increases risk of anxiety and depression.",
+      "category": "neuro_health"
+    },
+    {
+      "id": 43,
+      "question": "Which nutrients are important for brain health?",
+      "answer": "Omega-3 fatty acids, B vitamins, antioxidants, and magnesium support brain function and reduce inflammation.",
+      "category": "nutrition"
+    },
+    {
+      "id": 44,
+      "question": "How does exercise benefit the brain?",
+      "answer": "Exercise improves blood flow, stimulates neurogenesis, and boosts memory and mood through endorphin release.",
+      "category": "neuro_health"
+    },
+    {
+      "id": 45,
+      "question": "What is brain fog?",
+      "answer": "Brain fog is a state of confusion, forgetfulness, and lack of mental clarity, often caused by stress, poor sleep, or diet.",
+      "category": "neuro_health"
+    },
+    {
+      "id": 46,
+      "question": "How does dehydration affect the brain?",
+      "answer": "Dehydration can cause fatigue, confusion, headaches, and reduced concentration.",
+      "category": "neuro_health"
+    },
+    {
+      "id": 47,
+      "question": "What is serotonin’s role in the brain?",
+      "answer": "Serotonin regulates mood, sleep, appetite, and overall feelings of well-being.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 48,
+      "question": "What are neuroprotective foods?",
+      "answer": "Foods like blueberries, walnuts, salmon, and leafy greens protect the brain from oxidative stress and aging.",
+      "category": "nutrition"
+    },
+    {
+      "id": 49,
+      "question": "What are early signs of dementia?",
+      "answer": "Early signs include memory loss, difficulty planning, language problems, and disorientation in familiar places.",
+      "category": "dementia"
+    },
+    {
+      "id": 50,
+      "question": "What are the best ways to keep your brain healthy?",
+      "answer": "Regular exercise, balanced diet, quality sleep, mental stimulation, and social interaction help maintain brain health.",
+      "category": "neuro_health"
+    }
+  ]
+}

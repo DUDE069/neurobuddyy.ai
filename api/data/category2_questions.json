@@ -1,0 +1,2104 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "How can I reduce the frequency of migraine headaches?",
+      "answer": "You can reduce migraine frequency by avoiding known triggers, staying hydrated, maintaining regular sleep patterns, managing stress, and using prescribed medications like triptans or beta-blockers if needed.",
+      "category": "headache"
+    },
+    {
+      "id": 2,
+      "question": "How can I manage chronic tension headaches naturally?",
+      "answer": "Manage tension headaches by practicing relaxation techniques, improving posture, staying hydrated, stretching neck muscles, and ensuring adequate sleep.",
+      "category": "headache"
+    },
+    {
+      "id": 3,
+      "question": "How can epilepsy be controlled with medication and lifestyle?",
+      "answer": "Epilepsy can be controlled with anti-seizure medications, avoiding triggers like sleep deprivation and alcohol, maintaining a consistent routine, and following up regularly with a neurologist.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 4,
+      "question": "How can I help someone recover from a stroke?",
+      "answer": "Stroke recovery involves physical therapy, speech therapy, a healthy diet, managing blood pressure, and emotional support to regain mobility and brain function.",
+      "category": "stroke"
+    },
+    {
+      "id": 5,
+      "question": "How can Parkinson’s disease symptoms be improved?",
+      "answer": "Parkinson’s symptoms can be improved with medications like levodopa, regular exercise, physical therapy, and a protein-balanced diet.",
+      "category": "parkinson"
+    },
+    {
+      "id": 6,
+      "question": "How can memory loss in Alzheimer’s patients be slowed down?",
+      "answer": "Memory loss in Alzheimer’s can be slowed by maintaining mental activity, following medication plans, eating a Mediterranean diet, and engaging in social interaction.",
+      "category": "alzheimer"
+    },
+    {
+      "id": 7,
+      "question": "How can I prevent cognitive decline with age?",
+      "answer": "Prevent cognitive decline by staying mentally active, exercising regularly, sleeping well, eating omega-3-rich foods, and avoiding smoking or alcohol abuse.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 8,
+      "question": "How can multiple sclerosis be managed effectively?",
+      "answer": "Multiple sclerosis can be managed through disease-modifying drugs, physical therapy, balanced diet, and avoiding heat and stress.",
+      "category": "multiple_sclerosis"
+    },
+    {
+      "id": 9,
+      "question": "How can I reduce the risk of developing dementia?",
+      "answer": "Reduce dementia risk by staying physically and mentally active, managing chronic conditions like diabetes and hypertension, and maintaining a social life.",
+      "category": "dementia"
+    },
+    {
+      "id": 10,
+      "question": "How can I treat neuropathic pain at home?",
+      "answer": "Neuropathic pain can be eased by gentle exercise, avoiding alcohol, taking prescribed medications like gabapentin, and managing blood sugar if diabetic.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 11,
+      "question": "How can brain inflammation be reduced naturally?",
+      "answer": "Reduce brain inflammation by eating anti-inflammatory foods like berries and fish, managing stress, sleeping well, and avoiding processed foods.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 12,
+      "question": "How can I improve brain function and concentration?",
+      "answer": "Improve concentration with regular mental exercises, sufficient hydration, balanced diet, good sleep, and minimizing digital distractions.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 13,
+      "question": "How can anxiety and stress be reduced to protect the brain?",
+      "answer": "Reduce anxiety through mindfulness, deep breathing, regular exercise, and maintaining social connections.",
+      "category": "mental_health"
+    },
+    {
+      "id": 14,
+      "question": "How can sleep improve brain health?",
+      "answer": "Sleep helps the brain clear toxins and consolidate memory; aim for 7–8 hours of consistent sleep daily.",
+      "category": "sleep"
+    },
+    {
+      "id": 15,
+      "question": "How can I improve blood circulation to the brain?",
+      "answer": "Improve brain circulation by exercising regularly, staying hydrated, avoiding smoking, and eating heart-healthy foods.",
+      "category": "vascular"
+    },
+    {
+      "id": 16,
+      "question": "How can I treat vertigo or dizziness due to neurological causes?",
+      "answer": "Vertigo can be treated with vestibular rehabilitation exercises, hydration, avoiding sudden movements, and consulting a neurologist if persistent.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 17,
+      "question": "How can I manage muscle stiffness in Parkinson’s disease?",
+      "answer": "Regular stretching, physiotherapy, medications like levodopa, and yoga help manage stiffness in Parkinson’s.",
+      "category": "parkinson"
+    },
+    {
+      "id": 18,
+      "question": "How can I recover faster after a mild traumatic brain injury?",
+      "answer": "Rest, avoid screen time, stay hydrated, eat nutritious food, and gradually resume activities under medical advice.",
+      "category": "tbi"
+    },
+    {
+      "id": 19,
+      "question": "How can depression caused by brain chemistry imbalance be treated?",
+      "answer": "Depression can be treated with therapy, antidepressant medication, exercise, and social engagement.",
+      "category": "mental_health"
+    },
+    {
+      "id": 20,
+      "question": "How can I strengthen my memory and focus naturally?",
+      "answer": "Practice puzzles, read regularly, eat walnuts and fish, and maintain a consistent sleep schedule.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 21,
+      "question": "How can I protect my brain from oxidative stress?",
+      "answer": "Eat antioxidant-rich foods like blueberries, avoid pollution, and manage stress to reduce oxidative damage.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 22,
+      "question": "How can I lower my risk of stroke through diet and exercise?",
+      "answer": "Eat low-salt foods, control blood pressure, exercise daily, and avoid smoking or alcohol.",
+      "category": "stroke"
+    },
+    {
+      "id": 23,
+      "question": "How can I manage headaches caused by eye strain or stress?",
+      "answer": "Take screen breaks, adjust lighting, do eye exercises, and use cold compresses to ease strain.",
+      "category": "headache"
+    },
+    {
+      "id": 24,
+      "question": "How can I prevent brain fog and mental fatigue?",
+      "answer": "Stay hydrated, eat balanced meals, take breaks, and sleep at least 7 hours each night.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 25,
+      "question": "How can I treat mild tremors caused by neurological issues?",
+      "answer": "Mild tremors can be managed through stress control, caffeine reduction, and medication if needed.",
+      "category": "movement_disorder"
+    },
+    {
+      "id": 26,
+      "question": "How can I reduce inflammation in the nervous system?",
+      "answer": "Adopt an anti-inflammatory diet, exercise regularly, and control autoimmune responses through medication.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 27,
+      "question": "How can I recover nerve damage faster?",
+      "answer": "Ensure proper vitamin B intake, do physiotherapy, and manage chronic conditions like diabetes.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 28,
+      "question": "How can I increase dopamine levels naturally?",
+      "answer": "Exercise, eat protein-rich foods, get sunlight, and practice gratitude to boost dopamine levels.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 29,
+      "question": "How can serotonin imbalance be corrected?",
+      "answer": "Eat foods rich in tryptophan, sleep well, reduce stress, and consider medical therapy if needed.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 30,
+      "question": "How can I improve my brain’s neuroplasticity?",
+      "answer": "Learn new skills, play strategy games, exercise, and practice mindfulness for better neural adaptability.",
+      "category": "neurobiology"
+    },
+    {
+      "id": 31,
+      "question": "How can I prevent sleep-related neurological problems?",
+      "answer": "Maintain consistent sleep times, avoid screens before bed, and reduce caffeine intake.",
+      "category": "sleep"
+    },
+    {
+      "id": 32,
+      "question": "How can I boost my brain’s energy and alertness?",
+      "answer": "Eat balanced meals, stay hydrated, exercise, and take short mental breaks during work.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 33,
+      "question": "How can meditation help with neurological disorders?",
+      "answer": "Meditation reduces stress hormones, improves brain connectivity, and supports emotional balance.",
+      "category": "mental_health"
+    },
+    {
+      "id": 34,
+      "question": "How can diet improve cognitive performance?",
+      "answer": "Consume omega-3 fatty acids, whole grains, and antioxidants for improved brain performance.",
+      "category": "nutrition"
+    },
+    {
+      "id": 35,
+      "question": "How can I manage neuropathy from diabetes?",
+      "answer": "Control blood sugar, avoid alcohol, take vitamin supplements, and exercise regularly.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 36,
+      "question": "How can I restore balance and coordination after a stroke?",
+      "answer": "Participate in balance exercises, physical therapy, and brain retraining programs.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 37,
+      "question": "How can I strengthen neural connections through brain exercises?",
+      "answer": "Solve puzzles, learn new languages, and play memory-enhancing games regularly.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 38,
+      "question": "How can I prevent brain damage from high blood pressure?",
+      "answer": "Maintain blood pressure through diet, exercise, and prescribed medications.",
+      "category": "vascular"
+    },
+    {
+      "id": 39,
+      "question": "How can I manage chronic fatigue related to brain health?",
+      "answer": "Get enough rest, eat iron-rich foods, and manage stress through relaxation techniques.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 40,
+      "question": "How can I support recovery from a brain tumor surgery?",
+      "answer": "Attend regular rehabilitation therapy, eat nutrient-rich foods, and follow medical advice.",
+      "category": "brain_tumor"
+    },
+    {
+      "id": 41,
+      "question": "How can I prevent seizures naturally?",
+      "answer": "Maintain regular sleep, avoid flashing lights, and manage stress to reduce seizure triggers.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 42,
+      "question": "How can I improve hand-eye coordination through neuro training?",
+      "answer": "Practice ball games, juggling, and reaction-based exercises to improve coordination.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 43,
+      "question": "How can I enhance concentration and reduce distractions?",
+      "answer": "Eliminate multitasking, create a quiet environment, and practice focus exercises daily.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 44,
+      "question": "How can I calm an overactive nervous system?",
+      "answer": "Practice deep breathing, do yoga, and reduce caffeine to calm the nervous system.",
+      "category": "nervous_system"
+    },
+    {
+      "id": 45,
+      "question": "How can I support my nervous system with vitamins and minerals?",
+      "answer": "Consume foods rich in B vitamins, magnesium, and omega-3 fatty acids.",
+      "category": "nutrition"
+    },
+    {
+      "id": 46,
+      "question": "How can I treat insomnia caused by neurological stress?",
+      "answer": "Follow a bedtime routine, avoid blue light, and use relaxation techniques before sleep.",
+      "category": "sleep"
+    },
+    {
+      "id": 47,
+      "question": "How can mindfulness therapy help the brain recover from trauma?",
+      "answer": "Mindfulness helps by reducing stress hormones, improving focus, and supporting emotional healing.",
+      "category": "mental_health"
+    },
+    {
+      "id": 48,
+      "question": "How can music therapy support brain healing?",
+      "answer": "Music therapy stimulates brain regions responsible for emotion, memory, and coordination.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 49,
+      "question": "How can I improve attention span and reduce mental clutter?",
+      "answer": "Meditation, deep breathing, and taking regular breaks improve attention span.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 50,
+      "question": "How can I naturally increase brain oxygen supply?",
+      "answer": "Exercise regularly, practice deep breathing, and avoid smoking to increase oxygen flow.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 51,
+      "question": "How can I recover cognitive skills after a brain injury?",
+      "answer": "Cognitive rehabilitation therapy, memory exercises, puzzles, and consistency in daily routines help rebuild thinking and attention skills.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 52,
+      "question": "How can I prevent migraines triggered by hormonal changes?",
+      "answer": "Keep a headache diary, maintain stable sleep and diet patterns, manage stress, and consult a neurologist for hormonal therapy if needed.",
+      "category": "headache"
+    },
+    {
+      "id": 53,
+      "question": "How can I reduce the impact of stress on brain function?",
+      "answer": "Practice meditation, deep breathing, yoga, and take breaks from work to lower cortisol and protect neurons.",
+      "category": "mental_health"
+    },
+    {
+      "id": 54,
+      "question": "How can I improve focus if I have ADHD?",
+      "answer": "Break tasks into small goals, avoid distractions, get regular exercise, and use prescribed stimulant or non-stimulant medications.",
+      "category": "adhd"
+    },
+    {
+      "id": 55,
+      "question": "How can I prevent nerve degeneration in older age?",
+      "answer": "Eat nutrient-rich foods, stay physically active, avoid toxins, and control chronic diseases like diabetes and hypertension.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 56,
+      "question": "How can I manage anxiety-related headaches?",
+      "answer": "Practice mindfulness, stretch your neck and shoulders, stay hydrated, and reduce caffeine or alcohol intake.",
+      "category": "headache"
+    },
+    {
+      "id": 57,
+      "question": "How can I boost my brain’s learning ability?",
+      "answer": "Learn new skills, repeat information, get enough sleep, and use spaced repetition for better memory retention.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 58,
+      "question": "How can I reduce tremors caused by essential tremor disorder?",
+      "answer": "Avoid caffeine, manage stress, and use medications like propranolol or primidone as prescribed.",
+      "category": "movement_disorder"
+    },
+    {
+      "id": 59,
+      "question": "How can I support my brain during depression recovery?",
+      "answer": "Maintain a routine, exercise, eat omega-3-rich foods, sleep well, and seek therapy support.",
+      "category": "mental_health"
+    },
+    {
+      "id": 60,
+      "question": "How can I prevent brain infections such as meningitis?",
+      "answer": "Get vaccinated, maintain hygiene, and avoid contact with infected individuals.",
+      "category": "infection_prevention"
+    },
+    {
+      "id": 61,
+      "question": "How can I manage fatigue in multiple sclerosis?",
+      "answer": "Balance rest and activity, stay cool, maintain hydration, and use energy-conserving strategies.",
+      "category": "multiple_sclerosis"
+    },
+    {
+      "id": 62,
+      "question": "How can I prevent motion sickness and dizziness while traveling?",
+      "answer": "Look at the horizon, avoid reading, stay hydrated, and use prescribed motion-sickness medication.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 63,
+      "question": "How can I train my memory after long-term illness?",
+      "answer": "Practice recall exercises, visualization, and mnemonic devices to enhance memory recovery.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 64,
+      "question": "How can I protect my brain from digital screen overuse?",
+      "answer": "Take screen breaks, follow the 20-20-20 rule, reduce blue light exposure, and get enough outdoor time.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 65,
+      "question": "How can I treat mild cognitive impairment?",
+      "answer": "Engage in brain training, maintain healthy diet and exercise, and monitor health conditions like diabetes.",
+      "category": "cognition"
+    },
+    {
+      "id": 66,
+      "question": "How can I reduce chronic pain caused by nerve injury?",
+      "answer": "Physical therapy, nerve stimulation, pain-relief medication, and relaxation techniques help manage neuropathic pain.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 67,
+      "question": "How can I enhance my reaction time and reflexes?",
+      "answer": "Play fast-paced video games, do balance drills, and engage in sports that require quick movements.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 68,
+      "question": "How can I strengthen my visual-spatial skills?",
+      "answer": "Practice puzzles, drawing, 3D games, and navigation exercises to improve brain mapping abilities.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 69,
+      "question": "How can I support healthy brain development in children?",
+      "answer": "Provide nutritious food, ensure adequate sleep, limit screen time, and encourage creative play.",
+      "category": "child_neurohealth"
+    },
+    {
+      "id": 70,
+      "question": "How can I prevent cognitive burnout from overwork?",
+      "answer": "Take breaks, avoid multitasking, stay hydrated, and practice deep breathing or meditation daily.",
+      "category": "mental_health"
+    },
+    {
+      "id": 71,
+      "question": "How can I recover speech after a stroke?",
+      "answer": "Speech therapy, repetition exercises, and supportive communication tools help regain language skills.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 72,
+      "question": "How can I maintain balance if I have a vestibular disorder?",
+      "answer": "Do vestibular rehabilitation exercises and avoid sudden head movements or bright lights.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 73,
+      "question": "How can I increase mental clarity during exams or stress?",
+      "answer": "Get proper sleep, stay hydrated, eat brain foods, and practice time management and relaxation techniques.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 74,
+      "question": "How can I calm nerve inflammation caused by autoimmune disease?",
+      "answer": "Follow anti-inflammatory diets, manage stress, and take immunosuppressive medications if prescribed.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 75,
+      "question": "How can I rebuild confidence after neurological trauma?",
+      "answer": "Join support groups, set realistic goals, celebrate progress, and engage in positive self-talk.",
+      "category": "mental_health"
+    },
+    {
+      "id": 76,
+      "question": "How can I detect early signs of neurodegeneration?",
+      "answer": "Look for memory loss, difficulty planning, tremors, or mood changes and consult a neurologist early.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 77,
+      "question": "How can I reduce stress-related muscle tension in the neck and head?",
+      "answer": "Do regular stretching, massage therapy, and relaxation exercises to release muscle tightness.",
+      "category": "headache"
+    },
+    {
+      "id": 78,
+      "question": "How can I stay mentally active after retirement?",
+      "answer": "Read daily, learn new hobbies, volunteer, and play brain games to keep neurons active.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 79,
+      "question": "How can I control mood swings related to brain chemistry?",
+      "answer": "Eat regularly, get proper sleep, manage stress, and seek counseling or medication when needed.",
+      "category": "mental_health"
+    },
+    {
+      "id": 80,
+      "question": "How can I rebuild motor control after nerve injury?",
+      "answer": "Perform physiotherapy, practice fine motor tasks, and use repetitive movement therapy.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 81,
+      "question": "How can I prevent memory problems related to vitamin deficiency?",
+      "answer": "Consume foods rich in vitamin B12, folate, and omega-3 fatty acids to protect neurons.",
+      "category": "nutrition"
+    },
+    {
+      "id": 82,
+      "question": "How can I manage light sensitivity after a concussion?",
+      "answer": "Wear sunglasses indoors, reduce screen brightness, and gradually increase light exposure.",
+      "category": "tbi"
+    },
+    {
+      "id": 83,
+      "question": "How can I speed up mental recovery after surgery?",
+      "answer": "Sleep adequately, eat nutrient-dense foods, and engage in light brain exercises daily.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 84,
+      "question": "How can I avoid brain fatigue during long work hours?",
+      "answer": "Use the Pomodoro technique, take hydration breaks, and stretch every hour to refresh your brain.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 85,
+      "question": "How can I improve my emotional resilience after brain trauma?",
+      "answer": "Therapy, mindfulness, journaling, and social support help rebuild emotional strength.",
+      "category": "mental_health"
+    },
+    {
+      "id": 86,
+      "question": "How can I manage dizziness caused by low blood pressure?",
+      "answer": "Rise slowly, stay hydrated, eat small meals, and increase salt intake under doctor guidance.",
+      "category": "vascular"
+    },
+    {
+      "id": 87,
+      "question": "How can I train my brain to multitask efficiently?",
+      "answer": "Practice switching tasks gradually, plan schedules, and limit distractions to enhance cognitive flexibility.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 88,
+      "question": "How can I lower my risk of brain aneurysm?",
+      "answer": "Avoid smoking, control blood pressure, eat a healthy diet, and monitor family history risks.",
+      "category": "vascular"
+    },
+    {
+      "id": 89,
+      "question": "How can I reduce inflammation caused by chronic stress?",
+      "answer": "Practice yoga, eat anti-inflammatory foods, and maintain work-life balance to lower cortisol levels.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 90,
+      "question": "How can I protect my brain during aging?",
+      "answer": "Exercise regularly, eat omega-3-rich foods, socialize, and challenge your mind with learning.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 91,
+      "question": "How can I restore my sense of smell after viral infection?",
+      "answer": "Olfactory retraining therapy using essential oils can help restore smell pathways gradually.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 92,
+      "question": "How can I prevent brain dehydration?",
+      "answer": "Drink enough water, avoid excess caffeine and alcohol, and eat hydrating fruits.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 93,
+      "question": "How can I boost my mood using brain-healthy foods?",
+      "answer": "Eat foods rich in omega-3s, magnesium, and antioxidants such as salmon, nuts, and leafy greens.",
+      "category": "nutrition"
+    },
+    {
+      "id": 94,
+      "question": "How can I recover coordination after a spinal injury?",
+      "answer": "Physical therapy, aquatic exercises, and electrical stimulation help regain coordination.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 95,
+      "question": "How can I prevent brain fog from poor gut health?",
+      "answer": "Eat probiotics, reduce sugar, and maintain digestive health to support the gut-brain axis.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 96,
+      "question": "How can I manage visual disturbances from migraines?",
+      "answer": "Rest in a dark room, avoid triggers like bright lights, and use migraine-specific medication.",
+      "category": "headache"
+    },
+    {
+      "id": 97,
+      "question": "How can I stay mentally sharp while aging?",
+      "answer": "Keep learning, socialize, exercise, and maintain a balanced diet with brain-supportive nutrients.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 98,
+      "question": "How can I control seizures through lifestyle?",
+      "answer": "Maintain consistent sleep, avoid alcohol and flashing lights, and manage stress effectively.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 99,
+      "question": "How can I recover emotional control after brain injury?",
+      "answer": "Therapy, mindfulness, journaling, and structured daily routines help regulate emotions.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 100,
+      "question": "How can I train my brain to adapt after neural loss?",
+      "answer": "Neuroplasticity training, consistent practice, and engaging in new cognitive tasks encourage adaptation.",
+      "category": "neurobiology"
+    },
+    {
+      "id": 101,
+      "question": "How can I improve neural communication in the brain?",
+      "answer": "Regular physical exercise, a balanced diet, and sufficient sleep improve neurotransmitter balance and neuron connectivity.",
+      "category": "neurobiology"
+    },
+    {
+      "id": 102,
+      "question": "How can I prevent brain fatigue from information overload?",
+      "answer": "Take short breaks, avoid multitasking, and schedule mental rest periods to allow the brain to recharge.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 103,
+      "question": "How can I manage headaches caused by dehydration?",
+      "answer": "Increase water intake, reduce caffeine, and ensure electrolyte balance to relieve dehydration headaches.",
+      "category": "headache"
+    },
+    {
+      "id": 104,
+      "question": "How can I enhance creativity through brain exercises?",
+      "answer": "Engage in drawing, storytelling, brainstorming, and open-ended problem-solving to stimulate creative neural circuits.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 105,
+      "question": "How can I recover from chronic stress-related memory loss?",
+      "answer": "Practice mindfulness, reduce stress exposure, get proper rest, and maintain social connections to restore memory function.",
+      "category": "mental_health"
+    },
+    {
+      "id": 106,
+      "question": "How can I improve blood flow to my brain naturally?",
+      "answer": "Exercise regularly, eat omega-3-rich foods, avoid smoking, and control blood pressure to boost cerebral circulation.",
+      "category": "vascular"
+    },
+    {
+      "id": 107,
+      "question": "How can I restore my concentration after COVID-19 brain fog?",
+      "answer": "Sleep well, exercise, eat antioxidant-rich foods, and perform memory and focus exercises regularly.",
+      "category": "neurorehabilitation"
+    },
+    {
+      "id": 108,
+      "question": "How can I manage the early signs of dementia?",
+      "answer": "Keep the brain active, maintain social interaction, and control health factors like hypertension and diabetes.",
+      "category": "dementia"
+    },
+    {
+      "id": 109,
+      "question": "How can I avoid nerve pain due to diabetes?",
+      "answer": "Keep blood sugar in check, eat low-glycemic foods, and take vitamin B12 supplements if needed.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 110,
+      "question": "How can I strengthen my short-term memory?",
+      "answer": "Repeat information, use visualization, and avoid distractions when learning new material.",
+      "category": "cognition"
+    },
+    {
+      "id": 111,
+      "question": "How can I improve brain oxygen levels?",
+      "answer": "Engage in aerobic exercise, practice deep breathing, and spend time in fresh air environments.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 112,
+      "question": "How can I protect neurons from oxidative stress?",
+      "answer": "Eat foods rich in antioxidants like berries and nuts, and avoid excessive alcohol or processed foods.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 113,
+      "question": "How can I manage vertigo and sudden dizziness?",
+      "answer": "Perform vestibular exercises, stay hydrated, and avoid quick head movements or bright lights.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 114,
+      "question": "How can I control muscle stiffness from Parkinson’s disease?",
+      "answer": "Stretch daily, take prescribed medications like levodopa, and attend physiotherapy sessions.",
+      "category": "parkinson"
+    },
+    {
+      "id": 115,
+      "question": "How can I improve nerve regeneration after surgery?",
+      "answer": "Eat foods rich in B vitamins, engage in light physical therapy, and rest adequately to promote healing.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 116,
+      "question": "How can I reduce brain inflammation after injury?",
+      "answer": "Apply cold compress, take anti-inflammatory foods, and rest to allow healing of brain tissue.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 117,
+      "question": "How can I control sleep paralysis episodes?",
+      "answer": "Maintain a consistent sleep schedule, reduce stress, and avoid sleeping on your back.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 118,
+      "question": "How can I improve decision-making under stress?",
+      "answer": "Practice mindfulness, take deep breaths before reacting, and build emotional resilience through self-awareness.",
+      "category": "cognition"
+    },
+    {
+      "id": 119,
+      "question": "How can I prevent migraines from computer use?",
+      "answer": "Adjust screen brightness, take 20-minute breaks, and ensure proper posture and hydration.",
+      "category": "headache"
+    },
+    {
+      "id": 120,
+      "question": "How can I restore my confidence after a seizure episode?",
+      "answer": "Learn about your condition, follow treatment plans, and engage with epilepsy support groups.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 121,
+      "question": "How can I train my non-dominant hand to improve brain symmetry?",
+      "answer": "Practice daily writing or brushing with your non-dominant hand to activate both hemispheres equally.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 122,
+      "question": "How can I calm down during panic attacks?",
+      "answer": "Use grounding techniques, slow breathing, and muscle relaxation to lower adrenaline levels.",
+      "category": "mental_health"
+    },
+    {
+      "id": 123,
+      "question": "How can I prevent head injuries during sports?",
+      "answer": "Wear helmets, follow safety rules, and avoid risky plays to minimize concussion risk.",
+      "category": "tbi"
+    },
+    {
+      "id": 124,
+      "question": "How can I manage dizziness after standing up quickly?",
+      "answer": "Stand slowly, increase salt intake slightly, and drink plenty of water to maintain blood pressure.",
+      "category": "vascular"
+    },
+    {
+      "id": 125,
+      "question": "How can I regain motivation after neurological illness?",
+      "answer": "Set small goals, seek therapy, stay social, and celebrate progress regularly to rebuild motivation.",
+      "category": "mental_health"
+    },
+    {
+      "id": 126,
+      "question": "How can I prevent forgetfulness caused by multitasking?",
+      "answer": "Focus on one task at a time and use reminders or notes to reduce memory interference.",
+      "category": "cognition"
+    },
+    {
+      "id": 127,
+      "question": "How can I treat neuropathic pain naturally?",
+      "answer": "Try acupuncture, yoga, and anti-inflammatory diets to relieve nerve pain naturally.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 128,
+      "question": "How can I improve alertness in the morning?",
+      "answer": "Get sunlight exposure, drink water, stretch lightly, and avoid heavy meals before bed.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 129,
+      "question": "How can I maintain healthy dopamine levels?",
+      "answer": "Exercise regularly, get enough sleep, listen to music, and eat protein-rich foods.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 130,
+      "question": "How can I protect my brain from air pollution?",
+      "answer": "Wear masks, use air purifiers indoors, and eat antioxidant-rich foods to combat oxidative damage.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 131,
+      "question": "How can I improve reaction time after a concussion?",
+      "answer": "Perform coordination drills, balance exercises, and allow gradual return to physical activity.",
+      "category": "tbi"
+    },
+    {
+      "id": 132,
+      "question": "How can I manage lightheadedness caused by anxiety?",
+      "answer": "Take slow deep breaths, sit down, and practice mindfulness to calm your nervous system.",
+      "category": "mental_health"
+    },
+    {
+      "id": 133,
+      "question": "How can I rebuild neural pathways after stroke?",
+      "answer": "Perform repetitive physical and cognitive tasks under professional guidance to promote neuroplasticity.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 134,
+      "question": "How can I reduce migraine attacks during stress?",
+      "answer": "Relaxation therapy, regular meals, hydration, and biofeedback can help prevent stress migraines.",
+      "category": "headache"
+    },
+    {
+      "id": 135,
+      "question": "How can I enhance brain endurance during long study sessions?",
+      "answer": "Take short breaks, stay hydrated, and eat small healthy snacks for consistent glucose supply.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 136,
+      "question": "How can I manage nerve twitches from fatigue?",
+      "answer": "Get enough sleep, maintain magnesium levels, and reduce caffeine intake to calm nerve firing.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 137,
+      "question": "How can I reduce brain swelling after trauma?",
+      "answer": "Seek immediate medical help, apply cold compress, and follow prescribed anti-inflammatory treatment.",
+      "category": "tbi"
+    },
+    {
+      "id": 138,
+      "question": "How can I prevent brain shrinkage due to aging?",
+      "answer": "Exercise, mental stimulation, and a balanced diet rich in antioxidants protect against atrophy.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 139,
+      "question": "How can I reduce mental confusion after medication?",
+      "answer": "Consult your doctor about dosage adjustments and stay hydrated to aid toxin clearance.",
+      "category": "cognition"
+    },
+    {
+      "id": 140,
+      "question": "How can I manage facial paralysis after nerve damage?",
+      "answer": "Physical therapy, gentle facial exercises, and nerve stimulation aid muscle recovery.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 141,
+      "question": "How can I improve auditory processing speed?",
+      "answer": "Practice listening exercises, avoid background noise, and engage in sound-based memory games.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 142,
+      "question": "How can I recover coordination after brain surgery?",
+      "answer": "Balance therapy, physiotherapy, and task-based motor training promote neuromuscular recovery.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 143,
+      "question": "How can I control sleepwalking episodes?",
+      "answer": "Maintain a regular sleep schedule, avoid alcohol, and create a safe sleep environment.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 144,
+      "question": "How can I prevent stroke recurrence?",
+      "answer": "Take prescribed medication, manage blood pressure, exercise, and eat a low-salt diet.",
+      "category": "stroke"
+    },
+    {
+      "id": 145,
+      "question": "How can I increase serotonin levels naturally?",
+      "answer": "Get sunlight exposure, eat tryptophan-rich foods, and engage in regular physical activity.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 146,
+      "question": "How can I manage brain fog from lack of sleep?",
+      "answer": "Establish a bedtime routine, avoid screens before bed, and aim for 7–9 hours of rest nightly.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 147,
+      "question": "How can I reduce emotional sensitivity after brain injury?",
+      "answer": "Practice mindfulness, seek therapy, and maintain calm environments to ease emotional reactivity.",
+      "category": "mental_health"
+    },
+    {
+      "id": 148,
+      "question": "How can I maintain a healthy circadian rhythm?",
+      "answer": "Expose yourself to morning light, eat meals at consistent times, and avoid blue light at night.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 149,
+      "question": "How can I support nerve repair through nutrition?",
+      "answer": "Consume foods rich in vitamin B, zinc, and antioxidants to help repair myelin and nerve fibers.",
+      "category": "nutrition"
+    },
+    {
+      "id": 150,
+      "question": "How can I control chronic headaches from tension?",
+      "answer": "Relax neck muscles, stay hydrated, avoid excessive screen use, and use ergonomic posture.",
+      "category": "headache"
+    },{
+      "id": 151,
+      "question": "How can I improve balance issues caused by neurological problems?",
+      "answer": "Practice balance exercises like standing on one leg, use support tools, and attend vestibular rehabilitation therapy.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 152,
+      "question": "How can I reduce stress-induced brain inflammation?",
+      "answer": "Engage in deep breathing, meditation, and consume anti-inflammatory foods like turmeric and berries.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 153,
+      "question": "How can I recover fine motor control after a stroke?",
+      "answer": "Perform repetitive hand exercises, use grip tools, and follow guided physical therapy.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 154,
+      "question": "How can I prevent nerve degeneration as I age?",
+      "answer": "Stay physically active, avoid toxins, eat nutrient-rich foods, and manage chronic illnesses like diabetes.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 155,
+      "question": "How can I overcome speech difficulties after brain injury?",
+      "answer": "Work with a speech therapist, practice slow articulation, and repeat short phrases daily.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 156,
+      "question": "How can I prevent memory loss from alcohol use?",
+      "answer": "Limit alcohol intake, stay hydrated, and eat foods rich in vitamin B1 and antioxidants.",
+      "category": "cognition"
+    },
+    {
+      "id": 157,
+      "question": "How can I strengthen the connection between mind and body?",
+      "answer": "Practice yoga, tai chi, and mindfulness meditation to synchronize physical and mental awareness.",
+      "category": "neurotraining"
+    },
+    {
+      "id": 158,
+      "question": "How can I manage early signs of multiple sclerosis?",
+      "answer": "Follow prescribed medications, reduce stress, and exercise gently to maintain nerve function.",
+      "category": "multiple_sclerosis"
+    },
+    {
+      "id": 159,
+      "question": "How can I avoid cognitive decline due to high cholesterol?",
+      "answer": "Eat low-fat foods, exercise regularly, and maintain healthy blood lipid levels.",
+      "category": "vascular"
+    },
+    {
+      "id": 160,
+      "question": "How can I improve neural synchronization during multitasking?",
+      "answer": "Train focus through dual-task exercises and gradually increase task complexity.",
+      "category": "cognition"
+    },
+    {
+      "id": 161,
+      "question": "How can I manage post-traumatic stress after a head injury?",
+      "answer": "Seek psychological therapy, join support groups, and practice relaxation methods like deep breathing.",
+      "category": "mental_health"
+    },
+    {
+      "id": 162,
+      "question": "How can I reduce involuntary muscle movements in neurological disorders?",
+      "answer": "Use prescribed medications, maintain hydration, and perform controlled relaxation exercises.",
+      "category": "movement_disorder"
+    },
+    {
+      "id": 163,
+      "question": "How can I enhance my problem-solving abilities?",
+      "answer": "Play logic-based games, learn new skills, and maintain consistent mental challenges.",
+      "category": "cognition"
+    },
+    {
+      "id": 164,
+      "question": "How can I treat eye strain caused by nervous fatigue?",
+      "answer": "Follow the 20-20-20 rule, use artificial tears, and take regular screen breaks.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 165,
+      "question": "How can I manage restlessness from dopamine imbalance?",
+      "answer": "Engage in physical activity, practice mindfulness, and ensure adequate sleep to stabilize dopamine levels.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 166,
+      "question": "How can I prevent migraine headaches triggered by weather changes?",
+      "answer": "Stay hydrated, manage stress, and track triggers to anticipate and prevent attacks.",
+      "category": "headache"
+    },
+    {
+      "id": 167,
+      "question": "How can I rebuild focus after brain inflammation?",
+      "answer": "Gradually increase cognitive tasks, eat anti-inflammatory foods, and stay well-rested.",
+      "category": "neurorehabilitation"
+    },
+    {
+      "id": 168,
+      "question": "How can I manage excessive daytime sleepiness due to neurological causes?",
+      "answer": "Maintain a consistent sleep schedule, avoid heavy meals, and seek a neurologist’s advice for sleep disorders.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 169,
+      "question": "How can I treat tingling sensations caused by nerve compression?",
+      "answer": "Improve posture, stretch regularly, and use ergonomic equipment to reduce nerve pressure.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 170,
+      "question": "How can I avoid dizziness caused by blood pressure changes?",
+      "answer": "Stand slowly, stay hydrated, and eat small, frequent meals to maintain stable pressure.",
+      "category": "vascular"
+    },
+    {
+      "id": 171,
+      "question": "How can I keep my nervous system calm under pressure?",
+      "answer": "Practice controlled breathing, mindfulness, and engage in relaxing hobbies daily.",
+      "category": "mental_health"
+    },
+    {
+      "id": 172,
+      "question": "How can I prevent neural damage due to vitamin deficiencies?",
+      "answer": "Ensure regular intake of vitamins B1, B6, B12, and D through diet or supplements.",
+      "category": "nutrition"
+    },
+    {
+      "id": 173,
+      "question": "How can I improve my coordination after neurological surgery?",
+      "answer": "Participate in physical therapy, start balance exercises, and stay consistent with rehabilitation routines.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 174,
+      "question": "How can I improve cognitive flexibility?",
+      "answer": "Learn new languages, play strategic games, and engage in problem-solving activities regularly.",
+      "category": "cognition"
+    },
+    {
+      "id": 175,
+      "question": "How can I prevent brain fog during hormonal changes?",
+      "answer": "Stay hydrated, eat omega-3 fats, and maintain balanced sleep and exercise habits.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 176,
+      "question": "How can I improve emotional control after neurological trauma?",
+      "answer": "Seek therapy, practice mindfulness, and engage in relaxation training techniques.",
+      "category": "mental_health"
+    },
+    {
+      "id": 177,
+      "question": "How can I prevent nerve weakness caused by prolonged sitting?",
+      "answer": "Take movement breaks, stretch often, and ensure ergonomic seating support.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 178,
+      "question": "How can I maintain brain hydration for better focus?",
+      "answer": "Drink water regularly, eat water-rich fruits, and limit caffeine and alcohol.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 179,
+      "question": "How can I reduce brain aging due to chronic stress?",
+      "answer": "Practice meditation, exercise, and get quality sleep to reduce cortisol damage.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 180,
+      "question": "How can I control tremors caused by essential tremor disorder?",
+      "answer": "Use medications, avoid caffeine, and perform relaxation and hand-strengthening exercises.",
+      "category": "movement_disorder"
+    },
+    {
+      "id": 181,
+      "question": "How can I restore sensory perception after brain damage?",
+      "answer": "Undergo sensory retraining therapy and engage in repetitive sensory tasks daily.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 182,
+      "question": "How can I prevent seizures during sleep?",
+      "answer": "Take medications regularly, avoid sleep deprivation, and keep stress levels low.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 183,
+      "question": "How can I recover from language impairment due to stroke?",
+      "answer": "Attend speech therapy, use communication aids, and practice verbal exercises daily.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 184,
+      "question": "How can I improve brain detoxification naturally?",
+      "answer": "Sleep adequately, drink plenty of water, and eat leafy greens that support lymphatic flow.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 185,
+      "question": "How can I manage hyperactivity in children with ADHD?",
+      "answer": "Establish routines, provide structured activities, and consult a behavioral therapist.",
+      "category": "adhd"
+    },
+    {
+      "id": 186,
+      "question": "How can I prevent insomnia caused by racing thoughts?",
+      "answer": "Avoid screens before bed, write down worries, and listen to calming sounds.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 187,
+      "question": "How can I enhance long-term memory retention?",
+      "answer": "Review information regularly, associate ideas with visuals, and get enough sleep.",
+      "category": "cognition"
+    },
+    {
+      "id": 188,
+      "question": "How can I reduce chronic brain inflammation from poor diet?",
+      "answer": "Avoid processed foods, increase intake of omega-3s, and add leafy greens to meals.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 189,
+      "question": "How can I recover emotional stability after concussion?",
+      "answer": "Get sufficient rest, seek counseling, and gradually return to normal activities.",
+      "category": "tbi"
+    },
+    {
+      "id": 190,
+      "question": "How can I prevent dizziness from inner ear nerve dysfunction?",
+      "answer": "Perform vestibular exercises and maintain ear hygiene under medical supervision.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 191,
+      "question": "How can I improve focus in ADHD naturally?",
+      "answer": "Exercise, eat high-protein meals, reduce screen time, and maintain consistent routines.",
+      "category": "adhd"
+    },
+    {
+      "id": 192,
+      "question": "How can I recover from peripheral nerve injury?",
+      "answer": "Use physiotherapy, massage, and maintain proper nutrition to promote healing.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 193,
+      "question": "How can I prevent brain damage from hypertension?",
+      "answer": "Monitor blood pressure regularly, avoid salty foods, and take medications as prescribed.",
+      "category": "vascular"
+    },
+    {
+      "id": 194,
+      "question": "How can I strengthen visual-spatial skills?",
+      "answer": "Play puzzles, practice drawing, and engage in 3D visualization tasks.",
+      "category": "cognition"
+    },
+    {
+      "id": 195,
+      "question": "How can I manage nerve sensitivity in hands and feet?",
+      "answer": "Use warm compresses, gentle massage, and maintain proper blood sugar control.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 196,
+      "question": "How can I prevent brain fog during recovery from infection?",
+      "answer": "Stay hydrated, eat balanced meals, and take gradual rest periods during healing.",
+      "category": "neurorehabilitation"
+    },
+    {
+      "id": 197,
+      "question": "How can I increase alertness during night shifts?",
+      "answer": "Use bright lighting, take short breaks, and maintain consistent sleep patterns.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 198,
+      "question": "How can I manage phantom pain after limb amputation?",
+      "answer": "Try mirror therapy, use nerve stimulation devices, and consult pain specialists.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 199,
+      "question": "How can I prevent anxiety-related memory loss?",
+      "answer": "Reduce stress with breathing exercises, therapy, and consistent sleep hygiene.",
+      "category": "mental_health"
+    },
+    {
+      "id": 200,
+      "question": "How can I improve learning speed and comprehension?",
+      "answer": "Use spaced repetition, active recall, and maintain mental focus during study sessions.",
+      "category": "cognition"
+    },
+    {
+      "id": 201,
+      "question": "How can I prevent neural fatigue after long hours of mental work?",
+      "answer": "Take short breaks every hour, stay hydrated, and consume omega-3 rich foods to maintain neural efficiency.",
+      "category": "neurofatigue"
+    },
+    {
+      "id": 202,
+      "question": "How can I recover from a mild traumatic brain injury faster?",
+      "answer": "Get adequate rest, avoid screen exposure, and follow gradual cognitive rehabilitation exercises.",
+      "category": "tbi"
+    },
+    {
+      "id": 203,
+      "question": "How can I strengthen concentration during aging?",
+      "answer": "Practice memory games, learn new skills, and keep a physically active routine to promote brain plasticity.",
+      "category": "cognition"
+    },
+    {
+      "id": 204,
+      "question": "How can I manage headaches caused by nerve tension?",
+      "answer": "Massage the neck and shoulders, apply a warm compress, and reduce stress levels.",
+      "category": "headache"
+    },
+    {
+      "id": 205,
+      "question": "How can I maintain proper serotonin balance in the brain?",
+      "answer": "Exercise daily, eat tryptophan-rich foods, and ensure sufficient sunlight exposure.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 206,
+      "question": "How can I reduce anxiety-related dizziness?",
+      "answer": "Practice grounding techniques, slow breathing, and maintain proper hydration throughout the day.",
+      "category": "mental_health"
+    },
+    {
+      "id": 207,
+      "question": "How can I prevent cognitive decline due to sedentary lifestyle?",
+      "answer": "Incorporate walking, stretching, and mental challenges like puzzles or reading into your routine.",
+      "category": "cognition"
+    },
+    {
+      "id": 208,
+      "question": "How can I improve brain oxygenation naturally?",
+      "answer": "Engage in aerobic exercise, maintain good posture, and practice deep breathing techniques.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 209,
+      "question": "How can I relieve stress-related neck and head pain?",
+      "answer": "Do gentle stretches, manage stress with mindfulness, and ensure ergonomic posture.",
+      "category": "headache"
+    },
+    {
+      "id": 210,
+      "question": "How can I prevent nerve cell damage from oxidative stress?",
+      "answer": "Consume antioxidant-rich foods like berries, nuts, and green vegetables regularly.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 211,
+      "question": "How can I enhance decision-making ability under pressure?",
+      "answer": "Train focus through mindfulness, visualize outcomes, and practice scenario-based thinking.",
+      "category": "cognition"
+    },
+    {
+      "id": 212,
+      "question": "How can I reduce headaches from eye strain?",
+      "answer": "Follow the 20-20-20 rule and ensure proper lighting and screen distance while working.",
+      "category": "headache"
+    },
+    {
+      "id": 213,
+      "question": "How can I recover from nerve inflammation naturally?",
+      "answer": "Follow an anti-inflammatory diet, manage stress, and use gentle physical therapy as advised.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 214,
+      "question": "How can I prevent neural issues caused by dehydration?",
+      "answer": "Drink adequate water daily, especially during physical or mental exertion.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 215,
+      "question": "How can I stop overthinking that affects sleep quality?",
+      "answer": "Write down thoughts before bed, meditate, and maintain a calming bedtime routine.",
+      "category": "mental_health"
+    },
+    {
+      "id": 216,
+      "question": "How can I keep dopamine levels stable without medication?",
+      "answer": "Engage in rewarding activities, exercise regularly, and limit excessive screen use.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 217,
+      "question": "How can I improve my learning ability after a stroke?",
+      "answer": "Participate in cognitive therapy, practice repetition, and maintain patience with gradual progress.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 218,
+      "question": "How can I reduce motion sickness from vestibular imbalance?",
+      "answer": "Perform gaze-stabilization exercises and avoid rapid head movements.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 219,
+      "question": "How can I manage emotional instability after brain surgery?",
+      "answer": "Attend counseling sessions, join support groups, and communicate openly with caregivers.",
+      "category": "mental_health"
+    },
+    {
+      "id": 220,
+      "question": "How can I boost neural regeneration after injury?",
+      "answer": "Consume omega-3 fatty acids, get enough sleep, and perform regular brain exercises.",
+      "category": "neuroregeneration"
+    },
+    {
+      "id": 221,
+      "question": "How can I recover from chronic fatigue linked to the nervous system?",
+      "answer": "Balance rest and gentle activity, ensure nutrient intake, and manage mental stress.",
+      "category": "neurofatigue"
+    },
+    {
+      "id": 222,
+      "question": "How can I prevent memory lapses caused by medication?",
+      "answer": "Consult a doctor for alternatives, stay mentally active, and maintain hydration.",
+      "category": "cognition"
+    },
+    {
+      "id": 223,
+      "question": "How can I prevent seizures triggered by flashing lights?",
+      "answer": "Avoid strobe effects, wear tinted lenses, and manage stress and sleep patterns.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 224,
+      "question": "How can I stabilize nerve signaling through diet?",
+      "answer": "Include magnesium, potassium, and vitamin B foods in your daily meals.",
+      "category": "nutrition"
+    },
+    {
+      "id": 225,
+      "question": "How can I prevent brain shrinkage from aging?",
+      "answer": "Exercise, eat a Mediterranean-style diet, and stay socially and mentally active.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 226,
+      "question": "How can I manage brain pressure caused by fluid imbalance?",
+      "answer": "Seek immediate medical care, reduce salt intake, and maintain a healthy posture.",
+      "category": "neurology"
+    },
+    {
+      "id": 227,
+      "question": "How can I reduce risk of stroke recurrence?",
+      "answer": "Maintain blood pressure, manage cholesterol, and take prescribed medication consistently.",
+      "category": "stroke"
+    },
+    {
+      "id": 228,
+      "question": "How can I improve sensory awareness after nerve injury?",
+      "answer": "Perform tactile stimulation exercises and use textures to retrain sensation.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 229,
+      "question": "How can I prevent headaches from caffeine withdrawal?",
+      "answer": "Gradually reduce caffeine intake and increase water and fruit consumption.",
+      "category": "headache"
+    },
+    {
+      "id": 230,
+      "question": "How can I manage stress to avoid brain inflammation?",
+      "answer": "Incorporate mindfulness, yoga, and consistent relaxation techniques into your day.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 231,
+      "question": "How can I improve neural communication speed?",
+      "answer": "Train with mental exercises, ensure adequate sleep, and consume B-vitamin-rich foods.",
+      "category": "cognition"
+    },
+    {
+      "id": 232,
+      "question": "How can I reduce tremors from medication side effects?",
+      "answer": "Discuss dosage adjustments with a doctor and use relaxation techniques.",
+      "category": "movement_disorder"
+    },
+    {
+      "id": 233,
+      "question": "How can I increase attention span in children with learning disabilities?",
+      "answer": "Use short focused sessions, positive reinforcement, and hands-on learning tools.",
+      "category": "adhd"
+    },
+    {
+      "id": 234,
+      "question": "How can I prevent insomnia from overuse of electronics?",
+      "answer": "Reduce screen time an hour before bed and keep lights dim in the evening.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 235,
+      "question": "How can I improve brain response speed during exams?",
+      "answer": "Sleep well, practice timed exercises, and eat light, nutritious meals before study.",
+      "category": "cognition"
+    },
+    {
+      "id": 236,
+      "question": "How can I heal brain fatigue after long emotional stress?",
+      "answer": "Take regular breaks, engage in relaxing hobbies, and focus on restorative sleep.",
+      "category": "mental_health"
+    },
+    {
+      "id": 237,
+      "question": "How can I manage chronic pain caused by nerve damage?",
+      "answer": "Use physical therapy, pain-relief medications, and relaxation techniques as prescribed.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 238,
+      "question": "How can I recover motor control after spinal cord injury?",
+      "answer": "Follow intensive physiotherapy and occupational therapy under professional guidance.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 239,
+      "question": "How can I prevent fainting caused by neural reflex imbalance?",
+      "answer": "Avoid standing quickly, stay hydrated, and increase salt intake if recommended by a doctor.",
+      "category": "autonomic_disorder"
+    },
+    {
+      "id": 240,
+      "question": "How can I maintain alertness after a long working day?",
+      "answer": "Take short naps, drink water, and stretch to promote blood circulation to the brain.",
+      "category": "neurofatigue"
+    },
+    {
+      "id": 241,
+      "question": "How can I support nerve repair after diabetic neuropathy?",
+      "answer": "Control blood sugar, supplement with vitamin B12, and do gentle foot exercises.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 242,
+      "question": "How can I stop stress from triggering migraines?",
+      "answer": "Use relaxation methods, track triggers, and maintain a consistent daily schedule.",
+      "category": "headache"
+    },
+    {
+      "id": 243,
+      "question": "How can I reduce fatigue from overactive nerves?",
+      "answer": "Practice grounding exercises and get adequate magnesium and potassium intake.",
+      "category": "neurofatigue"
+    },
+    {
+      "id": 244,
+      "question": "How can I strengthen hand coordination after nerve injury?",
+      "answer": "Use grip balls, finger stretching tools, and perform repetitive motion therapy.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 245,
+      "question": "How can I manage dizziness caused by anxiety?",
+      "answer": "Slow your breathing, sit down, and practice grounding awareness exercises.",
+      "category": "mental_health"
+    },
+    {
+      "id": 246,
+      "question": "How can I protect my brain from pollution damage?",
+      "answer": "Use air purifiers, wear masks in polluted areas, and consume antioxidant-rich foods.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 247,
+      "question": "How can I recover motivation after chronic illness affecting the brain?",
+      "answer": "Set small goals, celebrate progress, and seek therapy to rebuild positive habits.",
+      "category": "mental_health"
+    },
+    {
+      "id": 248,
+      "question": "How can I reduce inflammation in spinal nerves?",
+      "answer": "Use prescribed anti-inflammatory medicines and perform gentle stretching exercises.",
+      "category": "neuroinflammation"
+    },
+    {
+      "id": 249,
+      "question": "How can I manage blurred vision caused by nerve pressure?",
+      "answer": "Consult an ophthalmologist and relieve pressure through proper posture and hydration.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 250,
+      "question": "How can I restore normal sleep patterns after head trauma?",
+      "answer": "Follow a strict sleep schedule, avoid caffeine, and create a quiet sleep environment.",
+      "category": "sleep_disorder"
+    },
+     {
+      "id": 251,
+      "question": "How can I reduce mental burnout caused by overworking?",
+      "answer": "Take regular breaks, practice mindfulness, and ensure adequate sleep to allow your brain to recover.",
+      "category": "mental_health"
+    },
+    {
+      "id": 252,
+      "question": "How can I improve reaction time in daily activities?",
+      "answer": "Engage in coordination exercises, video games that train reflexes, and ensure good hydration.",
+      "category": "neuroperformance"
+    },
+    {
+      "id": 253,
+      "question": "How can I prevent nerve compression in the neck?",
+      "answer": "Maintain correct posture, stretch regularly, and avoid prolonged screen time without breaks.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 254,
+      "question": "How can I boost creativity through brain exercises?",
+      "answer": "Practice divergent thinking, doodle ideas, and try new activities to stimulate new neural pathways.",
+      "category": "cognition"
+    },
+    {
+      "id": 255,
+      "question": "How can I prevent fainting caused by low brain blood flow?",
+      "answer": "Stay hydrated, avoid standing too fast, and increase salt intake under medical advice.",
+      "category": "autonomic_disorder"
+    },
+    {
+      "id": 256,
+      "question": "How can I improve brain response during stressful exams?",
+      "answer": "Practice mock tests, get enough sleep, and manage anxiety with breathing exercises.",
+      "category": "cognition"
+    },
+    {
+      "id": 257,
+      "question": "How can I protect my brain from mobile radiation exposure?",
+      "answer": "Use speaker mode, keep devices away from your head, and limit screen time.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 258,
+      "question": "How can I recover from dizziness caused by inner ear problems?",
+      "answer": "Perform vestibular rehabilitation exercises and avoid sudden head movements.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 259,
+      "question": "How can I train my brain to stay calm under pressure?",
+      "answer": "Practice meditation, focus on controlled breathing, and use visualization techniques.",
+      "category": "mental_health"
+    },
+    {
+      "id": 260,
+      "question": "How can I enhance memory retention during learning?",
+      "answer": "Use spaced repetition, summarize information, and teach others to reinforce learning.",
+      "category": "cognition"
+    },
+    {
+      "id": 261,
+      "question": "How can I prevent neuropathy from vitamin deficiency?",
+      "answer": "Consume foods rich in vitamin B12, B6, and folate, or take supplements as prescribed.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 262,
+      "question": "How can I control brain overstimulation from noise?",
+      "answer": "Use ear protection, take breaks in quiet areas, and practice grounding exercises.",
+      "category": "sensory_overload"
+    },
+    {
+      "id": 263,
+      "question": "How can I improve my sleep to boost brain detoxification?",
+      "answer": "Maintain a consistent bedtime and avoid caffeine or blue light exposure before sleep.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 264,
+      "question": "How can I speed up recovery after a seizure episode?",
+      "answer": "Ensure rest, follow medication routines, and avoid known seizure triggers.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 265,
+      "question": "How can I reduce confusion after waking up suddenly?",
+      "answer": "Wake up gradually with natural light and give your brain time to adjust before moving.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 266,
+      "question": "How can I improve focus in noisy environments?",
+      "answer": "Use noise-cancelling headphones, play soft instrumental music, and set task priorities.",
+      "category": "cognition"
+    },
+    {
+      "id": 267,
+      "question": "How can I prevent chronic migraines triggered by dehydration?",
+      "answer": "Drink plenty of water throughout the day and avoid excessive caffeine or alcohol.",
+      "category": "headache"
+    },
+    {
+      "id": 268,
+      "question": "How can I reduce nerve tingling in my hands and feet?",
+      "answer": "Maintain blood circulation, stretch regularly, and ensure proper vitamin intake.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 269,
+      "question": "How can I balance neurotransmitters naturally?",
+      "answer": "Eat protein-rich foods, exercise daily, and manage stress through relaxation techniques.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 270,
+      "question": "How can I recover faster after emotional trauma affecting brain health?",
+      "answer": "Seek therapy, maintain social support, and practice mindfulness for emotional healing.",
+      "category": "mental_health"
+    },
+    {
+      "id": 271,
+      "question": "How can I prevent dizziness while standing up quickly?",
+      "answer": "Stand slowly, flex your calf muscles before rising, and stay hydrated.",
+      "category": "autonomic_disorder"
+    },
+    {
+      "id": 272,
+      "question": "How can I prevent brain cell damage from alcohol consumption?",
+      "answer": "Drink in moderation, stay hydrated, and supplement with B vitamins.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 273,
+      "question": "How can I strengthen my nervous system after illness?",
+      "answer": "Eat a balanced diet, sleep adequately, and engage in gentle physical activity.",
+      "category": "neurorecovery"
+    },
+    {
+      "id": 274,
+      "question": "How can I improve posture to avoid nerve compression?",
+      "answer": "Sit with straight alignment, use ergonomic chairs, and stretch frequently.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 275,
+      "question": "How can I protect my brain during aging?",
+      "answer": "Engage in mental challenges, eat brain-healthy foods, and maintain regular physical activity.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 276,
+      "question": "How can I improve hand coordination after brain injury?",
+      "answer": "Use occupational therapy, repetitive hand exercises, and sensory feedback training.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 277,
+      "question": "How can I prevent mental fatigue from excessive studying?",
+      "answer": "Use the Pomodoro technique, take nature breaks, and stay hydrated during sessions.",
+      "category": "mental_health"
+    },
+    {
+      "id": 278,
+      "question": "How can I restore balance after vestibular neuronitis?",
+      "answer": "Follow vestibular rehabilitation exercises and avoid sudden head movements.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 279,
+      "question": "How can I increase alertness without caffeine?",
+      "answer": "Try brisk walking, cold water splashes, or deep breathing exercises to boost brain alertness.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 280,
+      "question": "How can I protect neurons from chronic stress damage?",
+      "answer": "Use stress-reduction techniques, sleep adequately, and consume antioxidant foods.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 281,
+      "question": "How can I reduce the side effects of anti-epileptic drugs?",
+      "answer": "Stay hydrated, follow a nutrient-rich diet, and consult your neurologist regularly.",
+      "category": "epilepsy"
+    },
+    {
+      "id": 282,
+      "question": "How can I improve verbal memory and recall speed?",
+      "answer": "Practice storytelling, use mnemonic devices, and test yourself regularly.",
+      "category": "cognition"
+    },
+    {
+      "id": 283,
+      "question": "How can I prevent chronic stress from impairing focus?",
+      "answer": "Maintain a routine, get enough sleep, and use breathing exercises to calm the mind.",
+      "category": "mental_health"
+    },
+    {
+      "id": 284,
+      "question": "How can I rebuild my confidence after a brain injury?",
+      "answer": "Set small goals, celebrate progress, and seek emotional support during recovery.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 285,
+      "question": "How can I stop involuntary muscle spasms caused by nerve irritation?",
+      "answer": "Stay hydrated, stretch gently, and maintain balanced electrolyte levels.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 286,
+      "question": "How can I prevent panic attacks that affect my brain focus?",
+      "answer": "Practice slow breathing, reduce caffeine, and use grounding techniques during stress.",
+      "category": "mental_health"
+    },
+    {
+      "id": 287,
+      "question": "How can I improve attention and planning skills?",
+      "answer": "Use to-do lists, train with brain games, and minimize multitasking.",
+      "category": "cognition"
+    },
+    {
+      "id": 288,
+      "question": "How can I recover from eye twitching due to nerve fatigue?",
+      "answer": "Get adequate rest, reduce caffeine, and apply warm compresses over the eyes.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 289,
+      "question": "How can I manage emotional outbursts after a brain injury?",
+      "answer": "Attend therapy sessions, communicate openly, and use mindfulness to regulate emotions.",
+      "category": "mental_health"
+    },
+    {
+      "id": 290,
+      "question": "How can I enhance problem-solving skills naturally?",
+      "answer": "Challenge your brain with puzzles, strategy games, and daily journaling.",
+      "category": "cognition"
+    },
+    {
+      "id": 291,
+      "question": "How can I prevent dizziness caused by low blood sugar?",
+      "answer": "Eat balanced meals, avoid long fasting, and keep snacks available when active.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 292,
+      "question": "How can I improve sensory focus during multitasking?",
+      "answer": "Limit distractions, train attention with single-sense tasks, and practice mindful listening.",
+      "category": "cognition"
+    },
+    {
+      "id": 293,
+      "question": "How can I rebuild my sleep cycle after night shifts?",
+      "answer": "Use blackout curtains, maintain consistent rest hours, and avoid stimulants before bed.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 294,
+      "question": "How can I prevent brain swelling from minor head injury?",
+      "answer": "Apply cold compresses, rest, and seek medical attention if symptoms persist.",
+      "category": "tbi"
+    },
+    {
+      "id": 295,
+      "question": "How can I boost brain energy through nutrition?",
+      "answer": "Eat whole grains, fruits, and healthy fats to provide stable glucose to the brain.",
+      "category": "nutrition"
+    },
+    {
+      "id": 296,
+      "question": "How can I stop shaking hands due to stress?",
+      "answer": "Breathe deeply, reduce caffeine, and practice progressive muscle relaxation.",
+      "category": "movement_disorder"
+    },
+    {
+      "id": 297,
+      "question": "How can I improve my coordination while walking after injury?",
+      "answer": "Perform balance exercises, use support tools, and undergo physical therapy.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 298,
+      "question": "How can I restore sensory nerves after viral infection?",
+      "answer": "Use vitamin B supplements and perform guided nerve recovery exercises.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 299,
+      "question": "How can I manage headaches caused by tight scalp muscles?",
+      "answer": "Massage the scalp, stay hydrated, and manage stress with relaxation techniques.",
+      "category": "headache"
+    },
+    {
+      "id": 300,
+      "question": "How can I prevent nerve inflammation caused by autoimmune disease?",
+      "answer": "Follow prescribed medication, maintain an anti-inflammatory diet, and reduce chronic stress.",
+      "category": "neuroinflammation"
+    },
+{
+      "id": 301,
+      "question": "What are the best methods to strengthen brain connections?",
+      "answer": "Engage in new learning activities, solve puzzles, and maintain a healthy lifestyle with good sleep and nutrition.",
+      "category": "cognition"
+    },
+    {
+      "id": 302,
+      "question": "Which habits improve mental clarity throughout the day?",
+      "answer": "Stay hydrated, take regular breaks, and avoid multitasking to maintain focus.",
+      "category": "mental_health"
+    },
+    {
+      "id": 303,
+      "question": "What helps prevent memory decline with aging?",
+      "answer": "Regular exercise, a brain-healthy diet, and continuous learning help preserve memory function.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 304,
+      "question": "What techniques are useful to reduce brain fog?",
+      "answer": "Prioritize sleep, manage stress, and eat nutrient-rich foods that support cognitive performance.",
+      "category": "cognition"
+    },
+    {
+      "id": 305,
+      "question": "Which foods support nerve regeneration?",
+      "answer": "Foods rich in omega-3 fatty acids, B vitamins, and antioxidants support nerve repair and function.",
+      "category": "nutrition"
+    },
+    {
+      "id": 306,
+      "question": "What exercises can improve hand-eye coordination?",
+      "answer": "Try juggling, reaction-based video games, or table tennis to strengthen coordination.",
+      "category": "neuroperformance"
+    },
+    {
+      "id": 307,
+      "question": "What are early signs of neurodegenerative disorders?",
+      "answer": "Memory loss, slowed thinking, balance issues, and personality changes can signal early neurodegeneration.",
+      "category": "neurology"
+    },
+    {
+      "id": 308,
+      "question": "Which activities enhance problem-solving skills?",
+      "answer": "Brain games, strategic board games, and creative hobbies improve problem-solving ability.",
+      "category": "cognition"
+    },
+    {
+      "id": 309,
+      "question": "What helps balance mood and emotional stability?",
+      "answer": "Regular physical activity, adequate sleep, and mindfulness help stabilize mood.",
+      "category": "mental_health"
+    },
+    {
+      "id": 310,
+      "question": "What lifestyle changes reduce risk of stroke?",
+      "answer": "Maintain healthy blood pressure, quit smoking, exercise regularly, and limit alcohol intake.",
+      "category": "stroke"
+    },
+    {
+      "id": 311,
+      "question": "Which factors contribute to chronic stress on the brain?",
+      "answer": "Lack of rest, poor nutrition, and emotional overload contribute to chronic stress effects.",
+      "category": "mental_health"
+    },
+    {
+      "id": 312,
+      "question": "What are effective ways to restore focus after distractions?",
+      "answer": "Practice single-tasking, take short breaks, and use time-blocking methods for better focus.",
+      "category": "cognition"
+    },
+    {
+      "id": 313,
+      "question": "What practices can slow down cognitive decline?",
+      "answer": "Mental exercises, physical activity, and social engagement help slow cognitive decline.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 314,
+      "question": "Which vitamins are vital for brain function?",
+      "answer": "Vitamins B6, B12, D, and E are crucial for nerve health and cognitive performance.",
+      "category": "nutrition"
+    },
+    {
+      "id": 315,
+      "question": "What daily habits support long-term brain health?",
+      "answer": "Balanced diet, consistent sleep schedule, mental activity, and stress control improve brain health.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 316,
+      "question": "Which techniques improve learning efficiency?",
+      "answer": "Use visualization, spaced repetition, and association techniques for faster learning.",
+      "category": "cognition"
+    },
+    {
+      "id": 317,
+      "question": "What helps the brain recover from emotional trauma?",
+      "answer": "Therapy, social support, and relaxation practices aid emotional and neurological recovery.",
+      "category": "mental_health"
+    },
+    {
+      "id": 318,
+      "question": "What are the major triggers for migraine attacks?",
+      "answer": "Stress, dehydration, hormonal changes, and certain foods can trigger migraines.",
+      "category": "headache"
+    },
+    {
+      "id": 319,
+      "question": "Which practices improve neural plasticity?",
+      "answer": "Learning new skills, exercising, and maintaining positive social interactions enhance neural plasticity.",
+      "category": "cognition"
+    },
+    {
+      "id": 320,
+      "question": "What are recommended ways to manage insomnia naturally?",
+      "answer": "Avoid screens before bed, keep a consistent sleep schedule, and create a calm bedtime routine.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 321,
+      "question": "What habits damage brain cells over time?",
+      "answer": "Sleep deprivation, substance abuse, and chronic stress can damage brain cells.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 322,
+      "question": "Which therapies help stroke survivors regain movement?",
+      "answer": "Physical therapy, occupational therapy, and constraint-induced movement therapy are effective.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 323,
+      "question": "What causes numbness or tingling in extremities?",
+      "answer": "Peripheral neuropathy, vitamin deficiencies, or nerve compression are common causes.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 324,
+      "question": "What methods reduce anxiety-related brain overactivity?",
+      "answer": "Meditation, breathing exercises, and limiting caffeine can calm overactive brain patterns.",
+      "category": "mental_health"
+    },
+    {
+      "id": 325,
+      "question": "Which nutrients support neurotransmitter balance?",
+      "answer": "Amino acids, omega-3 fats, and magnesium support healthy neurotransmitter function.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 326,
+      "question": "What are the benefits of music therapy for brain health?",
+      "answer": "Music therapy enhances memory, reduces anxiety, and aids recovery from neurological conditions.",
+      "category": "therapy"
+    },
+    {
+      "id": 327,
+      "question": "What role does hydration play in brain performance?",
+      "answer": "Proper hydration maintains concentration, alertness, and efficient nerve signaling.",
+      "category": "neurohealth"
+    },
+    {
+      "id": 328,
+      "question": "Which activities support better motor control?",
+      "answer": "Yoga, balance exercises, and tai chi improve motor control and body awareness.",
+      "category": "movement_disorder"
+    },
+    {
+      "id": 329,
+      "question": "What treatments help with chronic fatigue syndrome?",
+      "answer": "Gradual exercise, sleep management, and cognitive behavioral therapy help manage fatigue.",
+      "category": "neurodisorder"
+    },
+    {
+      "id": 330,
+      "question": "What are early signs of multiple sclerosis?",
+      "answer": "Vision problems, muscle weakness, and numbness in limbs are common early signs.",
+      "category": "neurology"
+    },
+    {
+      "id": 331,
+      "question": "Which strategies prevent burnout in high-stress jobs?",
+      "answer": "Set work boundaries, rest regularly, and practice mindfulness to prevent burnout.",
+      "category": "mental_health"
+    },
+    {
+      "id": 332,
+      "question": "What helps improve mental resilience?",
+      "answer": "Positive thinking, self-care routines, and consistent physical exercise build resilience.",
+      "category": "mental_health"
+    },
+    {
+      "id": 333,
+      "question": "Which factors influence emotional regulation in the brain?",
+      "answer": "Hormones, neurotransmitters, and environmental stressors influence emotion control.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 334,
+      "question": "What natural methods help ease tension headaches?",
+      "answer": "Massage, hydration, relaxation, and proper posture reduce tension headaches.",
+      "category": "headache"
+    },
+    {
+      "id": 335,
+      "question": "Which habits keep the nervous system balanced?",
+      "answer": "Regular breathing exercises, healthy diet, and consistent sleep regulate nerve balance.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 336,
+      "question": "What are effective treatments for vertigo?",
+      "answer": "Vestibular rehabilitation, medication, and avoiding sudden head movements help treat vertigo.",
+      "category": "balance_disorder"
+    },
+    {
+      "id": 337,
+      "question": "Which foods enhance focus and alertness?",
+      "answer": "Blueberries, nuts, fatty fish, and dark chocolate improve focus and brain energy.",
+      "category": "nutrition"
+    },
+    {
+      "id": 338,
+      "question": "What practices enhance emotional intelligence?",
+      "answer": "Self-awareness exercises, empathy training, and mindfulness enhance emotional intelligence.",
+      "category": "mental_health"
+    },
+    {
+      "id": 339,
+      "question": "Which activities help prevent age-related dementia?",
+      "answer": "Reading, social activities, exercise, and brain games reduce dementia risk.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 340,
+      "question": "What are major risk factors for brain stroke?",
+      "answer": "High blood pressure, diabetes, smoking, and obesity increase stroke risk.",
+      "category": "stroke"
+    },
+    {
+      "id": 341,
+      "question": "Which routines enhance deep sleep for better brain recovery?",
+      "answer": "Avoid blue light, set a dark environment, and follow consistent bedtime routines.",
+      "category": "sleep_disorder"
+    },
+    {
+      "id": 342,
+      "question": "What are key differences between stress and anxiety?",
+      "answer": "Stress is a response to external pressure; anxiety is persistent worry without clear cause.",
+      "category": "mental_health"
+    },
+    {
+      "id": 343,
+      "question": "Which exercises stimulate both brain hemispheres?",
+      "answer": "Cross-lateral movements, dancing, and musical instrument practice activate both hemispheres.",
+      "category": "neuroperformance"
+    },
+    {
+      "id": 344,
+      "question": "What contributes to long-term depression recovery?",
+      "answer": "Therapy, medication adherence, physical activity, and supportive relationships aid recovery.",
+      "category": "mental_health"
+    },
+    {
+      "id": 345,
+      "question": "Which relaxation techniques calm the nervous system?",
+      "answer": "Deep breathing, progressive muscle relaxation, and meditation calm the nervous system.",
+      "category": "neuropathy"
+    },
+    {
+      "id": 346,
+      "question": "What are common symptoms of serotonin imbalance?",
+      "answer": "Low mood, sleep disturbances, and digestive changes indicate serotonin imbalance.",
+      "category": "neurochemistry"
+    },
+    {
+      "id": 347,
+      "question": "Which therapies help improve memory after injury?",
+      "answer": "Cognitive rehabilitation, memory training, and repetitive recall exercises improve memory.",
+      "category": "rehabilitation"
+    },
+    {
+      "id": 348,
+      "question": "What habits protect the brain from oxidative stress?",
+      "answer": "Eat antioxidant-rich foods, avoid smoking, and reduce exposure to pollution.",
+      "category": "neuroprotection"
+    },
+    {
+      "id": 349,
+      "question": "Which daily practices support overall mental balance?",
+      "answer": "Mindfulness, gratitude journaling, and balanced nutrition maintain mental stability.",
+      "category": "mental_health"
+    },
+    {
+      "id": 350,
+      "question": "What helps improve processing speed and attention span?",
+      "answer": "Brain games, aerobic exercise, and a diet rich in omega-3 fats improve attention and speed.",
+      "category": "cognition"
+    }
+  
+  ]
+}
