@@ -22,14 +22,24 @@ ENABLE_SMS = False
 # ========== SERVE FRONTEND ==========
 @app.route('/')
 def home():
+    from flask import Response
     try:
-        import os
-        # Get absolute path to HTML file
-        file_path = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'index.html')
-        with open(file_path, 'r', encoding='utf-8') as f:
-            return f.read()
+        # For Vercel, the working directory is /var/task
+        html_path = '/var/task/frontend/index.html'
+        
+        # Fallback paths
+        if not os.path.exists(html_path):
+            html_path = 'frontend/index.html'
+        
+        with open(html_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        return Response(content, mimetype='text/html')
+    except FileNotFoundError:
+        return Response("Frontend not found. Deployment may still be processing.", status=404)
     except Exception as e:
-        return f"Error loading page: {str(e)}", 500
+        return Response(f"Error: {str(e)}", status=500)
+
 
 # ========== LOAD DATA FILES ==========
 def load_greetings():
