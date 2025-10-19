@@ -21,7 +21,16 @@ ENABLE_SMS = False
 # ========== SERVE FRONTEND ==========
 @app.route('/')
 def home():
-    return send_from_directory('../frontend', 'index.html')
+    try:
+        # Read the HTML file directly
+        html_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'frontend', 'index.html')
+        with open(html_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        return jsonify({"error": "Frontend HTML not found", "path": html_path}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # ========== LOAD DATA FILES ==========
 def load_greetings():
