@@ -1,0 +1,34 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What causes migraine headaches?",
+      "answer": "Migraines are caused by genetic factors, stress, hormonal changes, and certain food triggers like chocolate and cheese.",
+      "category": "headache"
+    },
+    {
+      "id": 2,
+      "question": "What are the symptoms of migraine?",
+      "answer": "Migraine symptoms include severe throbbing pain on one side of the head, nausea, vomiting, and sensitivity to light and sound.",
+      "category": "headache"
+    },
+    {
+      "id": 3,
+      "question": "How to treat tension headaches?",
+      "answer": "Tension headaches can be treated with rest, stress management, pain relievers, and neck stretches.",
+      "category": "headache"
+    },
+    {
+      "id": 4,
+      "question": "What is the difference between migraine and tension headache?",
+      "answer": "Migraines cause throbbing pain on one side with nausea, while tension headaches cause dull pressure pain on both sides of the head.",
+      "category": "headache"
+    },
+    {
+      "id": 5,
+      "question": "When should I see a doctor for headaches?",
+      "answer": "See a doctor if headaches are sudden and severe, occur with fever or stiff neck, or if they change in pattern or intensity.",
+      "category": "headache"
+    }
+  ]
+}

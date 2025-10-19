@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEUROBUDDYY.ai</title>
+  <style>
+    /* [KEEP ALL YOUR EXISTING CSS - NO CHANGES] */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #f0f4f8;
+    }
+
+    .topbar {
+      background: #060000;
+      color: #fff;
+      text-align: center;
+      font-size: 1.7rem;
+      font-weight: bold;
+      padding: 17px;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .hamburger {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.8rem;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      height:calc(100vh - 60px);
+    }
+
+    .leftbar {
+      width: 0;
+      background: #d4faff;
+      border-right: 8px solid #a8ebf9;
+      overflow-y: auto;
+      transition: width 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .leftbar.open {
+      width: 220px;
+      padding: 15px;
+    }
+
+    .menu {
+      list-style: none;
+      padding: 0;
+    }
+
+    .menu li {
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 500;
+    }
+
+    .menu li:hover {
+      background: #7a9fef;
+      color: #fff;
+    }
+
+    .settings {
+      margin-top: auto;
+      padding: 10px;
+      background: #fff;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .settings:hover {
+      background: #7a9adf;
+      color: rgb(255, 255, 255);
+    }
+
+    .chat-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f9fafb;
+      position: relative;
+    }
+
+    .chat-window {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .chat-window div {
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 15px;
+      line-height: 1.4;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    .bot-msg {
+      background: #2575d6;
+      color: #ffffff;
+      text-align: left;
+    }
+
+    .user-msg {
+      background:linear-gradient(rgb(144, 179, 214) 0%,rgb(168, 242, 161) 20%);
+      color: rgb(0, 0, 0);
+      text-align: right;
+      margin-left: auto;
+    }
+
+    .top-typing-box {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+      padding: 20px;
+      margin: 10px 16px;
+      border-radius: 15px;
+      display: none;
+      min-height: 60px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      animation: slideDown 0.4s ease;
+    }
+
+    .top-typing-box.active {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .typing-title {
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+      opacity: 0.8;
+      text-transform: uppercase;
+    }
+
+    #topTypingContent {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .suggestions-box {
+      background: #ffffff;
+      border-top: 3px solid #2563eb;
+      border-bottom: 3px solid #2563eb;
+      padding: 12px 16px;
+      display: none;
+      max-height: 250px;
+      overflow-y: auto;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+
+    .suggestions-box.active {
+      display: block;
+    }
+
+    .suggestions-title {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .suggestion-item {
+      padding: 12px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #e5e7eb;
+      transition: all 0.2s;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      background: #f9fafb;
+      font-size: 0.9rem;
+    }
+
+    .suggestion-item:hover {
+      background: #2563eb;
+      color: white;
+      transform: translateX(5px);
+    }
+
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+
+    .no-suggestions {
+      text-align: center;
+      color: #999;
+      padding: 15px;
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    .search-bar {
+      flex:0 0 60px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-top: 5px solid #ffffff;
+      background: white;
+      padding: 12px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      border: 2px solid #9fbff0c1;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .btn{
+      display:flex;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: rgb(236, 223, 215);
+      font-weight: bold;
+      cursor: pointer;
+      border: 2px solid;
+      transition: 0.1s;
+    }
+
+    .btn:hover { transform: scale(1.05); }
+    .mic { background: #95b1ea; }
+    .upload { background: #fef8df; }
+    .send { background: #6b7280; }
+
+    .rightbar {
+      width: 25%;
+      background: white;
+      border-left: 8px solid #ffffff;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .emergency {
+      background: #dc2626;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      cursor: pointer;
+      border: none;
+    }
+    .emergency:hover { background: #b91c1c; }
+
+    .connect-doctor {
+      background: #2563eb;
+      color: white;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border: none;
+      transition: 0.2s;
+    }
+    .connect-doctor:hover { background: #1d4ed8; }
+
+    #doctorListContainer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out;
+      background: #f0f4f8;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    #doctorListContainer.expanded {
+      max-height: 600px;
+      padding: 15px;
+      border: 2px solid #2563eb;
+      overflow-y:auto;
+      overflow-x:hidden;
+    }
+
+    .doctor-card {
+      background: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #doctorList {
+      max-height: 350px;
+      overflow-y:auto;
+      overflow:hidden;
+    }
+
+    .doctor-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      background: #f0f9ff;
+    }
+
+    .doctor-info {
+      flex-grow: 1;
+    }
+
+    .doctor-name {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 3px;
+      font-size: 0.95rem;
+    }
+
+    .doctor-specialty {
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+
+    .status-available {
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    .status-engaged {
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+    }
+
+    .status-offline {
+      background: #9ca3af;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading-doctors {
+      text-align: center;
+      color: #666;
+      padding: 20px;
+      font-style: italic;
+    }
+
+    .hospital-section {
+      margin-top: 15px;
+    }
+
+    .location-title {
+      font-size: 1rem;
+      color: rgb(42, 106, 255);
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .location-form {
+      background: #f0f4f8;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+    }
+
+    .location-input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: white;
+      cursor: pointer;
+    }
+
+    .location-input:disabled {
+      background: #f3f4f6;
+      cursor: not-allowed;
+    }
+
+    .location-input:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    .save-location-btn {
+      width: 100%;
+      padding: 12px;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .save-location-btn:hover {
+      background: #059669;
+      transform: scale(1.02);
+    }
+
+    /* Chat History Styles */
+    #chatHistoryPanel {
+      width: 0;
+      background: white;
+      border-right: 8px solid #e5e7eb;
+      overflow-y: auto;
+      transition: width 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
+    #chatHistoryPanel.open {
+      width: 300px;
+      padding: 15px;
+    }
+
+    .history-header {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #2563eb;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .history-item {
+      background: #f9fafb;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .history-item:hover {
+      background: #e0f2fe;
+      border-color: #2563eb;
+      transform: translateX(5px);
+    }
+
+    .history-title {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .history-time {
+      font-size: 0.75rem;
+      color: #666;
+    }
+
+    .no-history {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+      font-style: italic;
+    }
+
+    .clear-history-btn {
+      background: #dc2626;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+      transition: 0.2s;
+    }
+
+    .clear-history-btn:hover {
+      background: #b91c1c;
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+    🎀 NEURO BUDDYY
+  </header>
+
+  <div class="container">
+
+    <aside class="leftbar" id="sidebar">
+      <ul class="menu">
+        <li onclick="toggleChatHistory()">🔎 Search</li>
+        <li>📂 Categories</li>
+      </ul>
+      <div class="settings">
+        <div onclick="toggleSettings()" style="cursor: pointer; margin-bottom: 8px;">⚙️ Settings ▼</div>
+        <ul id="settingsSubmenu" style="display: none; list-style: none; padding-left: 10px; margin: 0;">
+          <li onclick="openAbout()" style="padding: 8px; background: #e0f2fe; cursor: pointer; border-radius: 5px;">
+            ℹ️ About
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- CHAT HISTORY PANEL -->
+    <aside id="chatHistoryPanel">
+      <div class="history-header">📜 Chat History</div>
+      <div id="historyList"></div>
+      <button class="clear-history-btn" onclick="clearChatHistory()">🗑️ Clear History</button>
+    </aside>
+
+    <main class="chat-section">
+      <div class="top-typing-box" id="topTypingBox">
+        <div class="typing-title">✍️ You're typing...</div>
+        <div id="topTypingContent"></div>
+      </div>
+
+      <div class="chat-window" id="chatWindow">
+        <div class="bot-msg">👋 Hello! Type your health question below and I'll help you find answers.</div>
+      </div>
+
+      <div class="suggestions-box" id="suggestionsBox">
+        <div class="suggestions-title">💡 Related Questions (click to select):</div>
+        <div id="suggestionsList"></div>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="userInput" placeholder="Type your health question here...">
+        <button class="btn send" onclick="sendMessage()">⬆️</button>
+        <button class="btn"> <span class="mic">🎤 </span> <span class="upload"> 📁 </span></button>
+      </div>
+    </main>
+
+    <aside class="rightbar">
+      <button class="emergency" onclick="triggerEmergency()">🚨 Emergency</button>
+      
+      <button class="connect-doctor" onclick="toggleDoctorList()" id="connectDoctorBtn">
+        👨‍⚕️ Connect to Doctors
+      </button>
+      
+      <div id="doctorListContainer">
+        <div id="doctorList">
+          <p class="loading-doctors">Loading doctors...</p>
+        </div>
+      </div>
+
+      <!-- HOSPITAL LOCATION SECTION -->
+      <div class="hospital-section">
+        <h2 class="location-title" id="hospitalSectionTitle">🏥 Setup Nearest Hospital</h2>
+        
+        <div class="location-form" id="locationForm">
+          <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">
+            ⚠️ Required for Emergency Button
+          </p>
+          
+          <select id="stateInput" class="location-input" onchange="loadDistricts()">
+            <option value="">Select State</option>
+            <option value="Delhi">Delhi</option>
+            <option value="Maharashtra">Maharashtra</option>
+            <option value="Karnataka">Karnataka</option>
+            <option value="Tamil Nadu">Tamil Nadu</option>
+            <option value="West Bengal">West Bengal</option>
+            <option value="Gujarat">Gujarat</option>
+            <option value="Rajasthan">Rajasthan</option>
+            <option value="Uttar Pradesh">Uttar Pradesh</option>
+            <option value="Assam">Assam</option>
+          </select>
+          
+          <select id="districtInput" class="location-input" disabled onchange="loadAreas()">
+            <option value="">Select District</option>
+          </select>
+          
+          <select id="areaInput" class="location-input" disabled>
+            <option value="">Select Area</option>
+          </select>
+          
+          <button class="save-location-btn" onclick="saveUserLocation()">
+            💾 Save Location
+          </button>
+        </div>
+        
+        <div id="savedLocationDisplay" style="display: none;"></div>
+      </div>
+    </aside>
+
+  </div>
+
+  <div id="aboutModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);">
+    <div style="background-color: white; margin: 10% auto; padding: 40px; border-radius: 15px; width: 70%; max-width: 600px; box-shadow: 0 5px 30px rgba(0,0,0,0.3);">
+      <span onclick="closeAbout()" style="float: right; font-size: 28px; font-weight: bold; cursor: pointer; color: #999;">&times;</span>
+      <h2 style="color: #2563eb; margin-bottom: 20px;">ℹ️ About NeuroBuddyy.AI</h2>
+      <p style="font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
+        NEUROBUDDYY.AI is an intelligent health chatbot developed by <strong>ZERO DAY CODERS</strong> to provide reliable information about health issues, neurology, and brain-related problems. Our mission is to make health information accessible to everyone. We specialize in neurological conditions, brain health, and general medical inquiries. This platform is designed to help people get instant answers to their health questions anytime, anywhere. However, please note that NeuroBuddy.AI is not a replacement for professional medical advice. Always consult with qualified healthcare providers for medical concerns.
+      </p>
+      <p style="text-align: center; margin-top: 20px; color: #2563eb; font-weight: bold;">© 2025 ZERO DAY CODERS</p>
+      <p style="font-size: 1rem; line-height:1.8; color:#060000; text-align:justify;">
+        Important Instruction: While entering a question in our chatbot, kindly select your query from the suggestion box. If you type a question manually without selecting a suggestion, it may cause an error. To ensure accurate responses, always choose a question from the suggestions provided.
+      </p>
+    </div>
+  </div>
+
+<script>
+  const BACKEND_URL = 'http://127.0.0.1:5000';
+
+  // ========== HOSPITAL LOCATION FEATURE ==========
+
+  const districtData = {
+
+  "Andaman & Nicobar Islands": [
+    "Nicobar",
+    "North & Middle Andaman",
+    "South Andaman"
+  ],
+  "Andhra Pradesh": [
+    "Anantapur",
+    "Chittoor",
+    "East Godavari",
+    "Guntur",
+    "Kadapa",
+    "Krishna",
+    "Kurnool",
+    "Nellore",
+    "Prakasam",
+    "Srikakulam",
+    "Visakhapatnam",
+    "Vizianagaram",
+    "West Godavari"
+  ],
+  "Arunachal Pradesh": [
+    "Anjaw",
+    "Changlang",
+    "East Kameng",
+    "East Siang",
+    "Kurung Kumey",
+    "Lohit",
+    "Lower Dibang Valley",
+    "Lower Siang",
+    "Lower Subansiri",
+    "Namsai",
+    "Papum Pare",
+    "Shi Yomi",
+    "Siang",
+    "Tawang",
+    "Tirap",
+    "Upper Dibang Valley",
+    "Upper Siang",
+    "Upper Subansiri",
+    "West Kameng",
+    "West Siang"
+  ],
+  "Assam": [
+    "Baksa",
+    "Barpeta",
+    "Biswanath",
+    "Bongaigaon",
+    "Cachar",
+    "Charaideo",
+    "Chirang",
+    "Darrang",
+    "Dhemaji",
+    "Dhubri",
+    "Dibrugarh",
+    "Dima Hasao",
+    "Guwahati",
+    "Goalpara",
+    "Golaghat",
+    "Hailakandi",
+    "Hojai",
+    "Jorhat",
+    "Kamrup",
+    "Kamrup Metropolitan",
+    "Karbi Anglong",
+    "Karimganj",
+    "Kokrajhar",
+    "Lakhimpur",
+    "Majuli",
+    "Morigaon",
+    "Nagaon",
+    "Nalbari",
+    "Sivasagar",
+    "Sonitpur",
+    "Tinsukia",
+    "Udalguri",
+    "West Karbi Anglong"
+  ],
+  "Bihar": [
+    "Araria",
+    "Arwal",
+    "Aurangabad",
+    "Banka",
+    "Begusarai",
+    "Bhagalpur",
+    "Bhojpur",
+    "Buxar",
+    "Darbhanga",
+    "East Champaran",
+    "Gaya",
+    "Gopalganj",
+    "Jamui",
+    "Jehanabad",
+    "Kaimur",
+    "Katihar",
+    "Khagaria",
+    "Kishanganj",
+    "Lakhisarai",
+    "Madhepura",
+    "Madhubani",
+    "Munger",
+    "Muzaffarpur",
+    "Nalanda",
+    "Nawada",
+    "Pashchim Champaran",
+    "Patna",
+    "Purba Champaran",
+    "Purnia",
+    "Rohtas",
+    "Saharsa",
+    "Samastipur",
+    "Saran",
+    "Sheikhpura",
+    "Sheohar",
+    "Sitamarhi",
+    "Siwan",
+    "Supaul",
+    "Vaishali",
+    "West Champaran"
+  ],
+  "Chandigarh": [
+    "Chandigarh"
+  ],
+  "Chhattisgarh": [
+    "Balod",
+    "Baloda Bazar",
+    "Balrampur",
+    "Bastar",
+    "Bemetara",
+    "Bijapur",
+    "Bilaspur",
+    "Dakshin Bastar (Dantewada)",
+    "Dhamtari",
+    "Durg",
+    "Gariaband",
+    "Janjgir-Champa",
+    "Jashpur",
+    "Kabirdham",
+    "Kanker",
+    "Kondagaon",
+    "Korba",
+    "Koriya",
+    "Mahasamund",
+    "Mungeli",
+    "Narayanpur",
+    "Raigarh",
+    "Raipur",
+    "Rajnandgaon",
+    "Sukma",
+    "Surajpur",
+    "Surguja"
+  ],
+  "Dadra & Nagar Haveli and Daman & Diu": [
+    "Dadra & Nagar Haveli",
+    "Daman",
+    "Diu"
+  ],
+  "Delhi": [
+    "Central Delhi",
+    "East Delhi",
+    "New Delhi",
+    "North Delhi",
+    "North East Delhi",
+    "North West Delhi",
+    "Shahdara",
+    "South Delhi",
+    "South East Delhi",
+    "South West Delhi",
+    "West Delhi"
+  ],
+  "Goa": [
+    "North Goa",
+    "South Goa"
+  ],
+  "Gujarat": [
+    "Ahmedabad",
+    "Amreli",
+    "Anand",
+    "Aravalli",
+    "Banaskantha",
+    "Bharuch",
+    "Bhavnagar",
+    "Botad",
+    "Chhota Udaipur",
+    "Dahod",
+    "Dang",
+    "Devbhoomi Dwarka",
+    "Gandhinagar",
+    "Gir Somnath",
+    "Jamnagar",
+    "Junagadh",
+    "Kheda",
+    "Kutch",
+    "Mahisagar",
+    "Mehsana",
+    "Morbi",
+    "Narmada",
+    "Navsari",
+    "Panchmahal",
+    "Patan",
+    "Porbandar",
+    "Rajkot",
+    "Sabarkantha",
+    "Surat",
+    "Surendranagar",
+    "Tapi",
+    "Vadodara",
+    "Valsad"
+  ],
+  "Haryana": [
+    "Ambala",
+    "Bhiwani",
+    "Charkhi Dadri",
+    "Faridabad",
+    "Fatehabad",
+    "Gurugram",
+    "Hisar",
+    "Jhajjar",
+    "Jind",
+    "Kaithal",
+    "Kurukshetra",
+    "Mahendragarh",
+    "Nuh",
+    "Palwal",
+    "Panchkula",
+    "Panipat",
+    "Rewari",
+    "Rohtak",
+    "Sirsa",
+    "Sonipat",
+    "Yamunanagar"
+  ],
+  "Himachal Pradesh": [
+    "Bilaspur",
+    "Chamba",
+    "Hamirpur",
+    "Kangra",
+    "Kinnaur",
+    "Kullu",
+    "Lahaul & Spiti",
+    "Mandi",
+    "Shimla",
+    "Sirmaur",
+    "Solan",
+    "Una"
+  ],
+  "Jammu & Kashmir": [
+    "Anantnag",
+    "Bandipora",
+    "Baramulla",
+    "Budgam",
+    "Doda",
+    "Ganderbal",
+    "Kulgam",
+    "Kupwara",
+    "Kishtwar",
+    "Poonch",
+    "Pulwama",
+    "Ramban",
+    "Reasi",
+    "Samba",
+    "Shopian",
+    "Srinagar",
+    "Udhampur",
+    "Rajouri",
+    "Kathua"
+  ],
+  "Jharkhand": [
+    "Bokaro",
+    "Chatra",
+    "Deoghar",
+    "Dhanbad",
+    "Dumka",
+    "East Singhbhum",
+    "Garhwa",
+    "Giridih",
+    "Godda",
+    "Gumla",
+    "Hazaribagh",
+    "Jamtara",
+    "Khunti",
+    "Koderma",
+    "Latehar",
+    "Lohardaga",
+    "Pakur",
+    "Palamu",
+    "Ramgarh",
+    "Ranchi",
+    "Sahibganj",
+    "Seraikela Kharsawan",
+    "Simdega",
+    "West Singhbhum"
+  ],
+  "Karnataka": [
+    "Bagalkot",
+    "Ballari",
+    "Belagavi",
+    "Bengaluru Rural",
+    "Bengaluru Urban",
+    "Bidar",
+    "Chamarajanagar",
+    "Chikkaballapura",
+    "Chikkamagaluru",
+    "Chitradurga",
+    "Dakshina Kannada",
+    "Davanagere",
+    "Dharwad",
+    "Gadag",
+    "Hassan",
+    "Haveri",
+    "Kalaburagi",
+    "Kodagu",
+    "Kolar",
+    "Mandya",
+    "Mysuru",
+    "Raichur",
+    "Ramanagara",
+    "Shivamogga",
+    "Tumakuru",
+    "Udupi",
+    "Uttara Kannada",
+    "Vijayapura",
+    "Yadgir"
+  ],
+  "Kerala": [
+    "Alappuzha",
+    "Ernakulam",
+    "Idukki",
+    "Kannur",
+    "Kasaragod",
+    "Kollam",
+    "Kottayam",
+    "Kozhikode",
+    "Malappuram",
+    "Palakkad",
+    "Pathanamthitta",
+    "Thiruvananthapuram",
+    "Thrissur",
+    "Wayanad"
+  ],
+  "Lakshadweep": [
+    "Lakshadweep"
+  ],
+  "Madhya Pradesh": [
+    "Agar Malwa",
+    "Alirajpur",
+    "Anuppur",
+    "Ashoknagar",
+    "Balaghat",
+    "Barwani",
+    "Betul",
+    "Bhind",
+    "Bhopal",
+    "Burhanpur",
+    "Chhatarpur",
+    "Chhindwara",
+    "Damoh",
+    "Datia",
+    "Dewas",
+    "Dhar",
+    "Dindori",
+    "Guna",
+    "Gwalior",
+    "Harda",
+    "Hoshangabad",
+    "Indore",
+    "Jabalpur",
+    "Jhabua",
+    "Katni",
+    "Khandwa",
+    "Khargone",
+    "Mandla",
+    "Mandsaur",
+    "Morena",
+    "Narsinghpur",
+    "Neemuch",
+    "Panna",
+    "Rajgarh",
+    "Ratlam",
+    "Rewa",
+    "Sagar",
+    "Satna",
+    "Sehore",
+    "Seoni",
+    "Shahdol",
+    "Shajapur",
+    "Sheopur",
+    "Shivpuri",
+    "Singrauli",
+    "Tikamgarh",
+    "Ujjain"
+  ],
+  "Maharashtra": [
+    "Ahmednagar",
+    "Akola",
+    "Amravati",
+    "Aurangabad",
+    "Beed",
+    "Bhandara",
+    "Buldhana",
+    "Chandrapur",
+    "Dhule",
+    "Gadchiroli",
+    "Gondia",
+    "Hingoli",
+    "Jalgaon",
+    "Jalna",
+    "Kolhapur",
+    "Latur",
+    "Mumbai City",
+    "Mumbai Suburban",
+    "Nagpur",
+    "Nanded",
+    "Nandurbar",
+    "Nashik",
+    "Osmanabad",
+    "Palghar",
+    "Parbhani",
+    "Pune",
+    "Raigad",
+    "Ratnagiri",
+    "Sangli",
+    "Satara",
+    "Sindhudurg",
+    "Solapur",
+    "Thane",
+    "Wardha",
+    "Washim",
+    "Yavatmal"
+  ],
+  "Manipur": [
+    "Bishnupur",
+    "Chandel",
+    "Churachandpur",
+    "Imphal East",
+    "Imphal West",
+    "Jiribam",
+    "Kakching",
+    "Kamjong",
+    "Kangpokpi",
+    "Noney",
+    "Pherzawl",
+    "Senapati",
+    "Tamenglong",
+    "Tengnoupal",
+    "Thoubal",
+    "Ukhrul"
+  ],
+  "Meghalaya": [
+    "East Garo Hills",
+    "East Jaintia Hills",
+    "East Khasi Hills",
+    "North Garo Hills",
+    "Ri Bhoi",
+    "South Garo Hills",
+    "South West Garo Hills",
+    "West Garo Hills",
+    "West Jaintia Hills",
+    "West Khasi Hills"
+  ],
+  "Mizoram": [
+    "Aizawl",
+    "Champhai",
+    "Hnahthial",
+    "Khawzawl",
+    "Kolasib",
+    "Lawngtlai",
+    "Lunglei",
+    "Mamit",
+    "Siaha",
+    "Serchhip"
+  ],
+  "Nagaland": [
+    "Dimapur",
+    "Kiphire",
+    "Kohima",
+    "Longleng",
+    "Mokokchung",
+    "Mon",
+    "Niuland",
+    "Noklak",
+    "Peren",
+    "Phek",
+    "Tuensang",
+    "Wokha",
+    "Zünheboto"
+  ],
+  "Odisha": [
+    "Angul",
+    "Balangir",
+    "Balasore",
+    "Bargarh",
+    "Bhadrak",
+    "Boudh",
+    "Cuttack",
+    "Deogarh",
+    "Dhenkanal",
+    "Gajapati",
+    "Ganjam",
+    "Jagatsinghpur",
+    "Jajpur",
+    "Jharsuguda",
+    "Kalahandi",
+    "Kandhamal",
+    "Kendrapara",
+    "Kendujhar",
+    "Khordha",
+    "Koraput",
+    "Malkangiri",
+    "Mayurbhanj",
+    "Nabarangpur",
+    "Nayagarh",
+    "Nuapada",
+    "Puri",
+    "Rayagada",
+    "Sambalpur",
+    "Sonepur",
+    "Sundergarh"
+  ],
+  "Puducherry": [
+    "Karaikal",
+    "Mahe",
+    "Puducherry",
+    "Yanam"
+  ],
+  "Punjab": [
+    "Amritsar",
+    "Barnala",
+    "Bathinda",
+    "Faridkot",
+    "Fatehgarh Sahib",
+    "Fazilka",
+    "Firozpur",
+    "Gurdaspur",
+    "Hoshiarpur",
+    "Jalandhar",
+    "Kapurthala",
+    "Ludhiana",
+    "Mansa",
+    "Moga",
+    "Pathankot",
+    "Patiala",
+    "Rupnagar",
+    "Sahibzada Ajit Singh Nagar (Mohali)",
+    "Sangrur",
+    "Tarn Taran"
+  ],
+  "Rajasthan": [
+    "Ajmer",
+    "Alwar",
+    "Banswara",
+    "Baran",
+    "Barmer",
+    "Bharatpur",
+    "Bhilwara",
+    "Bikaner",
+    "Bundi",
+    "Chittorgarh",
+    "Churu",
+    "Dausa",
+    "Dholpur",
+    "Dungarpur",
+    "Hanumangarh",
+    "Jaipur",
+    "Jaisalmer",
+    "Jalore",
+    "Jhalawar",
+    "Jhunjhunu",
+    "Jodhpur",
+    "Karauli",
+    "Kota",
+    "Nagaur",
+    "Pali",
+    "Pratapgarh",
+    "Rajsamand",
+    "Sawai Madhopur",
+    "Sikar",
+    "Sirohi",
+    "Sri Ganganagar",
+    "Tonk",
+    "Udaipur"
+  ],
+  "Sikkim": [
+    "East Sikkim",
+    "North Sikkim",
+    "South Sikkim",
+    "West Sikkim"
+  ],
+  "Tamil Nadu": [
+    "Ariyalur",
+    "Chengalpattu",
+    "Chennai",
+    "Coimbatore",
+    "Cuddalore",
+    "Dharmapuri",
+    "Dindigul",
+    "Erode",
+    "Kallakurichi",
+    "Kanchipuram",
+    "Kanyakumari",
+    "Karur",
+    "Krishnagiri",
+    "Madurai",
+    "Nagapattinam",
+    "Namakkal",
+    "Nilgiris",
+    "Perambalur",
+    "Pudukkottai",
+    "Ramanathapuram",
+    "Ranipet",
+    "Salem",
+    "Sivaganga",
+    "Tenkasi",
+    "Thanjavur",
+    "Theni",
+    "Thoothukudi",
+    "Tiruchirappalli",
+    "Tirunelveli",
+    "Tirupathur",
+    "Tiruppur",
+    "Tiruvallur",
+    "Tiruvannamalai",
+    "Tiruvarur",
+    "Vellore",
+    "Viluppuram",
+    "Virudhunagar"
+  ],
+  "Telangana": [
+    "Adilabad",
+    "Bhadradri Kothagudem",
+    "Hyderabad",
+    "Jagtial",
+    "Jangaon",
+    "Jayashankar Bhupalpally",
+    "Jogulamba Gadwal",
+    "Kamareddy",
+    "Karimnagar",
+    "Khammam",
+    "Kumuram Bheem Asifabad",
+    "Mahabubabad",
+    "Mahabubnagar",
+    "Mancherial",
+    "Medak",
+    "Medchal-Malkajgiri",
+    "Mulugu",
+    "Nagarkurnool",
+    "Nalgonda",
+    "Narayanpet",
+    "Nizamabad",
+    "Peddapalli",
+    "Rajanna Sircilla",
+    "Ranga Reddy",
+    "Sangareddy",
+    "Siddipet",
+    "Suryapet",
+    "Vikarabad",
+    "Wanaparthy",
+    "Warangal (Urban)",
+    "Warangal (Rural)",
+    "Yadadri Bhuvanagiri"
+  ],
+  "Tripura": [
+    "Dhalai",
+    "Gomati",
+    "Khowai",
+    "North Tripura",
+    "Sepahijala",
+    "South Tripura",
+    "Unakoti",
+    "West Tripura"
+  ],
+  "Uttarakhand": [
+    "Almora",
+    "Bageshwar",
+    "Chamoli",
+    "Champawat",
+    "Dehradun",
+    "Haridwar",
+    "Nainital",
+    "Pauri Garhwal",
+    "Pithoragarh",
+    "Rudraprayag",
+    "Tehri Garhwal",
+    "Udham Singh Nagar",
+    "Uttarkashi"
+  ],
+  "Uttar Pradesh": [
+    "Agra",
+    "Aligarh",
+    "Ambedkar Nagar",
+    "Amethi",
+    "Amroha",
+    "Auraiya",
+    "Ayodhya",
+    "Azamgarh",
+    "Baghpat",
+    "Bahraich",
+    "Ballia",
+    "Banda",
+    "Barabanki",
+    "Bareilly",
+    "Basti",
+    "Bijnor",
+    "Bulandshahr",
+    "Chandauli",
+    "Chitrakoot",
+    "Deoria",
+    "Etah",
+    "Etawah",
+    "Farrukhabad",
+    "Fatehpur",
+    "Firozabad",
+    "Gautam Buddha Nagar",
+    "Ghaziabad",
+    "Ghazipur",
+    "Hardoi",
+    "Hathras",
+    "Jalaun",
+    "Jaunpur",
+    "Jhansi",
+    "Kannauj",
+    "Kanpur Dehat",
+    "Kanpur Nagar",
+    "Kasganj",
+    "Kaushambi",
+    "Kushinagar",
+    "Lalitpur",
+    "Lucknow",
+    "Maharajganj",
+    "Mahoba",
+    "Mainpuri",
+    "Mathura",
+    "Mau",
+    "Meerut",
+    "Mirzapur",
+    "Moradabad",
+    "Muzaffarnagar",
+    "Pilibhit",
+    "Pratapgarh",
+    "Rae Bareli",
+    "Rampur",
+    "Saharanpur",
+    "Sambhal",
+    "Sant Kabir Nagar",
+    "Shahjahanpur",
+    "Shamli",
+    "Shravasti",
+    "Siddharthnagar",
+    "Sitapur",
+    "Sonbhadra",
+    "Sultanpur",
+    "Unnao",
+    "Varanasi"
+  ],
+  "West Bengal": [
+    "Alipurduar",
+    "Bankura",
+    "Birbhum",
+    "Cooch Behar",
+    "Dakshin Dinajpur",
+    "Darjeeling",
+    "Hooghly",
+    "Howrah",
+    "Jalpaiguri",
+    "Jhargram",
+    "Kalimpong",
+    "Kolkata",
+    "Malda",
+    "Murshidabad",
+    "Nadia",
+    "North 24 Parganas",
+    "Paschim Medinipur",
+    "Purba Medinipur",
+    "Purulia",
+    "South 24 Parganas",
+    "Uttar Dinajpur"
+  ]
+
+  };
+
+  const areaData = {
+    "Central Delhi": ["Connaught Place", "Karol Bagh", "Paharganj"],
+    "South Delhi": ["Hauz Khas", "Saket", "Greater Kailash", "Lajpat Nagar"],
+    "Mumbai": ["Andheri", "Bandra", "Borivali", "Dadar"],
+    "Bangalore": ["Koramangala", "Whitefield", "Indiranagar", "Jayanagar"],
+    "Chennai": ["T Nagar", "Anna Nagar", "Velachery", "Adyar"],
+    "Kolkata": ["Salt Lake", "Park Street", "Ballygunge", "Howrah"],
+    "Guwahati": ["Fancy Bazar", "Paltan Bazar", "Zoo Road", "Ulubari"],
+    "Goalpara": ["seven sister Hospital", "Goalpara Town", "Lakhipur"]
+  };
+
+  function loadDistricts() {
+    const state = document.getElementById('stateInput').value;
+    const districtSelect = document.getElementById('districtInput');
+    const areaSelect = document.getElementById('areaInput');
+    
+    districtSelect.innerHTML = '<option value="">Select District</option>';
+    areaSelect.innerHTML = '<option value="">Select Area</option>';
+    areaSelect.disabled = true;
+    
+    if (state && districtData[state]) {
+      districtSelect.disabled = false;
+      districtData[state].forEach(district => {
+        const option = document.createElement('option');
+        option.value = district;
+        option.textContent = district;
+        districtSelect.appendChild(option);
+      });
+    } else {
+      districtSelect.disabled = true;
+    }
+  }
+
+  function loadAreas() {
+    const district = document.getElementById('districtInput').value;
+    const areaSelect = document.getElementById('areaInput');
+    
+    areaSelect.innerHTML = '<option value="">Select Area</option>';
+    
+    if (district && areaData[district]) {
+      areaSelect.disabled = false;
+      areaData[district].forEach(area => {
+        const option = document.createElement('option');
+        option.value = area;
+        option.textContent = area;
+        areaSelect.appendChild(option);
+      });
+    } else {
+      areaSelect.disabled = true;
+    }
+  }
+
+  async function saveUserLocation() {
+    const state = document.getElementById('stateInput').value;
+    const district = document.getElementById('districtInput').value;
+    const area = document.getElementById('areaInput').value;
+    
+    if (!state || !district || !area) {
+      alert("⚠️ Please fill all location fields!");
+      return;
+    }
+    
+    const locationData = {
+      state: state,
+      district: district,
+      area: area,
+      timestamp: new Date().toISOString()
+    };
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/save-user-location`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(locationData)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        localStorage.setItem('userLocation', JSON.stringify(locationData));
+        localStorage.setItem('nearestHospital', JSON.stringify(result.hospital));
+        
+        displaySavedLocation(locationData, result.hospital);
+        
+        alert("✅ Location saved successfully!\n\nEmergency button is now ready to use.");
+      } else {
+        alert("❌ Failed to save location: " + result.message);
+      }
+      
+    } catch (error) {
+      console.error('Error:', error);
+      alert("❌ Server error. Please check if backend is running.");
+    }
+  }
+
+  function displaySavedLocation(location, hospitalData) {
+    console.log("Displaying saved location:", location);
+    console.log("Hospital data received:", hospitalData);
+    
+    const title = document.getElementById('hospitalSectionTitle');
+    if (title) title.style.display = 'none';
+    document.getElementById('locationForm').style.display = 'none';
+    
+    const savedDisplay = document.getElementById('savedLocationDisplay');
+    savedDisplay.style.display = 'block';
+    
+    let hospitals = Array.isArray(hospitalData) ? hospitalData : [hospitalData];
+    
+    let html = `
+      <div style="background: white; padding: 15px; border-radius: 10px; border: 2px solid #e5e7eb; margin-bottom: 15px;">
+        <p style="font-weight: bold; margin-bottom: 15px; color: #2563eb; font-size: 1rem;">
+          📋 Your Nearest Hospitals (${hospitals.length})
+        </p>
+    `;
+    
+    hospitals.forEach((hospital, index) => {
+      const isPrimary = index === 0;
+      const bgColor = isPrimary ? '#d1fae5' : '#f9fafb';
+      const borderColor = isPrimary ? '#10b981' : '#e5e7eb';
+      
+      let mapsLink = '#';
+      if (hospital.coordinates) {
+        mapsLink = `https://www.google.com/maps/search/?api=1&query=${hospital.coordinates.lat},${hospital.coordinates.lng}`;
+      }
+      
+      html += `
+        <div style="
+          background: ${bgColor}; 
+          padding: 12px; 
+          border-radius: 8px; 
+          border: 2px solid ${borderColor};
+          margin-bottom: 10px;
+        ">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div style="flex: 1;">
+              <p style="font-weight: bold; color: #333; font-size: 0.95rem; margin-bottom: 5px;">
+                ${index + 1}. ${hospital.hospital}
+              </p>
+              <p style="font-size: 0.85rem; color: #666; margin: 3px 0;">
+                📞 ${hospital.phone}
+              </p>
+              <p style="font-size: 0.85rem; color: #10b981; margin: 3px 0;">
+                📍 ${hospital.distance}
+              </p>
+              ${hospital.coordinates ? `
+                <a href="${mapsLink}" target="_blank" style="
+                  display: inline-block;
+                  margin-top: 8px;
+                  padding: 6px 12px;
+                  background: #2563eb;
+                  color: white;
+                  text-decoration: none;
+                  border-radius: 5px;
+                  font-size: 0.8rem;
+                  font-weight: bold;
+                  transition: 0.2s;
+                " onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                  🗺️ View on Map
+                </a>
+              ` : ''}
+            </div>
+            ${isPrimary ? `
+              <div style="
+                background: #10b981; 
+                color: white; 
+                padding: 4px 10px; 
+                border-radius: 5px; 
+                font-size: 0.75rem;
+                font-weight: bold;
+                white-space: nowrap;
+              ">
+                PRIMARY
+              </div>
+            ` : ''}
+          </div>
+          ${isPrimary ? `
+            <p style="
+              font-size: 0.8rem; 
+              color: #065f46; 
+              margin-top: 8px; 
+              font-style: italic;
+            ">
+              ⚡ Emergency alerts will be sent here
+            </p>
+          ` : ''}
+        </div>
+      `;
+    });
+    
+    html += `
+      </div>
+      
+      <button onclick="editLocation()" style="
+        width: 100%;
+        background: #2563eb; 
+        color: white; 
+        border: none;
+        padding: 12px 15px; 
+        border-radius: 8px; 
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: bold;
+        transition: 0.2s;
+      " onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+        ✏️ Edit Location
+      </button>
+    `;
+    
+    savedDisplay.innerHTML = html;
+  }
+
+  function editLocation() {
+    const title = document.getElementById('hospitalSectionTitle');
+    if (title) title.style.display = 'block';
+    
+    document.getElementById('locationForm').style.display = 'block';
+    document.getElementById('savedLocationDisplay').style.display = 'none';
+    
+    localStorage.removeItem('userLocation');
+    localStorage.removeItem('nearestHospital');
+  }
+
+  // ========== EMERGENCY BUTTON ==========
+
+  function triggerEmergency() {
+    const savedLocation = localStorage.getItem('userLocation');
+    
+    if (!savedLocation) {
+      alert(
+        "⚠️ Location Not Set!\n\n" +
+        "Please set your nearest hospital location first.\n\n" +
+        "Scroll down to 'Setup Nearest Hospital' section."
+      );
+      return;
+    }
+    
+    const confirmed = confirm(
+      "🚨 EMERGENCY ALERT\n\n" +
+      "This will notify your nearest neuro-hospital about your emergency.\n\n" +
+      "Click OK to proceed."
+    );
+    
+    if (!confirmed) return;
+    
+    sendEmergencyAlert();
+  }
+
+  async function sendEmergencyAlert() {
+    const location = JSON.parse(localStorage.getItem('userLocation'));
+    
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'emergencyLoading';
+    loadingDiv.style.cssText = `
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: white; padding: 30px; border-radius: 15px;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.3); z-index: 10000; text-align: center;
+    `;
+    loadingDiv.innerHTML = `
+      <h2 style="color: #dc2626;">🚨 Sending Emergency Alert...</h2>
+      <p>Please wait...</p>
+    `;
+    document.body.appendChild(loadingDiv);
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/emergency-alert`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location: location,
+          timestamp: new Date().toISOString()
+        })
+      });
+      
+      const result = await response.json();
+      
+      document.body.removeChild(loadingDiv);
+      
+      if (result.success) {
+        showEmergencySuccess(result);
+      } else {
+        alert("❌ Failed to send alert.\n\nPlease call emergency services: 108");
+      }
+      
+    } catch (error) {
+      document.body.removeChild(loadingDiv);
+      console.error("Emergency alert error:", error);
+      alert("❌ Server error.\n\nPlease call emergency services: 108");
+    }
+  }
+
+  function showEmergencySuccess(result) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: white; padding: 40px; border-radius: 15px;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.3); z-index: 10000;
+      max-width: 500px; text-align: center;
+    `;
+    
+    popup.innerHTML = `
+      <h2 style="color: #10b981;">✅ Emergency Alert Sent!</h2>
+      <p style="font-size: 1.1rem; margin: 20px 0;">
+        ${result.hospital_name} has been notified.
+      </p>
+      <div style="background: #f0f4f8; padding: 15px; border-radius: 10px; margin: 20px 0;">
+        <p><strong>Reference ID:</strong> ${result.reference_id}</p>
+        <p><strong>Hospital Phone:</strong> ${result.hospital_phone}</p>
+        <p><strong>Hospital Email:</strong> ${result.hospital_email}</p>
+        <p style="font-size: 0.9rem; color: #10b981; margin-top: 10px;">
+          ✅ Email Alert: ${result.email_status === 'success' ? 'Sent' : 'Failed'}<br>
+          📱 SMS Alert: ${result.sms_status === 'success' ? 'Sent' : result.sms_status === 'skipped' ? 'Skipped (Not Configured)' : 'Failed'}
+        </p>
+      </div>
+      <p style="color: #666; font-size: 0.9rem;">
+        Help is on the way. Stay calm and wait for assistance.
+      </p>
+      <button onclick="this.parentElement.remove()" style="
+        background: #2563eb; color: white; border: none;
+        padding: 12px 30px; border-radius: 8px; font-size: 1rem;
+        cursor: pointer; margin-top: 20px;
+      ">OK</button>
+    `;
+    
+    document.body.appendChild(popup);
+  }
+
+  // ========== CHAT HISTORY FEATURE ==========
+
+  let chatHistory = [];
+
+  function loadChatHistory() {
+    const saved = localStorage.getItem('chatHistory');
+    if (saved) {
+      chatHistory = JSON.parse(saved);
+    }
+  }
+
+  function saveChatHistory() {
+    localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+  }
+
+  function addToHistory(firstQuestion) {
+    const greetingWords = ['hi', 'hello', 'hey', 'good morning', 'good evening', 'good afternoon'];
+    const isGreeting = greetingWords.some(word => firstQuestion.toLowerCase().includes(word));
+    
+    if (!firstQuestion || isGreeting) {
+      return;
+    }
+    
+    const historyItem = {
+      id: Date.now(),
+      title: firstQuestion,
+      timestamp: new Date().toISOString(),
+      date: new Date()
+    };
+    
+    chatHistory.unshift(historyItem);
+    
+    if (chatHistory.length > 20) {
+      chatHistory = chatHistory.slice(0, 20);
+    }
+    
+    saveChatHistory();
+  }
+
+  function toggleChatHistory() {
+    const panel = document.getElementById('chatHistoryPanel');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (panel.classList.contains('open')) {
+      panel.classList.remove('open');
+    } else {
+      panel.classList.add('open');
+      sidebar.classList.remove('open');
+      displayChatHistory();
+    }
+  }
+
+  function displayChatHistory() {
+    const historyList = document.getElementById('historyList');
+    
+    if (chatHistory.length === 0) {
+      historyList.innerHTML = '<div class="no-history">No chat history yet.<br>Start a conversation!</div>';
+      return;
+    }
+    
+    let html = '';
+    chatHistory.forEach(item => {
+      const timeAgo = getTimeAgo(new Date(item.timestamp));
+      
+      html += `
+        <div class="history-item" onclick="loadConversation('${item.id}')">
+          <div class="history-title">${item.title}</div>
+          <div class="history-time">${timeAgo}</div>
+        </div>
+      `;
+    });
+    
+    historyList.innerHTML = html;
+  }
+
+  function getTimeAgo(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString();
+  }
+
+  function loadConversation(id) {
+    alert('Conversation loading feature coming soon!\n\nConversation ID: ' + id);
+  }
+
+  function clearChatHistory() {
+    const confirmed = confirm('Are you sure you want to clear all chat history?');
+    if (confirmed) {
+      chatHistory = [];
+      saveChatHistory();
+      displayChatHistory();
+    }
+  }
+
+  // ========== CHATBOT FUNCTIONS ==========
+
+  const userInputField = document.getElementById('userInput');
+  const topTypingBox = document.getElementById('topTypingBox');
+  const topTypingContent = document.getElementById('topTypingContent');
+  const suggestionsBox = document.getElementById('suggestionsBox');
+  const suggestionsList = document.getElementById('suggestionsList');
+  const chatWindow = document.getElementById('chatWindow');
+
+  function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("open");
+  }
+
+  userInputField.addEventListener('input', function() {
+    const text = userInputField.value.trim();
+    
+    if (text.length > 0) {
+      topTypingBox.classList.add('active');
+      topTypingContent.textContent = text;
+    } else {
+      topTypingBox.classList.remove('active');
+      suggestionsBox.classList.remove('active');
+      return;
+    }
+    
+    if (text.length >= 1) {
+      getSuggestions(text);
+    } else {
+      suggestionsBox.classList.remove('active');
+    }
+  });
+
+  async function getSuggestions(text) {
+    try {
+      const response = await fetch(`${BACKEND_URL}/get-suggestions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+      });
+      
+      const data = await response.json();
+      showSuggestions(data.suggestions);
+    } catch (error) {
+      console.error('Error:', error);
+      suggestionsList.innerHTML = '<div class="no-suggestions">⚠️  Connection error....</div>';
+      suggestionsBox.classList.add('active');
+    }
+  }
+
+  function showSuggestions(suggestions) {
+    suggestionsList.innerHTML = '';
+    
+    if (suggestions.length > 0) {
+      suggestions.forEach(question => {
+        const div = document.createElement('div');
+        div.className = 'suggestion-item';
+        div.textContent = question;
+        
+        div.addEventListener('click', function() {
+          userInputField.value = question;
+          topTypingBox.classList.remove('active');
+          suggestionsBox.classList.remove('active');
+          userInputField.focus();
+        });
+        
+        suggestionsList.appendChild(div);
+      });
+      
+      suggestionsBox.classList.add('active');
+    } else {
+      suggestionsList.innerHTML = '<div class="no-suggestions">No matching questions found.</div>';
+      suggestionsBox.classList.add('active');
+    }
+  }
+
+  async function sendMessage() {
+    const userText = userInputField.value.trim();
+    if (!userText) return;
+
+    topTypingBox.classList.remove('active');
+    suggestionsBox.classList.remove('active');
+
+    const userMsg = document.createElement("div");
+    userMsg.className = "user-msg";
+    userMsg.textContent = userText;
+    chatWindow.appendChild(userMsg);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+    userInputField.value = '';
+
+    // ✅ TRACK FIRST REAL QUESTION (FIXED VERSION)
+    if (!window.currentSessionFirstQuestion) {
+      const greetingWords = ['hi', 'hello', 'hey', 'good morning', 'good evening', 'good afternoon', 'hii', 'hlo', 'namaste'];
+      const isGreeting = greetingWords.some(word => userText.toLowerCase().trim() === word || userText.toLowerCase().includes(word));
+      
+      if (!isGreeting && userText.length > 5) {
+        window.currentSessionFirstQuestion = userText;
+        addToHistory(userText);
+      }
+    }
+
+    const loadingMsg = document.createElement("div");
+    loadingMsg.className = "bot-msg";
+    loadingMsg.textContent = "🙄 Finding answer...";
+    loadingMsg.id = "loading-msg";
+    chatWindow.appendChild(loadingMsg);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/get-answer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: userText })
+      });
+      
+      const data = await response.json();
+      
+      const loading = document.getElementById("loading-msg");
+      if (loading) loading.remove();
+
+      const botMsg = document.createElement("div");
+      botMsg.className = "bot-msg";
+      chatWindow.appendChild(botMsg);
+      
+      let i = 0;
+      function typeWriter() {
+        if (i < data.answer.length) {
+          botMsg.textContent += data.answer.charAt(i);
+          i++;
+          setTimeout(typeWriter, 20);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+      }
+      typeWriter();
+      
+    } catch (error) {
+      const loading = document.getElementById("loading-msg");
+      if (loading) loading.remove();
+      
+      const botMsg = document.createElement("div");
+      botMsg.className = "bot-msg";
+      botMsg.textContent = "⚠️ Server down!";
+      chatWindow.appendChild(botMsg);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+  }
+
+  userInputField.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  });
+
+  function toggleSettings() {
+    const submenu = document.getElementById('settingsSubmenu');
+    if (submenu.style.display === 'none') {
+      submenu.style.display = 'block';
+    } else {
+      submenu.style.display = 'none';
+    }
+  }
+
+  function openAbout() {
+    document.getElementById('aboutModal').style.display = 'block';
+  }
+
+  function closeAbout() {
+    document.getElementById('aboutModal').style.display = 'none';
+  }
+
+  window.onclick = function(event) {
+    const aboutModal = document.getElementById('aboutModal');
+    if (event.target == aboutModal) {
+      aboutModal.style.display = 'none';
+    }
+  }
+
+  // ========== DOCTOR CONNECT ==========
+  
+  let doctorListVisible = false;
+
+  function toggleDoctorList() {
+    const container = document.getElementById('doctorListContainer');
+    const btn = document.getElementById('connectDoctorBtn');
+    
+    if (!doctorListVisible) {
+      container.classList.add('expanded');
+      btn.textContent = ' Close Doctor List';
+      loadDoctors();
+      doctorListVisible = true;
+    } else {
+      container.classList.remove('expanded');
+      btn.textContent = '👨‍⚕️ Connect to Doctors';
+      doctorListVisible = false;
+    }
+  }
+
+  function loadDoctors() {
+    const demoDoctors = [
+      { id: 1, name: "Dr. Rajesh Kumar", specialty: "Neurologist", status: "available" },
+      { id: 2, name: "Dr. Priya Sharma", specialty: "Psychiatrist", status: "engaged" },
+      { id: 3, name: "Dr. Amit Verma", specialty: "Neurosurgeon", status: "offline" },
+      { id: 4, name: "Dr. Sneha Patel", specialty: "Neurologist", status: "available" }
+    ];
+    
+    displayDoctors(demoDoctors);
+  }
+
+  function displayDoctors(doctors) {
+    const doctorList = document.getElementById('doctorList');
+    
+    if (!doctors || doctors.length === 0) {
+      doctorList.innerHTML = '<p style="text-align: center; color: #666;">No doctors available.</p>';
+      return;
+    }
+    
+    let html = '';
+    doctors.forEach(doctor => {
+      let statusClass = '';
+      let statusText = '';
+      
+      if (doctor.status === 'available') {
+        statusClass = 'status-available';
+        statusText = 'Available';
+      } else if (doctor.status === 'engaged') {
+        statusClass = 'status-engaged';
+        statusText = 'Engaged';
+      } else {
+        statusClass = 'status-offline';
+        statusText = 'Offline';
+      }
+      
+      html += `
+        <div class="doctor-card" onclick="selectDoctor(${doctor.id}, '${doctor.name}')">
+          <div class="doctor-info">
+            <div class="doctor-name">${doctor.name}</div>
+            <div class="doctor-specialty">${doctor.specialty}</div>
+          </div>
+          <div class="status-indicator ${statusClass}" title="${statusText}"></div>
+        </div>
+      `;
+    });
+    
+    doctorList.innerHTML = html;
+  }
+
+  function selectDoctor(doctorId, doctorName) {
+    alert(`You selected ${doctorName}!\n\nConsultation feature coming soon...`);
+    console.log('Selected doctor ID:', doctorId);
+  }
+
+  setInterval(function() {
+    if (doctorListVisible) {
+      loadDoctors();
+    }
+  }, 10000);
+
+  // ========== PAGE LOAD ==========
+
+  window.addEventListener('DOMContentLoaded', function() {
+    loadChatHistory();
+    
+    const savedLocation = localStorage.getItem('userLocation');
+    const savedHospital = localStorage.getItem('nearestHospital');
+    
+    if (savedLocation && savedHospital) {
+      const location = JSON.parse(savedLocation);
+      const hospital = JSON.parse(savedHospital);
+      displaySavedLocation(location, hospital);
+    }
+  });
+
+</script>
+</body>
+</html>

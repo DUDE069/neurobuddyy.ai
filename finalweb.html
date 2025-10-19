@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEUROBUDDYY.ai</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #f0f4f8;
+    }
+
+    /* HEADER */
+    .topbar {
+      background: #060000;
+      color: #fff;
+      text-align: center;
+      font-size: 1.7rem;
+      font-weight: bold;
+      padding: 17px;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    /* HAMBURGER BUTTON */
+    .hamburger {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.8rem;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      height:calc(100vh - 60px);
+    }
+
+    /* LEFT SIDEBAR */
+    .leftbar {
+      width: 0; /* hidden by default */
+      background: #d4faff;
+      border-right: 8px solid #a8ebf9;
+      overflow-y: auto;
+      transition: width 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .leftbar.open {
+      width: 220px; /* expanded */
+      padding: 15px;
+    }
+
+    .menu {
+      list-style: none;
+      padding: 0;
+    }
+
+    .menu li {
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 500;
+    }
+
+    .menu li:hover {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    /* SETTINGS AT BOTTOM */
+    .settings {
+      margin-top: auto;
+      padding: 10px;
+      background: #fff;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .settings:hover {
+      background: #2563eb;
+      color: white;
+    }
+
+    /* CHAT SECTION */
+    .chat-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f9fafb;
+    }
+
+    .chat-window {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .chat-window div {
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 15px;
+      line-height: 1.4;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    .bot-msg {
+      background: #e5e7eb;
+      color: #111827;
+      text-align: left;
+    }
+
+    .user-msg {
+      background: #2563eb;
+      color: white;
+      text-align: right;
+      margin-left: auto;
+    }
+
+    /* SEARCH BAR */
+    .search-bar {
+      flex:0 0 60px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-top: 5px solid #ffffff;
+      background: white;
+      padding: 12px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      border: 2px solid #9fbff0c1;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .btn{
+      display:flex;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: rgb(236, 223, 215);
+      font-weight: bold;
+      cursor: pointer;
+      border: 2px solid;
+      transition: 0.1s;
+    }
+
+    .btn:hover { transform: scale(1.05); }
+    .mic { background: #95b1ea; }
+    .upload { background: #fef8df; }
+    .send { background: #6b7280; }
+
+    /* RIGHT SIDEBAR */
+    .rightbar {
+      width: 25%;
+      background: white;
+      border-left: 8px solid #ffffff;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .emergency {
+      background: #dc2626;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      cursor: pointer;
+      border: none;
+    }
+    .emergency:hover { background: #b91c1c; }
+
+    .connect-doctor {
+      background: #2563eb;
+      color: white;
+      width: 100%;
+      height:90px;
+      border-radius:10px ;
+      font-size: 80%;
+      font-weight: bold;
+      text-align:center;
+      
+      align-items:center;
+      margin:20px auto;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border: 0.8px solid;
+      display:flex;
+      position:relative;
+      justify-content:center;
+      top:0.09rem;
+    }
+    .connect-doctor:hover { background: #1d4ed8; }
+
+    .doctor-count {
+      font-size: 0.9rem;
+      text-align: center;
+      color: #333;
+      margin-bottom: 12px;
+    }
+    .rightbar {
+      width:30%;
+      display:flex;
+      flex-direction:colum;
+    }
+    .location-title {
+      text-align:buttom;
+      font-size:1.0rem;
+      color:rgb(42, 106, 255);
+      margin:90px 0; /* added space above & below */
+      display:inline-block;
+      position:relative;
+      top:70px;
+      
+    }
+    .location-box {
+      background:#19191955;
+      color:rgb(0, 0, 0);
+      border-radius:10px;
+      padding:20px;
+      margin-bottom:30px;
+      border:2px solid rgb(154, 154, 154);
+    }
+    .location-list{
+      list-style:none;
+      padding:0;
+      margin:0 0 15px 0 ;
+      
+    }
+    .location-list li{
+      padding:8px;
+      background:#b91c1c;
+    
+      border-radius:8px;
+      margin-bottom:8px;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .location-list li:hover{
+      background:#ffffff;
+      color:white;
+    }
+    .map-placeholder {
+      margin-top: auto;
+      height: 150px;
+      border: 2px solid #d0daea;
+      border-radius: 8px;
+      background: #bbcbe9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+    🎀 NEURO BUDDYY
+  </header>
+
+  <div class="container">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="leftbar" id="sidebar">
+      <ul class="menu">
+        <li>🔎 Search</li>
+        <li>📂 Categories</li>
+      </ul>
+      <div class="settings">⚙️ Settings <br> ℹ️ About</div>
+    </aside>
+
+    <!-- CHAT SECTION -->
+    <main class="chat-section">
+      <div class="chat-window">
+        <div class="bot-msg">👋 Hello! How can I help? </div>
+        <div class="user-msg">Find hospitals near me </div>
+        <div class="bot-msg">Here are some hospitals nearby... </div>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" placeholder="Type here..."><button class="btn send">⬆️</button>
+        <button class="btn > <span class="mic">🎤 </span> <span class="upload"> 📁 </span></button>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="rightbar">
+      <button class="emergency">🚨 Emergency</button>
+      <button class="connect-doctor">👨‍⚕️ Connect to Doctors</button>
+      
+
+      <!-- Available Location BELOW doctor button & ABOVE map -->
+      <h2 class="location-title"> Nearest Neuro Hospitals </h2>
+      <div class="location-box">
+      <u1 class="location -list">
+        <li>(Name of location will appear here!)</li>
+        <li>City hospital - 40 km</li>
+        <li>Assam neuro - 800 km</li>
+        <li>Neuro buddy - 90 km</li>
+      </u1>
+      </div>
+      <div class="map-placeholder">📍MAP HELP</div>
+    </aside>
+
+  </div>
+
+  <!-- SCRIPT -->
+<script>
+  function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("open");
+  }
+
+  async function sendMessage() {
+    const input = document.querySelector(".search-bar input");
+    const chatWindow = document.querySelector(".chat-window");
+
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    // Show user message
+    const userMsg = document.createElement("div");
+    userMsg.className = "user-msg";
+    userMsg.textContent = userText;
+    chatWindow.appendChild(userMsg);
+
+    input.value = "";
+
+    // Connect to backend
+    try {
+      const response = await fetch("http://localhost:8000/chat", {
+
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userText })
+      });
+
+      let data;
+      if (response.ok) {
+        data = await response.json();
+      } else {
+        data = { reply: "⚠️ Backend error. Please check backend is running." };
+      }
+
+      const botMsg = document.createElement("div");
+      botMsg.className = "bot-msg";
+      botMsg.textContent = data.reply;
+      chatWindow.appendChild(botMsg);
+
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    } catch (error) {
+      const botMsg = document.createElement("div");
+      botMsg.className = "bot-msg";
+      botMsg.textContent = "⚠️ Cannot connect to backend. Make sure backend is running.";
+      chatWindow.appendChild(botMsg);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+  }
+
+  // Connect send button to sendMessage function
+  document.addEventListener("DOMContentLoaded", function() {
+    const sendBtn = document.querySelector(".btn.send");
+    const input = document.querySelector(".search-bar input");
+    
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
+  });
+</script>
+
+
+</body>
+</html>
