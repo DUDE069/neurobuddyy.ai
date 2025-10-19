@@ -22,14 +22,22 @@ ENABLE_SMS = False
 @app.route('/')
 def home():
     try:
-        # Read the HTML file directly
-        html_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'frontend', 'index.html')
-        with open(html_path, 'r', encoding='utf-8') as f:
-            return f.read()
-    except FileNotFoundError:
-        return jsonify({"error": "Frontend HTML not found", "path": html_path}), 404
+        # Get the absolute path to frontend/index.html
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        html_file = os.path.join(base_dir, 'frontend', 'index.html')
+        
+        with open(html_file, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        
+        return html_content
+    except FileNotFoundError as e:
+        return jsonify({
+            "error": "Frontend HTML not found",
+            "path": html_file,
+            "message": "Please check if frontend/index.html exists"
+        }), 404
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e), "type": type(e).__name__}), 500
 
 
 # ========== LOAD DATA FILES ==========
