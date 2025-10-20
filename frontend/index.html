@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="viewport" content="width=1024, initial-scale=0.5,maximum-scale=2.0,user-scalable=yes">
   <title>NEUROBUDDYY.ai</title>
   <style>
     /* [KEEP ALL YOUR EXISTING CSS - NO CHANGES] */
@@ -531,59 +531,6 @@
     ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
 
-/* ========== MOBILE RESPONSIVE FIX ========== */
-@media (max-width: 768px) {
-  body {
-    overflow-x: hidden;
-  }
-  
-  .container {
-    flex-direction: column; /* Stack vertically */
-  }
-  
-  /* Leftbar (Menu) - Make it overlay on mobile */
-  .leftbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    z-index: 1000;
-    background: #d4faff;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
-  }
-  
-  .leftbar.open {
-    width: 70vw; /* 70% of screen width when open */
-    max-width: 280px;
-  }
-  
-  /* Rightbar (Suggestions) - Move below chat on mobile */
-  .rightbar {
-    width: 100% !important; /* Full width */
-    border-left: none;
-    border-top: 3px solid #e5e7eb;
-    max-height: 200px; /* Limit height so chat is visible */
-    overflow-y: auto;
-  }
-  
-  /* Make chat section take full width */
-  .chat-section {
-    width: 100%;
-    min-height: 60vh;
-  }
-  
-  /* Smaller text on mobile */
-  .topbar {
-    font-size: 1.3rem;
-    padding: 12px;
-  }
-  
-  /* Make buttons fit better */
-  .btn {
-    padding: 8px;
-    font-size: 0.85rem;
-  }
-}
 
 
 
