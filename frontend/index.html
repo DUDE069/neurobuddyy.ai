@@ -1902,7 +1902,7 @@
 
   async function getSuggestions(text) {
     try {
-      const response = await fetch(`${BACKEND_URL}/get-suggestions`, {
+      const response = await fetch(`${BACKEND_URL}/api/get-suggestions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: text })
