@@ -2129,7 +2129,7 @@
     }
   }, 10000);
 
-  // ========== PAGE LOAD ==========
+   // ========== PAGE LOAD ==========
 
   window.addEventListener('DOMContentLoaded', function() {
     loadChatHistory();
@@ -2142,8 +2142,29 @@
       const hospital = JSON.parse(savedHospital);
       displaySavedLocation(location, hospital);
     }
-  });
+  });  // ✅ FIXED - was ")" before
+</script>
 
+<!-- Mobile Suggestions Toggle Button -->
+<button class="suggestions-toggle-btn" onclick="toggleSuggestions()">💡</button>
+
+<script>
+// Toggle rightbar on mobile
+function toggleSuggestions() {
+  const rightbar = document.querySelector('.rightbar');
+  rightbar.classList.toggle('mobile-active');
+}
+
+// Close rightbar when clicking outside (optional)
+document.addEventListener('click', function(e) {
+  if (window.innerWidth <= 768) {
+    const rightbar = document.querySelector('.rightbar');
+    const toggleBtn = document.querySelector('.suggestions-toggle-btn');
+    if (!rightbar.contains(e.target) && e.target !== toggleBtn) {
+      rightbar.classList.remove('mobile-active');
+    }
+  }
+});
 </script>
 </body>
 </html>
