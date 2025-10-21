@@ -156,26 +156,57 @@ def send_emergency_email(hospital_email, hospital_name, patient_location):
 
 # ========== API ENDPOINTS ==========
 
-@app.route('/get-suggestions', methods=['POST'])
+@app.route('/api/get-suggestions', methods=['POST'])
 def get_suggestions():
     try:
         user_input = request.json['text'].lower().strip()
-        
-        if check_greeting(user_input):
+
+        # Check greeting - don't suggest for greetings
+        greeting_response = check_greeting(user_input)
+        if greeting_response:
             return jsonify({'suggestions': []})
-        
+
+        # Split into words for matching
         search_words = user_input.split()
+        
+        # Find questions containing ALL search words
         matching = []
         
         for q in questions_database:
             question_lower = q['question'].lower()
+            
+            # Check if ALL words are in the question
             if all(word in question_lower for word in search_words):
                 matching.append(q['question'])
+                
+                # Stop once we have 10 suggestions
+                if len(matching) >= 10:
+                    break
         
+        # If no matches found, try partial matching (any word)
+        if not matching:
+            for q in questions_database:
+                question_lower = q['question'].lower()
+                
+                # Check if ANY word is in the question
+                if any(word in question_lower for word in search_words):
+                    matching.append(q['question'])
+                    
+                    if len(matching) >= 10:
+                        break
+        
+        # Sort by length (shorter questions first)
         matching.sort(key=len)
-        return jsonify({'suggestions': matching[:10]})
-    
+        
+        # Return top 10
+        top_10 = matching[:10]
+        
+        print(f"✓ User typed: '{user_input}' | Found: {len(matching)} matches | Showing: {len(top_10)}")
+        
+        return jsonify({'suggestions': top_10})
+
     except Exception as e:
+        print(f"❌ Error in suggestions: {e}")
         return jsonify({'suggestions': []})
 
 @app.route('/get-answer', methods=['POST'])
