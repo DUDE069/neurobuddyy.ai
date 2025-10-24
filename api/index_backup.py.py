@@ -516,20 +516,11 @@ hospitals_database = {
         "phone": "+91-3663-262123",
         "distance": "7 km",
         "coordinates": {
-          "lat": 26.1671,
-          "lng": 90.6187
-        }
-      },
-      {
-        "hospital": "Goalpara District Hospital - Neuro Unit",
-        "email": "districth.goalpara@gov.in",
-        "phone": "+91-3663-263234",
-        "distance": "11 km",
-        "coordinates": {
-          "lat": 26.1630,
-          "lng": 90.6250
+          "lat": 26.14247,
+          "lng": 90.61006
         }
       }
+      
     ],
     "Hailakandi": [
       {
