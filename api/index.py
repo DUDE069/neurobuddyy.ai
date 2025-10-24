@@ -1034,12 +1034,44 @@ def save_user_location():
         district = data.get('district')
         area = data.get('area')
         
-        hospitals = None
-        if state in hospitals_database and district in hospitals_database[state]:
-            hospitals = hospitals_database[state][district]
+        print(f"\n{'='*60}")
+        print(f"📍 LOCATION SAVE REQUEST")
+        print(f"   State: {state}")
+        print(f"   District: {district}")
+        print(f"   Area: {area}")
+        print(f"{'='*60}")
         
-        if not hospitals:
-            return jsonify({"success": False, "message": "No hospital found"}), 404
+        # Check if state exists
+        if state not in hospitals_database:
+            print(f"❌ State '{state}' NOT FOUND in database")
+            return jsonify({
+                "success": False,
+                "message": f"No hospitals for state: {state}"
+            }), 404
+        
+        # Check if district exists
+        if district not in hospitals_database[state]:
+            print(f"❌ District '{district}' NOT FOUND in {state}")
+            available = list(hospitals_database[state].keys())
+            print(f"   Available districts: {available}")
+            return jsonify({
+                "success": False,
+                "message": f"No hospitals for {district}, {state}"
+            }), 404
+        
+        # Get hospitals
+        hospitals = hospitals_database[state][district]
+        
+        # CRITICAL: Check if it's a list or dict
+        if isinstance(hospitals, dict):
+            print(f"⚠️ WARNING: Hospital data is DICT, converting to LIST")
+            hospitals = [hospitals]
+        
+        print(f"\n✅ FOUND HOSPITALS:")
+        print(f"   Total: {len(hospitals)}")
+        for i, h in enumerate(hospitals, 1):
+            print(f"   {i}. {h.get('hospital', 'NO NAME')} - {h.get('distance', 'NO DISTANCE')}")
+        print(f"{'='*60}\n")
         
         return jsonify({
             "success": True,
@@ -1048,7 +1080,11 @@ def save_user_location():
         })
         
     except Exception as e:
+        print(f"\n❌ ERROR in save_user_location: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"success": False, "error": str(e)}), 500
+
 
 @app.route('/api/emergency-alert', methods=['POST'])
 def emergency_alert():
