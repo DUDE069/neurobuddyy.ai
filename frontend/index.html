@@ -1513,7 +1513,7 @@
     };
     
     try {
-      const response = await fetch(`${BACKEND_URL}/save-user-location`, {
+      const response = await fetch(`${BACKEND_URL}/api/save-user-location`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(locationData)
@@ -1707,7 +1707,7 @@
     document.body.appendChild(loadingDiv);
     
     try {
-      const response = await fetch(`${BACKEND_URL}/emergency-alert`, {
+      const response = await fetch(`${BACKEND_URL}/api/emergency-alert`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1981,7 +1981,7 @@
     chatWindow.scrollTop = chatWindow.scrollHeight;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/get-answer`, {
+      const response = await fetch(`${BACKEND_URL}/api/get-answer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: userText })
