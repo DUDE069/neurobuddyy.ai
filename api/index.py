@@ -84,8 +84,6 @@ def check_greeting(user_input):
     return None
 
 hospitals_database = {
-    hospitals_database = {
-    # ========== DELHI (All 11 Districts) ==========
     "Delhi": {
         "Central Delhi": [
             {"hospital": "Ram Manohar Lohia Hospital - Neurology", "email": "demo.rml@example.com", "phone": "+919999991001", "distance": "3 km", "coordinates": {"lat": 28.636251, "lng": 77.214447}},
