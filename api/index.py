@@ -99,11 +99,22 @@ print(f"✓ Loaded {len(greetings_database)} greetings, {len(questions_database)
 def check_greeting(user_input):
     if not greetings_database:
         return None
+    
+    # Clean input
     clean = user_input.lower().strip().replace('?', '').replace('!', '').replace('.', '').replace(',', '')
+    
+    # Only check greeting if input is SHORT (less than 6 words)
+    word_count = len(clean.split())
+    if word_count > 5:
+        return None  # Too long to be a greeting
+    
     for g in greetings_database:
         for p in g.get('patterns', []):
-            if clean == p or p in clean or clean in p:
+            pattern_clean = p.lower().strip()
+            # Exact match or very close match
+            if clean == pattern_clean or (len(clean) < 20 and pattern_clean in clean):
                 return g.get('response')
+    
     return None
 
 hospitals_database = {
