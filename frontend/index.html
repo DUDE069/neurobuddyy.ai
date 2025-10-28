@@ -309,15 +309,19 @@
     }
 
     #doctorListContainer.expanded {
-      max-height: 800px;
+      min-height: 300px !important;
+      max-height: none !important;
+      height: 300px !important;
       padding: 15px;
       border: 2px solid #2563eb;
       overflow-y:auto;
       overflow-x:hidden;
+      margin-bottom: 20px;
+      animation :slideDown 0.4s ease-out ;
     }
 
     .doctor-card {
-      background: white;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
       padding: 12px;
       margin-bottom: 10px;
       border-radius: 8px;
@@ -329,15 +333,12 @@
       transition: all 0.2s ease;
     }
     #doctorList {
-      max-height: 500px;
-      overflow-y:auto;
-      overflow:hidden;
     }
 
     .doctor-card:hover {
       transform: translateX(5px);
-      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-      background: #f0f9ff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      background:  linear-gradient(135deg, #10b981 0%, #059669 100%);
     }
 
     .doctor-info {
@@ -372,10 +373,21 @@
     .status-engaged {
       background: #ef4444;
       box-shadow: 0 0 8px #ef4444;
+      animation:pulse 8s infinite;
     }
 
     .status-offline {
       background: #9ca3af;
+    }
+    @keyframes slideDowm{
+      from {
+        opacity : 0;
+        transform: translateY(-20px);
+      }
+      to{
+        opacity :1;
+        transform: translateY(0);
+      }
     }
 
     @keyframes pulse {
@@ -391,7 +403,7 @@
     }
 
     .hospital-section {
-      margin-top: 15px;
+      margin-top: 20px;
     }
 
     .location-title {
