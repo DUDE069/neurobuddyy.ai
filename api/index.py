@@ -1069,19 +1069,49 @@ def get_suggestions():
 @app.route('/api/get-answer', methods=['POST'])
 def get_answer():
     try:
-        question = request.json.get('question', '')
+        question = request.json.get('question', '').strip()
         
+        # Check greeting first
         greeting = check_greeting(question)
         if greeting:
             return jsonify({'answer': greeting})
         
+        # Clean the input for better matching
+        clean_question = question.lower().strip()
+        
+        # Try exact match first
         for q in questions_database:
-            if q.get('question') == question:
+            if q.get('question', '').lower().strip() == clean_question:
                 return jsonify({'answer': q.get('answer', 'Answer not found')})
         
+        # If no exact match, try fuzzy matching
+        best_match = None
+        highest_similarity = 0
+        
+        for q in questions_database:
+            db_question = q.get('question', '').lower().strip()
+            
+            # Calculate word overlap
+            user_words = set(clean_question.split())
+            db_words = set(db_question.split())
+            common_words = user_words.intersection(db_words)
+            
+            if len(user_words) > 0:
+                similarity = len(common_words) / len(user_words)
+                
+                if similarity > highest_similarity:
+                    highest_similarity = similarity
+                    best_match = q
+        
+        # If similarity is above 60%, return the answer
+        if highest_similarity > 0.6 and best_match:
+            return jsonify({'answer': best_match.get('answer', 'Answer not found')})
+        
         return jsonify({'answer': 'I am not able to identify your question. Please try selecting from suggested questions.'})
-    except Exception:
+    except Exception as e:
+        print(f"Error in get_answer: {str(e)}")
         return jsonify({'answer': 'Error processing request'})
+
 
 @app.route('/api/save-user-location', methods=['POST'])
 def save_user_location():
