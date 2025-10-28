@@ -1068,51 +1068,70 @@ def get_suggestions():
 
 @app.route('/api/get-answer', methods=['POST'])
 def get_answer():
+    import re  # Import here
     try:
         question = request.json.get('question', '').strip()
+        
+        print("=" * 60)
+        print(f"🔍 Question received: '{question}'")
+        print(f"📊 Database size: {len(questions_database)} questions")
         
         # Check greeting first
         greeting = check_greeting(question)
         if greeting:
+            print("✅ Greeting match found")
             return jsonify({'answer': greeting})
         
-        # Clean the input (lowercase and remove extra spaces)
+        # Clean and normalize
         clean_question = question.lower().strip()
+        clean_question = re.sub(r'[^\w\s]', '', clean_question)  # Remove punctuation
         
-        # Try exact match first (case-insensitive)
-        for q in questions_database:
-            db_question = q.get('question', '').lower().strip()
-            if db_question == clean_question:
+        print(f"🧹 Cleaned: '{clean_question}'")
+        
+        # Try exact match
+        for idx, q in enumerate(questions_database):
+            db_question = q.get('question', '')
+            db_clean = db_question.lower().strip()
+            db_clean = re.sub(r'[^\w\s]', '', db_clean)
+            
+            if db_clean == clean_question:
+                print(f"✅ EXACT MATCH at #{idx}: '{db_question}'")
                 return jsonify({'answer': q.get('answer', 'Answer not found')})
         
-        # If no exact match, try fuzzy matching
+        # Fuzzy matching
+        print("⚠️ No exact match, trying fuzzy...")
         best_match = None
         highest_similarity = 0
         
         for q in questions_database:
             db_question = q.get('question', '').lower().strip()
+            db_clean = re.sub(r'[^\w\s]', '', db_question)
             
-            # Calculate word overlap
             user_words = set(clean_question.split())
-            db_words = set(db_question.split())
-            common_words = user_words.intersection(db_words)
+            db_words = set(db_clean.split())
+            common = user_words.intersection(db_words)
             
             if len(user_words) > 0:
-                similarity = len(common_words) / len(user_words)
-                
+                similarity = len(common) / len(user_words)
                 if similarity > highest_similarity:
                     highest_similarity = similarity
                     best_match = q
         
-        # If similarity is above 60%, return the answer
-        if highest_similarity > 0.6 and best_match:
+        print(f"🎯 Best similarity: {highest_similarity:.1%}")
+        
+        if highest_similarity >= 0.5 and best_match:
+            print(f"✅ FUZZY MATCH: '{best_match.get('question')}'")
             return jsonify({'answer': best_match.get('answer', 'Answer not found')})
         
+        print("❌ NO MATCH FOUND")
         return jsonify({'answer': 'I am not able to identify your question. Please try selecting from suggested questions.'})
         
     except Exception as e:
-        print(f"Error in get_answer: {str(e)}")
+        print(f"❌ ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'answer': 'Error processing request'})
+
 
 
 
