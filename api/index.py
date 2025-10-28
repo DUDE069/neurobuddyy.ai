@@ -1076,12 +1076,13 @@ def get_answer():
         if greeting:
             return jsonify({'answer': greeting})
         
-        # Clean the input for better matching
+        # Clean the input (lowercase and remove extra spaces)
         clean_question = question.lower().strip()
         
-        # Try exact match first
+        # Try exact match first (case-insensitive)
         for q in questions_database:
-            if q.get('question', '').lower().strip() == clean_question:
+            db_question = q.get('question', '').lower().strip()
+            if db_question == clean_question:
                 return jsonify({'answer': q.get('answer', 'Answer not found')})
         
         # If no exact match, try fuzzy matching
@@ -1108,9 +1109,11 @@ def get_answer():
             return jsonify({'answer': best_match.get('answer', 'Answer not found')})
         
         return jsonify({'answer': 'I am not able to identify your question. Please try selecting from suggested questions.'})
+        
     except Exception as e:
         print(f"Error in get_answer: {str(e)}")
         return jsonify({'answer': 'Error processing request'})
+
 
 
 @app.route('/api/save-user-location', methods=['POST'])
