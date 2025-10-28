@@ -54,19 +54,42 @@ def load_questions():
     all_questions = []
     files = ['category1_questions.json', 'category2_questions.json', 
              'category3_questions.json', 'category4_questions.json']
-    dirs = ['api/data/', 'data/', '../data/']
+    
+    # Try multiple possible directories on Render
+    dirs = [
+        'backend/data/',
+        'api/data/',
+        'data/',
+        '../data/',
+        '/var/task/backend/data/',
+        '/var/task/data/',
+        './backend/data/',
+        './data/'
+    ]
     
     for file in files:
+        loaded = False
         for d in dirs:
             try:
                 path = os.path.join(d, file)
                 if os.path.exists(path):
                     with open(path, 'r', encoding='utf-8') as f:
-                        all_questions.extend(json.load(f).get('questions', []))
+                        data = json.load(f)
+                        questions = data.get('questions', [])
+                        all_questions.extend(questions)
+                        print(f"✅ Loaded {len(questions)} questions from {file}")
+                        loaded = True
                     break
-            except Exception:
+            except Exception as e:
+                print(f"⚠️ Error loading {path}: {str(e)}")
                 continue
+        
+        if not loaded:
+            print(f"❌ WARNING: Could not load {file}!")
+    
+    print(f"📊 TOTAL: {len(all_questions)} questions loaded from all categories")
     return all_questions
+
 
 greetings_database = load_greetings()
 questions_database = load_questions()
@@ -1119,7 +1142,7 @@ def get_answer():
         
         print(f"🎯 Best similarity: {highest_similarity:.1%}")
         
-        if highest_similarity >= 0.5 and best_match:
+        if highest_similarity >= 0.4 and best_match:
             print(f"✅ FUZZY MATCH: '{best_match.get('question')}'")
             return jsonify({'answer': best_match.get('answer', 'Answer not found')})
         
