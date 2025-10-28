@@ -17,7 +17,7 @@ CORS(app)
 
 # Gmail Configuration - YOUR EMAIL (Developer's Gmail)
 # This is YOUR system email that will send alerts to hospitals
-GMAIL_SENDER = "ariyanabedin00@gmail.com"  # ← Replace with YOUR Gmail
+GMAIL_SENDER = "ariyanabedin00000@gmail.com"  # ← Replace with YOUR Gmail
 GMAIL_APP_PASSWORD = "lfii ikdv hchl frmb"  # ← Replace with 16-digit App Password
 
 # Fast2SMS Configuration (OPTIONAL - For SMS)
