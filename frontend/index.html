@@ -300,60 +300,99 @@
     .connect-doctor:hover { background: #1d4ed8; }
 
     #doctorListContainer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.5s ease-in-out;
-  background: #f0f4f8;
-  border-radius: 10px;
-  margin-bottom: 15px;
-}
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out;
+      background: #f0f4f8;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
 
-#doctorListContainer.expanded {
-  max-height: 800px; /* ✅ Increased from 600px */
-  padding: 15px;
-  border: 2px solid #2563eb;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+    #doctorListContainer.expanded {
+      max-height: 800px;
+      padding: 15px;
+      border: 2px solid #2563eb;
+      overflow-y:auto;
+      overflow-x:hidden;
+    }
 
-#doctorList {
-  max-height: 500px; /* ✅ Increased from 350px */
-  overflow-y: auto;
-  overflow-x: hidden; /* ✅ Fixed typo: was "overflow:hidden" */
-}
+    .doctor-card {
+      background: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #doctorList {
+      max-height: 500px;
+      overflow-y:auto;
+      overflow:hidden;
+    }
 
-.doctor-card {
-  background: white;
-  padding: 15px; /* ✅ Increased from 12px for better readability */
-  margin-bottom: 10px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 80px; /* ✅ Added minimum height */
-}
+    .doctor-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      background: #f0f9ff;
+    }
 
-.doctor-name {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px; /* ✅ Increased from 3px */
-  font-size: 1rem; /* ✅ Increased from 0.95rem */
-}
+    .doctor-info {
+      flex-grow: 1;
+    }
 
-.doctor-specialty {
-  font-size: 0.85rem; /* ✅ Increased from 0.8rem */
-  color: #666;
-}
+    .doctor-name {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 3px;
+      font-size: 0.95rem;
+    }
 
-.hospital-section {
-  margin-top: 20px; /* ✅ Increased from 15px for better separation */
-  max-height: 400px; /* ✅ Added to make hospitals scrollable too */
-  overflow-y: auto;
-}
+    .doctor-specialty {
+      font-size: 0.8rem;
+      color: #666;
+    }
 
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+
+    .status-available {
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    .status-engaged {
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+    }
+
+    .status-offline {
+      background: #9ca3af;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading-doctors {
+      text-align: center;
+      color: #666;
+      padding: 20px;
+      font-style: italic;
+    }
+
+    .hospital-section {
+      margin-top: 15px;
+    }
 
     .location-title {
       font-size: 1rem;
