@@ -2211,83 +2211,79 @@
 
   // ========== DOCTOR CONNECT ==========
   
-  let doctorListVisible = false;
+  // ========== DOCTOR CONNECT (FIXED) ==========
 
-  function toggleDoctorList() {
-    const container = document.getElementById('doctorListContainer');
-    const btn = document.getElementById('connectDoctorBtn');
+let doctorListVisible = false;
+
+// Toggle doctor list
+function toggleDoctorList() {
+  const container = document.getElementById('doctorListContainer');
+  const btn = document.getElementById('connectDoctorBtn');
+  
+  if (!doctorListVisible) {
+    container.classList.add('expanded');
+    btn.textContent = '🚫 Close Doctor List';
+    loadRealDoctors(); // ✅ Call the REAL function
+    doctorListVisible = true;
+  } else {
+    container.classList.remove('expanded');
+    btn.textContent = '👨‍⚕️ Connect to Doctors';
+    doctorListVisible = false;
+  }
+}
+
+// Display doctors in the list
+function displayDoctors(doctors) {
+  const doctorList = document.getElementById('doctorList');
+  
+  if (!doctors || doctors.length === 0) {
+    doctorList.innerHTML = '<p style="text-align: center; color: #666;">No doctors available.</p>';
+    return;
+  }
+  
+  let html = '';
+  doctors.forEach(doctor => {
+    let statusClass = '';
+    let statusText = '';
     
-    if (!doctorListVisible) {
-      container.classList.add('expanded');
-      btn.textContent = ' Close Doctor List';
-      loadDoctors();
-      doctorListVisible = true;
+    if (doctor.status === 'available') {
+      statusClass = 'status-available';
+      statusText = 'Available';
+    } else if (doctor.status === 'engaged') {
+      statusClass = 'status-engaged';
+      statusText = 'Engaged';
     } else {
-      container.classList.remove('expanded');
-      btn.textContent = '👨‍⚕️ Connect to Doctors';
-      doctorListVisible = false;
-    }
-  }
-
-  function loadDoctors() {
-    const demoDoctors = [
-      { id: 1, name: "Dr. Rajesh Kumar", specialty: "Neurologist", status: "available" },
-      { id: 2, name: "Dr. Priya Sharma", specialty: "Psychiatrist", status: "engaged" },
-      { id: 3, name: "Dr. Amit Verma", specialty: "Neurosurgeon", status: "offline" },
-      { id: 4, name: "Dr. Sneha Patel", specialty: "Neurologist", status: "available" }
-    ];
-    
-    displayDoctors(demoDoctors);
-  }
-
-  function displayDoctors(doctors) {
-    const doctorList = document.getElementById('doctorList');
-    
-    if (!doctors || doctors.length === 0) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #666;">No doctors available.</p>';
-      return;
+      statusClass = 'status-offline';
+      statusText = 'Offline';
     }
     
-    let html = '';
-    doctors.forEach(doctor => {
-      let statusClass = '';
-      let statusText = '';
-      
-      if (doctor.status === 'available') {
-        statusClass = 'status-available';
-        statusText = 'Available';
-      } else if (doctor.status === 'engaged') {
-        statusClass = 'status-engaged';
-        statusText = 'Engaged';
-      } else {
-        statusClass = 'status-offline';
-        statusText = 'Offline';
-      }
-      
-      html += `
-        <div class="doctor-card" onclick="selectDoctor(${doctor.id}, '${doctor.name}')">
-          <div class="doctor-info">
-            <div class="doctor-name">${doctor.name}</div>
-            <div class="doctor-specialty">${doctor.specialty}</div>
-          </div>
-          <div class="status-indicator ${statusClass}" title="${statusText}"></div>
+    html += `
+      <div class="doctor-card" onclick="selectDoctor('${doctor.id}', '${doctor.name}')">
+        <div class="doctor-info">
+          <div class="doctor-name">${doctor.name}</div>
+          <div class="doctor-specialty">${doctor.specialty}</div>
         </div>
-      `;
-    });
-    
-    doctorList.innerHTML = html;
-  }
+        <div class="status-indicator ${statusClass}" title="${statusText}"></div>
+      </div>
+    `;
+  });
+  
+  doctorList.innerHTML = html;
+}
 
-  function selectDoctor(doctorId, doctorName) {
-    alert(`You selected ${doctorName}!\n\nConsultation feature coming soon...`);
-    console.log('Selected doctor ID:', doctorId);
-  }
+// Select doctor for consultation
+function selectDoctor(doctorId, doctorName) {
+  alert(`You selected ${doctorName}!\n\nConsultation feature coming soon...`);
+  console.log('Selected doctor ID:', doctorId);
+}
 
-  setInterval(function() {
-    if (doctorListVisible) {
-      loadDoctors();
-    }
-  }, 10000);
+// Auto-refresh doctor list every 10 seconds
+setInterval(function() {
+  if (doctorListVisible) {
+    loadRealDoctors(); // ✅ Call the REAL function
+  }
+}, 10000);
+
 
    // ========== PAGE LOAD ==========
 
