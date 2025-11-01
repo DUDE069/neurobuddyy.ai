@@ -8,6 +8,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import requests
 import os
+import hashlib
+import uuid
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
@@ -89,6 +91,42 @@ def load_questions():
     
     print(f"📊 TOTAL: {len(all_questions)} questions loaded from all categories")
     return all_questions
+
+# ========== DOCTOR AUTHENTICATION FUNCTIONS ==========
+
+def load_doctors():
+    """Load doctors database"""
+    paths = ['backend/data/doctors.json', 'api/data/doctors.json', 'data/doctors.json', '../data/doctors.json']
+    for path in paths:
+        try:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+        except Exception as e:
+            print(f"⚠️ Error loading {path}: {str(e)}")
+            continue
+    print("⚠️ doctors.json not found, creating new one")
+    return {"doctors": []}
+
+def save_doctors(data):
+    """Save doctors database"""
+    paths = ['backend/data/doctors.json', 'api/data/doctors.json', 'data/doctors.json']
+    for path in paths:
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2)
+            print(f"✅ Doctors database saved to {path}")
+            return True
+        except Exception as e:
+            print(f"⚠️ Error saving to {path}: {str(e)}")
+            continue
+    return False
+
+def hash_password(password):
+    """Hash password using SHA256"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
 
 
 greetings_database = load_greetings()
@@ -1234,6 +1272,138 @@ def test():
         'developer': 'ZERODAYCODERS',
         'project': 'NEUROBUDDYY.AI'
     })
+# ========== DOCTOR AUTHENTICATION API ==========
+
+@app.route('/api/doctor/register', methods=['POST'])
+def register_doctor():
+    """Register new doctor"""
+    try:
+        data = request.json
+        doctors_db = load_doctors()
+        
+        # Check if email already exists
+        for doc in doctors_db['doctors']:
+            if doc['email'] == data['email']:
+                return jsonify({'success': False, 'message': 'Email already registered'}), 400
+        
+        # Create new doctor
+        new_doctor = {
+            'id': str(uuid.uuid4()),
+            'name': data['name'],
+            'email': data['email'],
+            'password': hash_password(data['password']),
+            'specialty': data['specialty'],
+            'phone': data['phone'],
+            'license': data['license'],
+            'status': 'available',
+            'registered_at': datetime.now().isoformat()
+        }
+        
+        doctors_db['doctors'].append(new_doctor)
+        save_doctors(doctors_db)
+        
+        print(f"✅ New doctor registered: {new_doctor['name']} ({new_doctor['email']})")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Registration successful',
+            'doctor': {
+                'id': new_doctor['id'],
+                'name': new_doctor['name'],
+                'email': new_doctor['email'],
+                'specialty': new_doctor['specialty']
+            }
+        })
+    except Exception as e:
+        print(f"❌ Registration error: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/doctor/login', methods=['POST'])
+def login_doctor():
+    """Login doctor"""
+    try:
+        data = request.json
+        doctors_db = load_doctors()
+        
+        email = data['email']
+        password = hash_password(data['password'])
+        
+        # Find doctor
+        for doc in doctors_db['doctors']:
+            if doc['email'] == email and doc['password'] == password:
+                print(f"✅ Doctor logged in: {doc['name']} ({doc['email']})")
+                return jsonify({
+                    'success': True,
+                    'message': 'Login successful',
+                    'doctor': {
+                        'id': doc['id'],
+                        'name': doc['name'],
+                        'email': doc['email'],
+                        'specialty': doc['specialty'],
+                        'phone': doc['phone'],
+                        'status': doc['status']
+                    }
+                })
+        
+        print(f"❌ Login failed for: {email}")
+        return jsonify({'success': False, 'message': 'Invalid email or password'}), 401
+    except Exception as e:
+        print(f"❌ Login error: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/doctor/profile/<doctor_id>', methods=['GET'])
+def get_doctor_profile(doctor_id):
+    """Get doctor profile"""
+    try:
+        doctors_db = load_doctors()
+        
+        for doc in doctors_db['doctors']:
+            if doc['id'] == doctor_id:
+                doc_copy = doc.copy()
+                doc_copy.pop('password')  # Don't send password
+                return jsonify({'success': True, 'doctor': doc_copy})
+        
+        return jsonify({'success': False, 'message': 'Doctor not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/doctor/status', methods=['POST'])
+def update_doctor_status():
+    """Update doctor status (available, engaged, offline)"""
+    try:
+        data = request.json
+        doctors_db = load_doctors()
+        
+        for doc in doctors_db['doctors']:
+            if doc['id'] == data['doctor_id']:
+                doc['status'] = data['status']
+                save_doctors(doctors_db)
+                print(f"✅ Status updated: {doc['name']} -> {data['status']}")
+                return jsonify({'success': True, 'message': 'Status updated'})
+        
+        return jsonify({'success': False, 'message': 'Doctor not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/doctor/list', methods=['GET'])
+def list_doctors():
+    """List all doctors (for Connect to Doctors feature)"""
+    try:
+        doctors_db = load_doctors()
+        doctors_list = []
+        
+        for doc in doctors_db['doctors']:
+            doctors_list.append({
+                'id': doc['id'],
+                'name': doc['name'],
+                'specialty': doc['specialty'],
+                'status': doc['status']
+            })
+        
+        return jsonify({'success': True, 'doctors': doctors_list})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run()
