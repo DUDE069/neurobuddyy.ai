@@ -2650,25 +2650,58 @@ function logoutDoctor() {
   alert('âœ… Logged out successfully!');
 }
 
-// Load REAL doctors from backend (replaces demo doctors)
+// Load REAL doctors from Firebase
 async function loadRealDoctors() {
   const doctorList = document.getElementById('doctorList');
-  doctorList.innerHTML = '<p class="loading-doctors">Loading doctors...</p>';
   
   try {
-    const response = await fetch(`${BACKEND_URL}/api/doctor/list`);
-    const result = await response.json();
-    
-    if (result.success && result.doctors.length > 0) {
-      displayDoctors(result.doctors);
-    } else {
-      doctorList.innerHTML = '<p style="text-align: center; color: #666;">No doctors registered yet.</p>';
+    // Check if Firebase is available
+    if (!window.firebaseDB) {
+      doctorList.innerHTML = '<p class="loading-doctors">Firebase not initialized</p>';
+      return;
     }
+    
+    doctorList.innerHTML = '<p class="loading-doctors">Loading doctors...</p>';
+    
+    const { collection, getDocs } = window.firestoreFunctions;
+    const doctorsRef = collection(window.firebaseDB, 'doctors');
+    const querySnapshot = await getDocs(doctorsRef);
+    
+    if (querySnapshot.empty) {
+      doctorList.innerHTML = '<p style="text-align: center; color: #666;">No doctors registered yet.</p>';
+      return;
+    }
+    
+    // Build doctor cards
+    let html = '';
+    querySnapshot.forEach((doc) => {
+      const doctor = doc.data();
+      const status = doctor.status || 'offline';
+      
+      let statusClass = 'status-offline';
+      if (status === 'available') statusClass = 'status-available';
+      else if (status === 'engaged') statusClass = 'status-engaged';
+      
+      html += `
+        <div class="doctor-card" onclick="alert('Connect to Dr. ${doctor.name}\\n${doctor.specialty}\\n${doctor.phone}')">
+          <div class="doctor-info">
+            <div class="doctor-name">${doctor.name}</div>
+            <div class="doctor-specialty">${doctor.specialty}</div>
+          </div>
+          <div class="status-indicator ${statusClass}"></div>
+        </div>
+      `;
+    });
+    
+    doctorList.innerHTML = html;
+    console.log('✅ Loaded ' + querySnapshot.size + ' doctors from Firebase');
+    
   } catch (error) {
-    console.error('Error loading doctors:', error);
+    console.error('❌ Error loading doctors:', error);
     doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">Failed to load doctors.</p>';
   }
 }
+
 
 // Update toggleDoctorList to use real doctors
 function toggleDoctorList() {
