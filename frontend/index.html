@@ -1974,7 +1974,7 @@ async function submitPasswordReset() {
       </div>
 
       <div class="chat-window" id="chatWindow">
-        <div class="bot-msg">ðŸ‘‹ Hello! Type your health question below and I'll help you find answers.</div>
+        <div class="bot-msg"> 👋 Hello! Type your health question below and I'll help you find answers.</div>
       </div>
 
       <div class="suggestions-box" id="suggestionsBox">
@@ -1993,7 +1993,7 @@ async function submitPasswordReset() {
       <button class="emergency" onclick="triggerEmergency()">🚨 Emergency</button>
       
       <button class="connect-doctor" onclick="toggleDoctorList()" id="connectDoctorBtn">
-        ðŸ‘¨â€âš•ï¸ Connect to Doctors
+        👨‍⚕️ Connect to Doctors
       </button>
       
       <div id="doctorListContainer">
@@ -2821,10 +2821,10 @@ async function submitPasswordReset() {
                 ${index + 1}. ${hospital.hospital}
               </p>
               <p style="font-size: 0.85rem; color: #666; margin: 3px 0;">
-                ðŸ“ž ${hospital.phone}
+                ❕${hospital.phone}
               </p>
               <p style="font-size: 0.85rem; color: #10b981; margin: 3px 0;">
-                ðŸ“ ${hospital.distance}
+                🚩 ${hospital.distance}
               </p>
               ${hospital.coordinates ? `
                 <a href="${mapsLink}" target="_blank" style="
@@ -2864,7 +2864,7 @@ async function submitPasswordReset() {
               margin-top: 8px; 
               font-style: italic;
             ">
-              âš¡ Emergency alerts will be sent here
+              ❗Emergency alerts will be sent here
             </p>
           ` : ''}
         </div>
@@ -2886,7 +2886,7 @@ async function submitPasswordReset() {
         font-weight: bold;
         transition: 0.2s;
       " onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-        âœï¸ Edit Location
+       ✍️Edit Location
       </button>
     `;
     
@@ -3365,7 +3365,7 @@ async function resetPassword(email, resetCode, newPassword) {
 
     const loadingMsg = document.createElement("div");
     loadingMsg.className = "bot-msg";
-    loadingMsg.textContent = "ðŸ™„ Finding answer...";
+    loadingMsg.textContent = "🤔 Finding answer...";
     loadingMsg.id = "loading-msg";
     chatWindow.appendChild(loadingMsg);
     chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -3527,7 +3527,7 @@ function toggleDoctorList() {
     doctorListVisible = true;
   } else {
     container.classList.remove('expanded');
-    btn.textContent = 'ðŸ‘¨â€âš•ï¸ Connect to Doctors';
+    btn.textContent = '👨‍⚕️ Connect to Doctors';
     doctorListVisible = false;
   }
 }
@@ -4667,7 +4667,7 @@ function toggleDoctorList() {
   
   if (!doctorListVisible) {
     container.classList.add('expanded');
-    btn.textContent = 'ðŸš« Close Doctor List';
+    btn.textContent = '🚫 Close Doctor List';
     loadRealDoctors(); // âœ… Load real doctors from database
     doctorListVisible = true;
   } else {
