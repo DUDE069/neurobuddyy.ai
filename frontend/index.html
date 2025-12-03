@@ -1050,6 +1050,229 @@
 
 <script>
 
+// ============================================
+// 1. SYMPTOMS GALLERY FUNCTIONS
+// ============================================
+function toggleGallery() {
+  const panel = document.getElementById('galleryPanel');
+  const content = document.getElementById('galleryContent');
+  
+  if (panel.classList.contains('open')) {
+    panel.classList.remove('open');
+    panel.style.width = '0';
+    content.style.display = 'none';
+  } else {
+    // Close other panels
+    closeChatHistory();
+    document.getElementById('sidebar').classList.remove('open');
+    
+    panel.classList.add('open');
+    panel.style.width = '350px';
+    content.style.display = 'block';
+  }
+}
+
+function closeGallery() {
+  const panel = document.getElementById('galleryPanel');
+  const content = document.getElementById('galleryContent');
+  panel.classList.remove('open');
+  panel.style.width = '0';
+  content.style.display = 'none';
+}
+
+function showImageInfo(title, description) {
+  alert(`📌 ${title}\n\n${description}`);
+}
+
+function showUploadMessage() {
+  alert('📤 Upload Feature\n\nImage upload functionality will be available in the next update. For now, please describe your symptoms in the chat.');
+}
+
+// ============================================
+// 2. DOCTOR PORTAL FUNCTION
+// ============================================
+function openDoctorDashboard() {
+  const doctorData = localStorage.getItem('currentDoctor');
+  
+  if (!doctorData) {
+    // Not logged in - show login modal
+    showDoctorLogin();
+    return;
+  }
+  
+  // Logged in - show dashboard
+  try {
+    const doctor = JSON.parse(doctorData);
+    
+    // Populate dashboard
+    document.getElementById('dashboardName').textContent = doctor.name;
+    document.getElementById('dashboardSpecialty').textContent = doctor.specialty;
+    document.getElementById('dashboardEmail').textContent = doctor.email;
+    document.getElementById('doctorStatusSelect').value = doctor.status || 'available';
+    
+    // Show dashboard modal
+    document.getElementById('doctorDashboard').style.display = 'flex';
+    
+  } catch (error) {
+    console.error('Error opening dashboard:', error);
+    alert('❌ Error loading dashboard. Please login again.');
+    localStorage.removeItem('currentDoctor');
+    showDoctorLogin();
+  }
+}
+
+// ============================================
+// 3. DOCTOR CARD CLICK WITH CONFIRMATION
+// ============================================
+function displayDoctors(doctors) {
+  const doctorList = document.getElementById('doctorList');
+  
+  if (doctors.length === 0) {
+    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No doctors available</p>';
+    return;
+  }
+  
+  doctorList.innerHTML = '';
+  
+  doctors.forEach(doctor => {
+    const card = document.createElement('div');
+    card.className = 'doctor-card';
+    
+    const statusClass = doctor.status === 'available' ? 'status-available' :
+                       doctor.status === 'engaged' ? 'status-engaged' : 'status-offline';
+    
+    const statusText = doctor.status === 'available' ? '🟢 Available' :
+                      doctor.status === 'engaged' ? '🔴 Engaged' : '⚫ Offline';
+    
+    card.innerHTML = `
+      <div class="doctor-info">
+        <div class="doctor-name">${doctor.name}</div>
+        <div class="doctor-specialty">${doctor.specialty}</div>
+        <div style="font-size: 0.75rem; color: #666; margin-top: 4px;">${statusText}</div>
+      </div>
+      <div class="${statusClass} status-indicator"></div>
+    `;
+    
+    // ✅ ADD CLICK EVENT WITH CONFIRMATION
+    card.onclick = () => {
+      showDoctorConnectConfirmation(doctor);
+    };
+    
+    doctorList.appendChild(card);
+  });
+}
+
+// ============================================
+// 4. DOCTOR CONNECTION CONFIRMATION MODAL
+// ============================================
+function showDoctorConnectConfirmation(doctor) {
+  const statusEmoji = doctor.status === 'available' ? '🟢' :
+                     doctor.status === 'engaged' ? '🔴' : '⚫';
+  
+  const statusText = doctor.status === 'available' ? 'Available' :
+                    doctor.status === 'engaged' ? 'Currently Engaged' : 'Offline';
+  
+  // Check if doctor is not available
+  if (doctor.status !== 'available') {
+    const message = doctor.status === 'engaged' 
+      ? `⚠️ Doctor is Currently Engaged\n\n${doctor.name} is currently in consultation with another patient.\n\nWould you like to send a connection request anyway? You may need to wait.`
+      : `⚠️ Doctor is Offline\n\n${doctor.name} is currently offline and may not respond immediately.\n\nWould you like to leave a consultation request?`;
+    
+    if (!confirm(message)) {
+      return;
+    }
+  } else {
+    // Doctor is available - show normal confirmation
+    const confirmMsg = `🩺 Connect to Doctor?\n\n👨‍⚕️ ${doctor.name}\n📋 ${doctor.specialty}\n${statusEmoji} Status: ${statusText}\n\n⏰ Estimated wait time: Immediate\n\nClick OK to send consultation request.`;
+    
+    if (!confirm(confirmMsg)) {
+      return;
+    }
+  }
+  
+  // User confirmed - send consultation request
+  sendConsultationRequest(doctor);
+}
+
+// ============================================
+// 5. SEND CONSULTATION REQUEST
+// ============================================
+async function sendConsultationRequest(doctor) {
+  try {
+    const patientName = prompt('👤 Please enter your name:', '') || 'Anonymous Patient';
+    
+    if (!window.firebaseDB) {
+      alert('❌ Firebase not initialized. Please refresh the page.');
+      return;
+    }
+    
+    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+    
+    // Create consultation request
+    const requestData = {
+      patientName: patientName,
+      doctorId: doctor.id || 'unknown',
+      doctorName: doctor.name,
+      doctorSpecialty: doctor.specialty,
+      urgency: 'normal',
+      status: 'pending',
+      timestamp: serverTimestamp(),
+      message: `Patient ${patientName} wants to consult with you.`
+    };
+    
+    await addDoc(collection(window.firebaseDB, 'patientRequests'), requestData);
+    
+    alert(`✅ Request Sent!\n\nYour consultation request has been sent to ${doctor.name}.\n\nPlease wait for the doctor to accept your request.`);
+    
+    console.log('✅ Consultation request sent:', requestData);
+    
+  } catch (error) {
+    console.error('Error sending request:', error);
+    alert('❌ Failed to send request. Please try again.');
+  }
+}
+
+// ============================================
+// 6. LOAD REAL DOCTORS FUNCTION
+// ============================================
+async function loadRealDoctors() {
+  const doctorList = document.getElementById('doctorList');
+  doctorList.innerHTML = '<p class="loading-doctors">Loading doctors...</p>';
+  
+  try {
+    if (!window.firebaseDB) {
+      doctorList.innerHTML = '<p class="loading-doctors">⚠️ Firebase not initialized</p>';
+      return;
+    }
+    
+    const { collection, getDocs } = window.firestoreFunctions;
+    const doctorsRef = collection(window.firebaseDB, 'doctors');
+    const querySnapshot = await getDocs(doctorsRef);
+    
+    if (querySnapshot.empty) {
+      doctorList.innerHTML = '<p style="text-align: center; color: #666;">No doctors registered yet.</p>';
+      return;
+    }
+    
+    const doctors = [];
+    querySnapshot.forEach((doc) => {
+      doctors.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    console.log(`✅ Loaded ${doctors.length} doctors from Firebase`);
+    displayDoctors(doctors);
+    
+  } catch (error) {
+    console.error('Error loading doctors:', error);
+    doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❌ Error loading doctors</p>';
+  }
+}
+
+
+
 // Password Reset Functions
 function showPasswordReset() {
   document.getElementById('doctorLoginModal').style.display = 'none';
