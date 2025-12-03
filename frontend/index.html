@@ -864,6 +864,27 @@
   background: #b91c1c;
   transform: translateY(-2px);
 }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 
 
 
@@ -1027,17 +1048,17 @@
 
   <div class="container">
 
-    <aside class="leftbar" id="sidebar">
-      <ul class="menu">
-        <li onclick="toggleChatHistory()">ðŸ”Ž Search</li>
-        <li>ðŸ“‚ Categories</li>
-      </ul>
+   <aside class="leftbar" id="sidebar">
+  <ul class="menu">
+    <li onclick="toggleChatHistory()">🔎 Search</li>
+    <li onclick="toggleGallery()">🧠 Symtoms Gallery</li>
+  </ul>
+
       <div class="settings">
         <div onclick="toggleSettings()" style="cursor: pointer; margin-bottom: 8px;">âš™ï¸ Settings â–¼</div>
         <ul id="settingsSubmenu" style="display: none; list-style: none; padding-left: 10px; margin: 0;">
-  <li onclick="openAbout()" style="padding: 8px; background: #376c90; cursor: pointer; border-radius: 5px;">
-    ðŸ“– About
-  </li>
+ <li onclick="openAbout()" style="padding: 8px; background: #376c90; cursor: pointer; border-radius: 5px;">ℹ️ ABOUT</li>
+
   <li onclick="openDoctorDashboard()" style="padding: 8px; background: #2563eb; cursor: pointer; border-radius: 5px; margin-top: 5px; color: white;">
     ðŸ‘¨â€âš•ï¸ Doctor Portal
   </li>
@@ -1046,16 +1067,98 @@
       </div>
     </aside>
 
-    <!-- CHAT HISTORY PANEL -->
-    <aside id="chatHistoryPanel">
-      <div class="history-header">ðŸ“œ Chat History</div>
-      <div id="historyList"></div>
-      <button class="clear-history-btn" onclick="clearChatHistory()">ðŸ—‘ï¸ Clear History</button>
-    </aside>
+   <!-- CHAT HISTORY PANEL -->
+<aside id="chatHistoryPanel">
+  <div class="history-header">
+    📜 Chat History
+    <button onclick="closeChatHistory()" style="float: right; background: none; border: none; color: #2563eb; font-size: 1.5rem; cursor: pointer; padding: 0; margin-left: 10px;">×</button>
+  </div>
+  <div id="historyList"></div>
+  <button class="clear-history-btn" onclick="clearChatHistory()">🗑️ Clear History</button>
+</aside>
+
+<!-- BRAIN HEALTH GALLERY PANEL -->
+<aside id="galleryPanel" style="width: 0; background: white; border-right: 8px solid #e5e7eb; overflow-y: auto; transition: width 0.3s ease; display: flex; flex-direction: column; padding: 0;">
+  <div id="galleryContent" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 2px solid #e5e7eb;">
+      <h3 style="margin: 0; color: #2563eb; font-size: 1.1rem;">🧠 Brain Health Gallery</h3>
+      <button onclick="closeGallery()" style="background: none; border: none; color: #2563eb; font-size: 1.8rem; cursor: pointer; padding: 0;">×</button>
+    </div>
+    
+    <div style="padding: 15px;">
+      <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">Visual guide to neurological symptoms and conditions</p>
+      
+      <!-- Upload Button (Fake) -->
+      <button onclick="showUploadMessage()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-weight: bold; margin-bottom: 20px; cursor: pointer; transition: 0.3s;">
+        📤 Upload Your Image
+      </button>
+      
+      <!-- Gallery Grid -->
+      <div id="galleryGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+        
+        <!-- Image 1: Brain Anatomy -->
+        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Brain Anatomy', 'Understanding the structure of the human brain and its key regions.')">
+          <img src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Brain Anatomy">
+          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Brain Anatomy</p>
+        </div>
+        
+        <!-- Image 2: MRI Scan -->
+        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('MRI Brain Scan', 'Medical imaging used to detect neurological conditions.')">
+          <img src="https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="MRI Scan">
+          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">MRI Brain Scan</p>
+        </div>
+        
+        <!-- Image 3: Migraine Symptoms -->
+        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Migraine Symptoms', 'Visual representation of common migraine patterns and triggers.')">
+          <img src="https://images.unsplash.com/photo-1578496781379-7dcfb995293d?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Migraine">
+          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Migraine Symptoms</p>
+        </div>
+        
+        <!-- Image 4: Stroke Warning Signs -->
+        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Stroke Warning', 'Recognizing early signs of stroke - FAST method.')">
+          <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Stroke">
+          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Stroke Warning</p>
+        </div>
+        
+        <!-- Image 5: Alzheimer's Brain -->
+        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Alzheimer Disease', 'Brain changes associated with Alzheimer disease.')">
+          <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Alzheimer">
+          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Alzheimer's Disease</p>
+        </div>
+        
+        <!-- Image 6: Seizure Patterns -->
+        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Seizure Types', 'Understanding different types of seizure patterns.')">
+          <img src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Seizure">
+          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Seizure Patterns</p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</aside>
+
+<style>
+  #galleryPanel.open {
+    width: 350px !important;
+    padding: 0 !important;
+  }
+  
+  #galleryPanel.open #galleryContent {
+    display: block !important;
+  }
+  
+  .gallery-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-color: #2563eb !important;
+  }
+</style>
+
+
 
     <main class="chat-section">
       <div class="top-typing-box" id="topTypingBox">
-        <div class="typing-title">âœï¸ You're typing...</div>
+        <div class="typing-title">✍️ You're typing...</div>
         <div id="topTypingContent"></div>
       </div>
 
@@ -1129,19 +1232,143 @@
 
   </div>
 
-  <div id="aboutModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);">
-    <div style="background-color: white; margin: 10% auto; padding: 40px; border-radius: 15px; width: 70%; max-width: 600px; box-shadow: 0 5px 30px rgba(0,0,0,0.3);">
-      <span onclick="closeAbout()" style="float: right; font-size: 28px; font-weight: bold; cursor: pointer; color: #999;">&times;</span>
-      <h2 style="color: #2563eb; margin-bottom: 20px;">â„¹ï¸ About NeuroBuddyy.AI</h2>
-      <p style="font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
-        NEUROBUDDYY.AI is an intelligent health chatbot developed by <strong>ZERO DAY CODERS</strong> to provide reliable information about health issues, neurology, and brain-related problems. Our mission is to make health information accessible to everyone. We specialize in neurological conditions, brain health, and general medical inquiries. This platform is designed to help people get instant answers to their health questions anytime, anywhere. However, please note that NeuroBuddy.AI is not a replacement for professional medical advice. Always consult with qualified healthcare providers for medical concerns.
-      </p>
-      <p style="text-align: center; margin-top: 20px; color: #2563eb; font-weight: bold;">Â© 2025 ZERO DAY CODERS</p>
-      <p style="font-size: 1rem; line-height:1.8; color:#060000; text-align:justify;">
-        Important Instruction: While entering a question in our chatbot, kindly select your query from the suggestion box. If you type a question manually without selecting a suggestion, it may cause an error. To ensure accurate responses, always choose a question from the suggestions provided.
-      </p>
+ <div id="aboutModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px); overflow-y: auto;">
+  <div style="background-color: white; margin: 3% auto 3% auto; padding: 0; border-radius: 20px; width: 85%; max-width: 900px; box-shadow: 0 10px 50px rgba(0,0,0,0.4); max-height: 90vh; overflow-y: auto;">
+    
+    <!-- Header Section -->
+    <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 30px; border-radius: 20px 20px 0 0; position: relative;">
+      <span onclick="closeAbout()" style="position: absolute; right: 20px; top: 20px; font-size: 32px; font-weight: bold; cursor: pointer; color: white; transition: 0.3s;" onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0deg)'">×</span>
+      <h1 style="color: white; margin: 0; font-size: 2rem; text-align: center;">ℹ️ NEUROBUDDYY.AI Platform Guide</h1>
+      <p style="color: #e0f2fe; text-align: center; margin: 10px 0 0 0; font-size: 1.1rem;">Your Complete AI-Powered Brain Health Assistant</p>
+    </div>
+    
+    <!-- Content Body -->
+    <div style="padding: 40px;">
+      
+      <!-- What is NEUROBUDDYY.AI -->
+      <section style="margin-bottom: 35px;">
+        <h2 style="color: #2563eb; margin-bottom: 15px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">🧠 What is NEUROBUDDYY.AI?</h2>
+        <p style="font-size: 1rem; line-height: 1.8; color: #374151; text-align: justify;">
+          NEUROBUDDYY.AI is an intelligent, AI-powered healthcare platform designed to provide instant, reliable information about neurological conditions, brain health, and general medical inquiries. Our mission is to make professional health guidance accessible to everyone, anytime, anywhere.
+        </p>
+      </section>
+      
+      <!-- Two Modes Section -->
+      <section style="margin-bottom: 35px;">
+        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">👥 Two Modes of Operation</h2>
+        
+        <!-- Patient Mode -->
+        <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 5px solid #10b981;">
+          <h3 style="color: #065f46; margin: 0 0 10px 0; font-size: 1.2rem;">🩺 Patient Mode (Default)</h3>
+          <p style="color: #064e3b; margin: 8px 0; font-size: 0.95rem;"><strong>For:</strong> General users seeking medical information</p>
+          <p style="color: #064e3b; margin: 8px 0; font-size: 0.95rem;"><strong>Features:</strong></p>
+          <ul style="color: #064e3b; margin: 10px 0; padding-left: 20px;">
+            <li style="margin: 5px 0;">AI-powered chatbot for instant health queries</li>
+            <li style="margin: 5px 0;">Smart suggestion system for accurate questions</li>
+            <li style="margin: 5px 0;">Chat history with cross-device sync</li>
+            <li style="margin: 5px 0;">Brain Health Symptoms Gallery</li>
+            <li style="margin: 5px 0;">Connect to verified doctors via voice/video call</li>
+            <li style="margin: 5px 0;">Emergency SOS to nearest neuro-hospital</li>
+            <li style="margin: 5px 0;">Location-based hospital finder</li>
+          </ul>
+        </div>
+        
+        <!-- Doctor Mode -->
+        <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 20px; border-radius: 12px; border-left: 5px solid #2563eb;">
+          <h3 style="color: #1e40af; margin: 0 0 10px 0; font-size: 1.2rem;">👨‍⚕️ Doctor Mode (Professional)</h3>
+          <p style="color: #1e3a8a; margin: 8px 0; font-size: 0.95rem;"><strong>For:</strong> Registered neurologists and healthcare professionals</p>
+          <p style="color: #1e3a8a; margin: 8px 0; font-size: 0.95rem;"><strong>Features:</strong></p>
+          <ul style="color: #1e3a8a; margin: 10px 0; padding-left: 20px;">
+            <li style="margin: 5px 0;">Professional dashboard with patient management</li>
+            <li style="margin: 5px 0;">Real-time status control (Available/Engaged/Offline)</li>
+            <li style="margin: 5px 0;">Receive patient consultation requests</li>
+            <li style="margin: 5px 0;">Voice/Video call interface</li>
+            <li style="margin: 5px 0;">Emergency alert notifications</li>
+            <li style="margin: 5px 0;">Secure Firebase authentication</li>
+          </ul>
+        </div>
+        
+        <div style="background: #fef3c7; padding: 15px; border-radius: 10px; margin-top: 15px; border-left: 5px solid #f59e0b;">
+          <p style="margin: 0; color: #92400e; font-size: 0.95rem;"><strong>⚠️ Mode Selection:</strong> Upon first visit, you'll see a registration interface asking "Are you a healthcare professional?" Choose your mode accordingly. Doctors must register with valid credentials.</p>
+        </div>
+      </section>
+      
+      <!-- How to Use Section -->
+      <section style="margin-bottom: 35px;">
+        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">📖 How to Use the Platform</h2>
+        
+        <div style="background: #f9fafb; padding: 20px; border-radius: 12px; border: 2px solid #e5e7eb;">
+          <h3 style="color: #374151; margin-top: 0; font-size: 1.1rem;">For Patients:</h3>
+          <ol style="color: #4b5563; line-height: 1.8; padding-left: 20px;">
+            <li style="margin: 10px 0;"><strong>Ask Questions:</strong> Type your health query in the chat box. <strong style="color: #dc2626;">IMPORTANT: Always select your question from the suggestion box that appears. Manually typed questions without selection may cause errors.</strong></li>
+            <li style="margin: 10px 0;"><strong>View History:</strong> Click "🔎 Search" in the left menu to access your previous conversations.</li>
+            <li style="margin: 10px 0;"><strong>Browse Gallery:</strong> Click "🧠 Brain Health Gallery" to view visual guides of neurological symptoms.</li>
+            <li style="margin: 10px 0;"><strong>Set Location:</strong> Configure your nearest hospital in the right sidebar for emergency alerts.</li>
+            <li style="margin: 10px 0;"><strong>Connect to Doctors:</strong> Click "👨‍⚕️ Connect to Doctors" to see available professionals. Click any doctor to initiate consultation.</li>
+            <li style="margin: 10px 0;"><strong>Emergency:</strong> Press the red "⚠️ Emergency" button to send instant SOS to your configured hospital.</li>
+          </ol>
+          
+          <h3 style="color: #374151; margin-top: 25px; font-size: 1.1rem;">For Doctors:</h3>
+          <ol style="color: #4b5563; line-height: 1.8; padding-left: 20px;">
+            <li style="margin: 10px 0;"><strong>Register:</strong> Use valid medical license number and credentials.</li>
+            <li style="margin: 10px 0;"><strong>Login:</strong> Access your dashboard via Settings → Doctor Portal.</li>
+            <li style="margin: 10px 0;"><strong>Update Status:</strong> Set your availability (Available/Engaged/Offline) so patients know when you're ready to consult.</li>
+            <li style="margin: 10px 0;"><strong>Receive Consultations:</strong> Patients can see you in the "Connect to Doctors" list and initiate calls.</li>
+          </ol>
+        </div>
+      </section>
+      
+      <!-- Important Notice -->
+      <section style="margin-bottom: 35px;">
+        <div style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); padding: 20px; border-radius: 12px; border-left: 5px solid #dc2626;">
+          <h3 style="color: #991b1b; margin: 0 0 10px 0; font-size: 1.2rem;">⚠️ Important Disclaimer</h3>
+          <p style="color: #7f1d1d; margin: 0; line-height: 1.7; font-size: 0.95rem;">
+            NEUROBUDDYY.AI is an informational tool and <strong>NOT a replacement for professional medical advice, diagnosis, or treatment</strong>. Always consult with qualified healthcare providers for medical concerns. In case of emergency, call your local emergency services (India: 108) immediately.
+          </p>
+        </div>
+      </section>
+      
+      <!-- Contact & Support -->
+      <section style="margin-bottom: 20px;">
+        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">📞 Support & Contact</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+          
+          <!-- Email Support -->
+          <div style="background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); padding: 20px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📧</div>
+            <h3 style="color: #5b21b6; margin: 0 0 8px 0; font-size: 1rem;">Email Support</h3>
+            <a href="mailto:support@neurobuddyy.ai" style="color: #6d28d9; text-decoration: none; font-weight: bold; font-size: 0.9rem;">##############</a>
+          </div>
+          
+          <!-- Phone Support -->
+          <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); padding: 20px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📱</div>
+            <h3 style="color: #065f46; margin: 0 0 8px 0; font-size: 1rem;"> Support</h3>
+            <a href="tel:+919876543210" style="color: #047857; text-decoration: none; font-weight: bold; font-size: 0.9rem;">+91 **********</a>
+          </div>
+          
+          <!-- Developer -->
+          <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">💻</div>
+            <h3 style="color: #92400e; margin: 0 0 8px 0; font-size: 1rem;">Developer</h3>
+            <p style="color: #d31111; margin: 0; font-weight: bold; font-size: 0.9rem;">ARIYAN AND JYOTISHMAN</p>
+          </div>
+          
+        </div>
+      </section>
+      
+      <!-- Footer -->
+      <div style="text-align: center; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+        <p style="color: #2563eb; font-weight: bold; font-size: 1rem; margin: 10px 0;">© 2025 NEUROBUDDYY.AI</p>
+        <p style="color: #6b7280; font-size: 0.85rem; margin: 5px 0;">Empowering Health Through Artificial Intelligence</p>
+        <p style="color: #9ca3af; font-size: 0.8rem; margin: 5px 0;">Version 1.0 | Built with Firebase & FastAPI</p>
+      </div>
+      
     </div>
   </div>
+</div>
+
 
 <script>
   const BACKEND_URL = 'https://neurobuddyy-ai.onrender.com';
@@ -1727,9 +1954,10 @@
         
         displaySavedLocation(locationData, result.hospital);
         
-        alert("âœ… Location saved successfully!\n\nEmergency button is now ready to use.");
+       showEmergencyModal('success', '✅ Location Saved!', 'Your nearest hospital has been configured successfully. Emergency button is now ready to use.');
+
       } else {
-        alert("âŒ Failed to save location: " + result.message);
+        alert("❌ Failed to save location: " + result.message);
       }
       
     } catch (error) {
@@ -1867,107 +2095,119 @@
 
   // ========== EMERGENCY BUTTON ==========
 
-  function triggerEmergency() {
-    const savedLocation = localStorage.getItem('userLocation');
-    
-    if (!savedLocation) {
-      alert(
-        "âš ï¸ Location Not Set!\n\n" +
-        "Please set your nearest hospital location first.\n\n" +
-        "Scroll down to 'Setup Nearest Hospital' section."
-      );
-      return;
-    }
-    
-    const confirmed = confirm(
-      "ðŸš¨ EMERGENCY ALERT\n\n" +
-      "This will notify your nearest neuro-hospital about your emergency.\n\n" +
-      "Click OK to proceed."
-    );
-    
-    if (!confirmed) return;
-    
-    sendEmergencyAlert();
+  async function triggerEmergency() {
+  const savedLocation = localStorage.getItem('userLocation');
+  const savedHospital = localStorage.getItem('nearestHospital');
+  
+  if (!savedLocation || !savedHospital) {
+    showEmergencyModal('error', '⚠️ Location Not Set', 'Please set your nearest hospital in the right sidebar before using the Emergency button.');
+    return;
   }
-
-  async function sendEmergencyAlert() {
-    const location = JSON.parse(localStorage.getItem('userLocation'));
+  
+  const location = JSON.parse(savedLocation);
+  const hospital = JSON.parse(savedHospital);
+  
+  // Show sending modal
+  showEmergencyModal('sending', '🚨 Sending Emergency Alert...', 'Please wait while we contact the hospital.');
+  
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/emergency`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        state: location.state,
+        district: location.district,
+        area: location.area,
+        hospital: hospital
+      })
+    });
     
-    const loadingDiv = document.createElement('div');
-    loadingDiv.id = 'emergencyLoading';
-    loadingDiv.style.cssText = `
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      background: white; padding: 30px; border-radius: 15px;
-      box-shadow: 0 10px 50px rgba(0,0,0,0.3); z-index: 10000; text-align: center;
-    `;
-    loadingDiv.innerHTML = `
-      <h2 style="color: #dc2626;">ðŸš¨ Sending Emergency Alert...</h2>
-      <p>Please wait...</p>
-    `;
-    document.body.appendChild(loadingDiv);
+    const result = await response.json();
     
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/emergency-alert`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          location: location,
-          timestamp: new Date().toISOString()
-        })
-      });
-      
-      const result = await response.json();
-      
-      document.body.removeChild(loadingDiv);
-      
-      if (result.success) {
-        showEmergencySuccess(result);
-      } else {
-        alert("âŒ Failed to send alert.\n\nPlease call emergency services: 108");
-      }
-      
-    } catch (error) {
-      document.body.removeChild(loadingDiv);
-      console.error("Emergency alert error:", error);
-      alert("âŒ Server error.\n\nPlease call emergency services: 108");
+    if (result.success) {
+      showEmergencyModal('success', '✅ Emergency Alert Sent!', `Your SOS has been successfully sent to <strong>${hospital}</strong>. Help is on the way! Stay calm and stay where you are.`);
+    } else {
+      showEmergencyModal('error', '❌ Failed to Send Alert', result.message || 'Unable to send emergency alert. Please try again or call 108 directly.');
     }
+  } catch (error) {
+    console.error('Emergency error:', error);
+    showEmergencyModal('error', '❌ Connection Failed', 'Unable to reach emergency services. Please call 108 immediately for assistance.');
   }
+}
 
-  function showEmergencySuccess(result) {
-    const popup = document.createElement('div');
-    popup.style.cssText = `
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      background: white; padding: 40px; border-radius: 15px;
-      box-shadow: 0 10px 50px rgba(0,0,0,0.3); z-index: 10000;
-      max-width: 500px; text-align: center;
+// Custom Emergency Modal System
+function showEmergencyModal(type, title, message) {
+  // Remove any existing modal
+  const existingModal = document.getElementById('emergencyModalOverlay');
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'emergencyModalOverlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+  `;
+  
+  let backgroundColor, iconColor, icon, showCloseButton;
+  
+  if (type === 'sending') {
+    backgroundColor = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+    iconColor = '#ffffff';
+    icon = `
+      <div style="width: 80px; height: 80px; border: 6px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto;"></div>
     `;
-    
-    popup.innerHTML = `
-      <h2 style="color: #10b981;">âœ… Emergency Alert Sent!</h2>
-      <p style="font-size: 1.1rem; margin: 20px 0;">
-        ${result.hospital_name} has been notified.
-      </p>
-      <div style="background: #f0f4f8; padding: 15px; border-radius: 10px; margin: 20px 0;">
-        <p><strong>Reference ID:</strong> ${result.reference_id}</p>
-        <p><strong>Hospital Phone:</strong> ${result.hospital_phone}</p>
-        <p><strong>Hospital Email:</strong> ${result.hospital_email}</p>
-        <p style="font-size: 0.9rem; color: #10b981; margin-top: 10px;">
-          âœ… Email Alert: ${result.email_status === 'success' ? 'Sent' : 'Failed'}<br>
-          ðŸ“± SMS Alert: ${result.sms_status === 'success' ? 'Sent' : result.sms_status === 'skipped' ? 'Skipped (Not Configured)' : 'Failed'}
-        </p>
+    showCloseButton = false;
+  } else if (type === 'success') {
+    backgroundColor = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    iconColor = '#ffffff';
+    icon = '<div style="font-size: 5rem; margin-bottom: 15px;">✅</div>';
+    showCloseButton = true;
+  } else {
+    backgroundColor = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+    iconColor = '#ffffff';
+    icon = '<div style="font-size: 5rem; margin-bottom: 15px;">❌</div>';
+    showCloseButton = true;
+  }
+  
+  const modalHTML = `
+    <div style="background: white; padding: 0; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: modalSlideUp 0.4s ease-out; overflow: hidden;">
+      <div style="background: ${backgroundColor}; padding: 40px 30px; text-align: center;">
+        ${icon}
+        <h2 style="color: white; margin: 0; font-size: 1.8rem;">${title}</h2>
       </div>
-      <p style="color: #666; font-size: 0.9rem;">
-        Help is on the way. Stay calm and wait for assistance.
-      </p>
-      <button onclick="this.parentElement.remove()" style="
-        background: #2563eb; color: white; border: none;
-        padding: 12px 30px; border-radius: 8px; font-size: 1rem;
-        cursor: pointer; margin-top: 20px;
-      ">OK</button>
-    `;
-    
-    document.body.appendChild(popup);
+      <div style="padding: 30px; text-align: center;">
+        <p style="color: #374151; font-size: 1.1rem; line-height: 1.7; margin: 0;">${message}</p>
+        ${showCloseButton ? `
+          <button onclick="document.getElementById('emergencyModalOverlay').remove()" style="margin-top: 25px; padding: 14px 40px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(37,99,235,0.3);">
+            Close
+          </button>
+        ` : ''}
+      </div>
+    </div>
+  `;
+  
+  overlay.innerHTML = modalHTML;
+  document.body.appendChild(overlay);
+  
+  // Auto-close sending modal after response
+  if (type === 'sending') {
+    // Keep it open until replaced by success/error
   }
+}
+
 
   // ========== CHAT HISTORY FEATURE ==========
 
@@ -1984,42 +2224,74 @@
     localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
   }
 
-  function addToHistory(firstQuestion) {
-    const greetingWords = ['hi', 'hello', 'hey', 'good morning', 'good evening', 'good afternoon'];
-    const isGreeting = greetingWords.some(word => firstQuestion.toLowerCase().includes(word));
-    
-    if (!firstQuestion || isGreeting) {
-      return;
-    }
-    
-    const historyItem = {
-      id: Date.now(),
-      title: firstQuestion,
-      timestamp: new Date().toISOString(),
-      date: new Date()
-    };
-    
-    chatHistory.unshift(historyItem);
-    
-    if (chatHistory.length > 20) {
-      chatHistory = chatHistory.slice(0, 20);
-    }
-    
-    saveChatHistory();
+ async function addToHistory(firstQuestion) {
+  const greetingWords = ['hi', 'hello', 'hey', 'good morning', 'good evening', 'good afternoon'];
+  const isGreeting = greetingWords.some(word => firstQuestion.toLowerCase().includes(word));
+  
+  if (!firstQuestion || isGreeting) {
+    return;
   }
+  
+  const historyItem = {
+    id: Date.now(),
+    title: firstQuestion,
+    timestamp: new Date().toISOString(),
+    date: new Date()
+  };
+  
+  chatHistory.unshift(historyItem);
+  
+  if (chatHistory.length > 20) {
+    chatHistory = chatHistory.slice(0, 20);
+  }
+  
+  saveChatHistory();
+  
+  // ✅ NEW: Sync to Firebase for cross-device access
+  try {
+    if (window.firebaseDB) {
+      const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+      
+      // Get or create user ID
+      let userId = localStorage.getItem('userId');
+      if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('userId', userId);
+      }
+      
+      await addDoc(collection(window.firebaseDB, 'chatHistory'), {
+        userId: userId,
+        question: firstQuestion,
+        timestamp: serverTimestamp()
+      });
+      
+      console.log('✅ Chat history synced to Firebase');
+    }
+  } catch (error) {
+    console.error('⚠️ Failed to sync chat history:', error);
+    // Continue anyway - localStorage backup exists
+  }
+}
 
-  function toggleChatHistory() {
-    const panel = document.getElementById('chatHistoryPanel');
-    const sidebar = document.getElementById('sidebar');
-    
-    if (panel.classList.contains('open')) {
-      panel.classList.remove('open');
-    } else {
-      panel.classList.add('open');
-      sidebar.classList.remove('open');
-      displayChatHistory();
-    }
+
+ function toggleChatHistory() {
+  const panel = document.getElementById('chatHistoryPanel');
+  const sidebar = document.getElementById('sidebar');
+  
+  if (panel.classList.contains('open')) {
+    panel.classList.remove('open');
+  } else {
+    panel.classList.add('open');
+    sidebar.classList.remove('open');
+    displayChatHistory();
   }
+}
+
+// ✅ NEW: Close history independently
+function closeChatHistory() {
+  const panel = document.getElementById('chatHistoryPanel');
+  panel.classList.remove('open');
+}
 
   function displayChatHistory() {
     const historyList = document.getElementById('historyList');
@@ -2081,9 +2353,19 @@
   const suggestionsList = document.getElementById('suggestionsList');
   const chatWindow = document.getElementById('chatWindow');
 
-  function toggleMenu() {
-    document.getElementById("sidebar").classList.toggle("open");
+ function toggleMenu() {
+  const sidebar = document.getElementById("sidebar");
+  const historyPanel = document.getElementById("chatHistoryPanel");
+  
+  // Toggle sidebar
+  sidebar.classList.toggle("open");
+  
+  // ✅ NEW: Auto-close history when sidebar closes
+  if (!sidebar.classList.contains("open")) {
+    historyPanel.classList.remove("open");
   }
+}
+
 
   userInputField.addEventListener('input', function() {
     const text = userInputField.value.trim();
@@ -2602,103 +2884,42 @@ function closeDoctorDashboard() {
   document.getElementById('doctorDashboard').style.display = 'none';
 }
 
-// Update doctor status
+// Update doctor status in Firebase
 async function updateDoctorStatus() {
-  if (!currentDoctor) return;
+  if (!currentDoctor) {
+    alert('❌ No active session');
+    return;
+  }
   
   const newStatus = document.getElementById('doctorStatusSelect').value;
   
   try {
-    const response = await fetch(`${BACKEND_URL}/api/doctor/status`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        doctor_id: currentDoctor.id,
-        status: newStatus
-      })
-    });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      currentDoctor.status = newStatus;
-      sessionStorage.setItem('doctorSession', JSON.stringify(currentDoctor));
-      alert('âœ… Status updated to: ' + newStatus);
-      
-      // Reload doctors list
-      if (doctorListVisible) {
-        loadRealDoctors();
-      }
-    } else {
-      alert('âŒ Failed to update status');
-    }
-  } catch (error) {
-    console.error('Status update error:', error);
-    alert('âŒ Server error');
-  }
-}
-
-// Logout doctor
-function logoutDoctor() {
-  const confirmed = confirm('Are you sure you want to logout?');
-  if (!confirmed) return;
-  
-  currentDoctor = null;
-  sessionStorage.removeItem('doctorSession');
-  closeDoctorDashboard();
-  
-  alert('âœ… Logged out successfully!');
-}
-
-// Load REAL doctors from Firebase
-async function loadRealDoctors() {
-  const doctorList = document.getElementById('doctorList');
-  
-  try {
-    // Check if Firebase is available
     if (!window.firebaseDB) {
-      doctorList.innerHTML = '<p class="loading-doctors">Firebase not initialized</p>';
-      return;
+      throw new Error('Firebase not initialized');
     }
     
-    doctorList.innerHTML = '<p class="loading-doctors">Loading doctors...</p>';
+    const { doc, updateDoc } = window.firestoreFunctions;
+    const doctorRef = doc(window.firebaseDB, 'doctors', currentDoctor.id);
     
-    const { collection, getDocs } = window.firestoreFunctions;
-    const doctorsRef = collection(window.firebaseDB, 'doctors');
-    const querySnapshot = await getDocs(doctorsRef);
-    
-    if (querySnapshot.empty) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #666;">No doctors registered yet.</p>';
-      return;
-    }
-    
-    // Build doctor cards
-    let html = '';
-    querySnapshot.forEach((doc) => {
-      const doctor = doc.data();
-      const status = doctor.status || 'offline';
-      
-      let statusClass = 'status-offline';
-      if (status === 'available') statusClass = 'status-available';
-      else if (status === 'engaged') statusClass = 'status-engaged';
-      
-      html += `
-        <div class="doctor-card" onclick="alert('Connect to Dr. ${doctor.name}\\n${doctor.specialty}\\n${doctor.phone}')">
-          <div class="doctor-info">
-            <div class="doctor-name">${doctor.name}</div>
-            <div class="doctor-specialty">${doctor.specialty}</div>
-          </div>
-          <div class="status-indicator ${statusClass}"></div>
-        </div>
-      `;
+    await updateDoc(doctorRef, {
+      status: newStatus
     });
     
-    doctorList.innerHTML = html;
-    console.log('✅ Loaded ' + querySnapshot.size + ' doctors from Firebase');
+    // Update local session
+    currentDoctor.status = newStatus;
+    sessionStorage.setItem('doctorSession', JSON.stringify(currentDoctor));
+    
+    console.log('✅ Status updated to:', newStatus);
+    alert('✅ Status updated to: ' + newStatus.toUpperCase());
+    
+    // Reload doctors list
+    if (doctorListVisible) {
+      loadRealDoctors();
+    }
     
   } catch (error) {
-    console.error('❌ Error loading doctors:', error);
-    doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">Failed to load doctors.</p>';
+    console.error('❌ Status update error:', error);
+    alert('❌ Failed to update status: ' + error.message);
   }
 }
 
@@ -2737,6 +2958,118 @@ window.addEventListener('DOMContentLoaded', function() {
   checkDoctorSession();
   showRoleModalOnFirstVisit();
 });
+
+// ========== BRAIN HEALTH GALLERY FEATURE ==========
+
+function toggleGallery() {
+  const panel = document.getElementById('galleryPanel');
+  const sidebar = document.getElementById('sidebar');
+  const historyPanel = document.getElementById('chatHistoryPanel');
+  
+  if (panel.classList.contains('open')) {
+    panel.classList.remove('open');
+  } else {
+    panel.classList.add('open');
+    sidebar.classList.remove('open');
+    historyPanel.classList.remove('open');
+  }
+}
+
+function closeGallery() {
+  const panel = document.getElementById('galleryPanel');
+  panel.classList.remove('open');
+}
+
+function showUploadMessage() {
+  // Create custom modal overlay
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+  `;
+  
+  overlay.innerHTML = `
+    <div style="background: white; padding: 40px; border-radius: 15px; max-width: 450px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3); animation: modalSlideIn 0.3s ease-out;">
+      <div style="font-size: 3rem; margin-bottom: 15px;">🚧</div>
+      <h2 style="color: #2563eb; margin-bottom: 15px; font-size: 1.5rem;">Feature Under Construction</h2>
+      <p style="color: #666; font-size: 1rem; line-height: 1.6; margin-bottom: 25px;">
+        We're working hard to bring you the image upload feature! This functionality will be available soon. Thank you for your patience.
+      </p>
+      <button onclick="this.parentElement.parentElement.remove()" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s;">
+        Got It!
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  // Close on outside click
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
+}
+
+function showImageInfo(title, description) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+  `;
+  
+  overlay.innerHTML = `
+    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+      <h3 style="color: #2563eb; margin-bottom: 15px; font-size: 1.3rem;">${title}</h3>
+      <p style="color: #666; font-size: 1rem; line-height: 1.6; margin-bottom: 20px;">${description}</p>
+      <button onclick="this.parentElement.parentElement.remove()" style="background: #2563eb; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">
+        Close
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
+}
+
+// Update toggleMenu to also close gallery
+function toggleMenu() {
+  const sidebar = document.getElementById("sidebar");
+  const historyPanel = document.getElementById("chatHistoryPanel");
+  const galleryPanel = document.getElementById("galleryPanel");
+  
+  sidebar.classList.toggle("open");
+  
+  // Auto-close both panels when sidebar closes
+  if (!sidebar.classList.contains("open")) {
+    historyPanel.classList.remove("open");
+    galleryPanel.classList.remove("open");
+  }
+}
+
 
 </script>
 </body>
