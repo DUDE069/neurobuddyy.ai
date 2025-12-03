@@ -2874,6 +2874,45 @@ async function resetPassword(email, resetCode, newPassword) {
 
 let doctorListVisible = false;
 
+// Load real doctors from Firebase
+async function loadRealDoctors() {
+  const doctorList = document.getElementById('doctorList');
+  doctorList.innerHTML = '<p class="loading-doctors">Loading doctors...</p>';
+  
+  try {
+    if (!window.firebaseDB) {
+      doctorList.innerHTML = '<p class="loading-doctors">⚠️ Firebase not initialized</p>';
+      return;
+    }
+    
+    const { collection, getDocs } = window.firestoreFunctions;
+    const doctorsRef = collection(window.firebaseDB, 'doctors');
+    const querySnapshot = await getDocs(doctorsRef);
+    
+    if (querySnapshot.empty) {
+      doctorList.innerHTML = '<p style="text-align: center; color: #666;">No doctors available yet.</p>';
+      return;
+    }
+    
+    // Convert to array and display
+    const doctors = [];
+    querySnapshot.forEach((doc) => {
+      doctors.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    console.log(`✅ Loaded ${doctors.length} doctors from Firebase`);
+    displayDoctors(doctors);
+    
+  } catch (error) {
+    console.error('Error loading doctors:', error);
+    doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❌ Error loading doctors</p>';
+  }
+}
+
+
 // Toggle doctor list
 function toggleDoctorList() {
   const container = document.getElementById('doctorListContainer');
