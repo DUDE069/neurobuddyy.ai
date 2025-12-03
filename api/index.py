@@ -14,7 +14,7 @@ import uuid
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
 
-GMAIL_SENDER = "ariyanabedin00@gmail."
+GMAIL_SENDER = "ariyanabedin00."
 GMAIL_APP_PASSWORD = "lfii ikdv hchI frmb"
 FAST2SMS_API_KEY = "YOUR_API_KEY_HERE"
 ENABLE_SMS = False
