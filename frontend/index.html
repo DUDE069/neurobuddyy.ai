@@ -4392,7 +4392,7 @@ async function loginDoctor(event) {
     alert('❌ Server error: ' + error.message);
   }
 }
-<!-- Add this after the password input in doctorLoginModal -->
+
 
 
 
@@ -4485,114 +4485,93 @@ function togglePatientList() {
 async function loadPatientList() {
   const listContainer = document.getElementById('doctorList');
   listContainer.innerHTML = '<p class="loading-doctors">Loading patients...</p>';
-  
+
   try {
     if (!window.firebaseDB) {
       listContainer.innerHTML = '<p class="loading-doctors">Firebase not initialized</p>';
       return;
     }
-    
+
     const { collection, getDocs, query, orderBy } = window.firestoreFunctions;
     const patientsRef = collection(window.firebaseDB, 'patientRequests');
     const q = query(patientsRef, orderBy('timestamp', 'desc'));
     const querySnapshot = await getDocs(q);
-    
+
     if (querySnapshot.empty) {
       listContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No patient requests yet.</p>';
       return;
     }
-    
+
     let html = '';
-    querySnapshot.forEach((doc) => {
-      const patient = doc.data();
+    querySnapshot.forEach((docSnap) => {
+      const patient = docSnap.data();
       const urgency = patient.urgency || 'green';
       const timeAgo = getTimeAgo(new Date(patient.timestamp));
-      
-      let borderColor = '#10b981'; // green
+      let borderColor = '#10b981';
       if (urgency === 'red') borderColor = '#ef4444';
       if (urgency === 'blue') borderColor = '#3b82f6';
-      
+
       html += `
-        <div class="patient-card" style="background: #f9fafb; border-left: 5px solid ${borderColor}; padding: 15px; margin-bottom: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="selectPatient('doctorList.innerHTML = html;
-}
-
-
-// Auto-refresh doctor list every 10 seconds
- setInterval(function() {
-  if (doctorListVisible) {
-    loadRealDoctors(); // âœ… Call the REAL function
-  }
-}, 10000);
-
-// ========== PATIENT REQUEST SYSTEM ==========
-
-function requestDoctorConsultation(doctorId, doctorData) {
-  // Check i', ${JSON.stringify(patient).replace(/"/g, '&quot;')})">
+        <div class="patient-card"
+             style="background: #f9fafb; border-left: 5px solid ${borderColor}; padding: 15px; margin-bottom: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s;"
+             onclick="selectPatient('${docSnap.id}', ${JSON.stringify(patient).replace(/"/g, '&quot;')})">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div style="flex: 1;">
               <div style="font-weight: bold; color: #111827; font-size: 1rem; margin-bottom: 5px;">${patient.name || 'Anonymous Patient'}</div>
               <div style="font-size: 0.85rem; color: #6b7280;">Age: ${patient.age || 'N/A'} • ${timeAgo}</div>
             </div>
-            <button onclick="event.stopPropagation(); cancelPatient('doctorList.innerHTML = html;
-}
-
-
-// Auto-refresh doctor list every 10 seconds
- setInterval(function() {
-  if (doctorListVisible) {
-    loadRealDoctors(); // âœ… Call the REAL function
-  }
-}, 10000);
-
-// ========== PATIENT REQUEST SYSTEM ==========
-
-function requestDoctorConsultation(doctorId, doctorData) {
-  // Check i')" style="background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">Cancel</button>
+            <button onclick="event.stopPropagation(); cancelPatient('${docSnap.id}')"
+                    style="background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+              Cancel
+            </button>
           </div>
         </div>
       `;
     });
-    
+
     listContainer.innerHTML = html;
     console.log('✅ Loaded ' + querySnapshot.size + ' patients');
-    
+
   } catch (error) {
     console.error('❌ Error loading patients:', error);
     listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">Error loading patients</p>';
   }
 }
 
-function selectPatient(patientId, patientData) {
-  // Phase 3 will implement full conversation
-  alert('Selected: ' + (patientData.name || 'Patient') + '\n\nConversation area will activate in Phase 3!');
-  console.log('Patient selected:', patientId, patientData);
-}
 
-async function cancelPatient(patientId) {
-  if (!confirm('Cancel this patient consultation?')) {
-    return;
+// Auto-refresh doctor list every 10 seconds
+ setInterval(function() {
+  if (doctorListVisible) {
+    loadRealDoctors(); // âœ… Call the REAL function
   }
-  
-  try {
-    if (!window.firebaseDB) {
-      alert('Firebase not initialized');
-      return;
-    }
-    
-    const { doc, deleteDoc } = window.firestoreFunctions;
-    const patientRef = doc(window.firebaseDB, 'patientRequests', patientId);
-    await deleteDoc(patientRef);
-    
-    console.log('✅ Patient consultation cancelled');
-    alert('✅ Patient consultation cancelled');
-    
-    // Reload list
-    loadPatientList();
-    
-  } catch (error) {
-    console.error('❌ Error cancelling patient:', error);
-    alert('❌ Failed to cancel: ' + error.message);
+}, 10000);
+
+
+
+function selectPatient(patientId, patientData) {
+  // Set active patient
+  activePatientId = patientId;
+
+  // Build header + buttons + messages container
+  activateConversationArea(patientId, patientData);
+
+  // Show search bar
+  const searchBar = document.querySelector('.search-bar');
+  if (searchBar) {
+    searchBar.style.display = 'flex';
   }
+
+  // Set placeholder
+  const userInput = document.getElementById('userInput');
+  if (userInput) {
+    userInput.placeholder = `Type your message to ${patientData.name || 'patient'}...`;
+  }
+
+  // Load past messages and start polling
+  loadConversationHistory(patientId);
+  startConversationPolling(patientId);
+
+  console.log('✅ Conversation activated with patient:', patientId);
 }
 
 // ========== END DOCTOR MODE INTERFACE ==========
@@ -4672,7 +4651,7 @@ function toggleDoctorList() {
     doctorListVisible = true;
   } else {
     container.classList.remove('expanded');
-    btn.textContent = 'ðŸ‘¨â€âš•ï¸ Connect to Doctors';
+    btn.textContent = '👨‍⚕️ Connect to Doctors';
     doctorListVisible = false;
   }
 }
@@ -4726,46 +4705,6 @@ function closeGallery() {
   panel.classList.remove('open');
 }
 
-function showUploadMessage() {
-  // Create custom modal overlay
-  const overlay = document.createElement('div');
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    backdrop-filter: blur(5px);
-  `;
-  
-  overlay.innerHTML = `
-    <div style="background: white; padding: 40px; border-radius: 15px; max-width: 450px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3); animation: modalSlideIn 0.3s ease-out;">
-      <div style="font-size: 3rem; margin-bottom: 15px;">🚧</div>
-      <h2 style="color: #2563eb; margin-bottom: 15px; font-size: 1.5rem;">Feature Under Construction</h2>
-      <p style="color: #666; font-size: 1rem; line-height: 1.6; margin-bottom: 25px;">
-        We're working hard to bring you the image upload feature! This functionality will be available soon. Thank you for your patience.
-      </p>
-      <button onclick="this.parentElement.parentElement.remove()" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s;">
-        Got It!
-      </button>
-    </div>
-  `;
-  
-  document.body.appendChild(overlay);
-  
-  // Close on outside click
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) {
-      overlay.remove();
-    }
-  });
-}
-
 function showImageInfo(title, description) {
   const overlay = document.createElement('div');
   overlay.style.cssText = `
@@ -4781,25 +4720,27 @@ function showImageInfo(title, description) {
     z-index: 10000;
     backdrop-filter: blur(5px);
   `;
-  
+
   overlay.innerHTML = `
-    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-      <h3 style="color: #2563eb; margin-bottom: 15px; font-size: 1.3rem;">${title}</h3>
-      <p style="color: #666; font-size: 1rem; line-height: 1.6; margin-bottom: 20px;">${description}</p>
-      <button onclick="this.parentElement.parentElement.remove()" style="background: #2563eb; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">
+    <div style=" background : white ; padding : 30px ; border-radius : 15px ; max-width : 500px ; box-shadow : 0 10px 40px rgba(0,0,0,0.3) ; " >
+      <h3 style=" color : #2563eb ; margin-bottom : 15px ; font-size : 1.3rem ; " >${title}</h3>
+      <p style=" color : #666 ; font-size : 1rem ; line-height : 1.6 ; margin-bottom : 20px ; ">${description}</p>
+      <button onclick=" this.parentElement.parentElement.remove ()"
+              style="background: #2563eb; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">
         Close
       </button>
     </div>
-  `;
-  
+  `; 
+
   document.body.appendChild(overlay);
-  
+
   overlay.addEventListener('click', function(e) {
     if (e.target === overlay) {
       overlay.remove();
     }
   });
 }
+
 
 // Update toggleMenu to also close gallery
 function toggleMenu() {
