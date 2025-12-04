@@ -4680,19 +4680,20 @@ async function loadPatientList() {
     
     const { collection, getDocs, query, where, orderBy } = window.firestoreFunctions;
     
-    // ✅ FILTER: Only load patients requesting THIS doctor
+    // ✅ FULL QUERY WITH INDEX - NOW IT WORKS!
     const patientsRef = collection(window.firebaseDB, 'patientRequests');
     const q = query(
       patientsRef,
       where('doctorId', '==', doctorData.id),
       where('status', '==', 'pending'),
-      orderBy('timestamp', 'desc')
+      orderBy('timestamp', 'desc')  // ✅ Now this works with the index
     );
     
     const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {
       listContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No patient requests yet.</p>';
+      updatePatientCountBadge(0);
       return;
     }
     
@@ -4700,7 +4701,8 @@ async function loadPatientList() {
     querySnapshot.forEach((docSnap) => {
       const patient = docSnap.data();
       const urgency = patient.urgency || 'green';
-      const timeAgo = getTimeAgo(new Date(patient.timestamp?.toDate()));
+      const timestamp = patient.timestamp?.toDate ? patient.timestamp.toDate() : new Date();
+      const timeAgo = getTimeAgo(timestamp);
       
       let borderColor = '#10b981';
       let urgencyLabel = '🟢 Routine';
@@ -4733,17 +4735,15 @@ async function loadPatientList() {
     });
     
     listContainer.innerHTML = html;
-    
-    // ✅ UPDATE NOTIFICATION BADGE
     updatePatientCountBadge(querySnapshot.size);
-    
     console.log(`✅ Loaded ${querySnapshot.size} patients`);
     
   } catch (error) {
     console.error('❌ Error loading patients:', error);
-    listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">Error loading patients</p>';
+    listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">Error: ' + error.message + '</p>';
   }
 }
+
 
 
 
