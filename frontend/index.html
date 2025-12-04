@@ -10,7 +10,7 @@
   <script type="module">
     // Import Firebase modules
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // Your Firebase configuration
     const firebaseConfig = {
@@ -29,9 +29,8 @@
     // Make Firebase available globally
     window.firebaseDB = db;
     window.firebaseApp = app;
-    window.firestoreFunctions = {
-      collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc
-    };
+   window.firestoreFunctions = { collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc, onSnapshot };
+
 
     console.log("✅ Firebase initialized successfully!");
     console.log("📊 Firestore ready:", db);
