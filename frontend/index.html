@@ -897,15 +897,15 @@
   <!-- Role Selection Modal (First Visit) -->
 <div id="roleModal" class="modal-overlay" style="display: none;">
   <div class="modal-content role-modal">
-    <h2>ðŸ¥ Welcome to NEUROBUDDYY.AI</h2>
+    <h2>👋 Welcome to NEUROBUDDYY.AI</h2>
     <p style="font-size: 1.1rem; color: #666; margin: 20px 0;">Are you a healthcare professional?</p>
     
     <div class="role-buttons">
       <button class="btn-role btn-doctor" onclick="showDoctorRegister()">
-        ðŸ‘¨â€âš•ï¸ Yes, I'm a Doctor
+       🩺 Yes, I'm a Doctor
       </button>
       <button class="btn-role btn-guest" onclick="closeRoleModal()">
-        ðŸ‘¤ Continue as Guest
+       👤 Continue as Guest
       </button>
     </div>
     
@@ -919,7 +919,7 @@
 <div id="doctorRegModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
     <button class="modal-close" onclick="closeDoctorRegister()">✕</button>
-    <h2>ðŸ‘¨â€âš•ï¸ Doctor Registration</h2>
+    <h2>🪪 Doctor Registration</h2>
     <p style="color: #666; margin-bottom: 20px;">Join our network of healthcare professionals</p>
     
     <form id="doctorRegForm" onsubmit="registerDoctor(event)">
@@ -1075,6 +1075,32 @@ function closeDoctorRegister() {
 function closeDoctorDashboard() {
   document.getElementById('doctorDashboard').style.display = 'none';
 }
+
+// Logout doctor
+function logoutDoctor() {
+  if (!confirm('🚪 Logout?\n\nAre you sure you want to logout?')) {
+    return;
+  }
+  
+  // Clear all doctor session data
+  localStorage.removeItem('userMode');
+  localStorage.removeItem('activeDoctorSession');
+  sessionStorage.removeItem('doctorSession');
+  currentDoctor = null;
+  activePatientId = null;
+  
+  // Clear any active intervals
+  if (conversationInterval) {
+    clearInterval(conversationInterval);
+    conversationInterval = null;
+  }
+  
+  console.log('✅ Doctor logged out');
+  
+  // Reload page to reset to patient mode
+  location.reload();
+}
+
 
 // ============================================
 // DOCTOR CONNECTION CONFIRMATION MODAL
@@ -1828,11 +1854,11 @@ async function submitPasswordReset() {
 <div id="doctorDashboard" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-dashboard">
     <button class="modal-close" onclick="closeDoctorDashboard()">✕</button>
-    <h2>ðŸ‘¨â€âš•ï¸ Doctor Dashboard</h2>
+    <h2>👨‍⚕️ Doctor Dashboard</h2>
     
     <div class="doctor-profile">
       <div class="profile-header">
-        <div class="profile-avatar">ðŸ‘¨â€âš•ï¸</div>
+        <div class="profile-avatar">👤</div>
         <div class="profile-info">
           <h3 id="dashboardName">Loading...</h3>
           <p id="dashboardSpecialty">Loading...</p>
@@ -1983,10 +2009,23 @@ async function submitPasswordReset() {
       </div>
 
       <div class="search-bar">
-        <input type="text" id="userInput" placeholder="Type your health question here...">
-        <button class="btn send" onclick="sendMessage()">⬆️</button>
-        <button class="btn"> <span class="mic">🎤 </span> <span class="upload"> 📁 </span></button>
-      </div>
+  <input type="text" id="userInput" placeholder="Type your health question here..." />
+  <button class="btn send" onclick="sendMessage()">➤</button>
+  
+  <!-- These buttons will be hidden/shown based on mode -->
+  <button class="btn" id="patientActionBtn" style="display: flex;">
+    <span class="mic">🎤</span>
+    <span class="upload">📂</span>
+  </button>
+  
+  <button class="btn" id="doctorVideoBtn" onclick="startVideoCall(activePatientId)" style="display: none; background: #10b981;">
+    📹
+  </button>
+  <button class="btn" id="doctorVoiceBtn" onclick="startVoiceCall(activePatientId)" style="display: none; background: #3b82f6;">
+    📞
+  </button>
+</div>
+
     </main>
 
     <aside class="rightbar">
@@ -3861,6 +3900,34 @@ function startVideoCall(patientId) {
 function startVoiceCall(patientId) {
   alert('📞 Voice Call Feature\n\nVoice call functionality will be implemented in the next update.\n\nFor now, please use text chat to communicate with the patient.');
 }
+// Cancel patient consultation
+async function cancelPatient(patientId) {
+  if (!confirm('❌ Cancel this patient consultation?\n\nThe patient will be notified.')) {
+    return;
+  }
+  
+  try {
+    if (!window.firebaseDB) {
+      alert('❌ Firebase not initialized');
+      return;
+    }
+    
+    const { doc, deleteDoc } = window.firestoreFunctions;
+    const patientRef = doc(window.firebaseDB, 'patientRequests', patientId);
+    await deleteDoc(patientRef);
+    
+    console.log('✅ Patient consultation cancelled');
+    alert('✅ Patient consultation cancelled');
+    
+    // Reload patient list
+    loadPatientList();
+    
+  } catch (error) {
+    console.error('❌ Error cancelling patient:', error);
+    alert('❌ Failed to cancel: ' + error.message);
+  }
+}
+
 
 // ========== END PHASE 3 ==========
 
@@ -4424,6 +4491,14 @@ function switchToDoctorMode(doctorData) {
   if (hospitalSection) {
     hospitalSection.style.display = 'none';
   }
+   // Hide patient buttons, show doctor buttons
+  const patientBtn = document.getElementById('patientActionBtn');
+  const videoBtn = document.getElementById('doctorVideoBtn');
+  const voiceBtn = document.getElementById('doctorVoiceBtn');
+  
+  if (patientBtn) patientBtn.style.display = 'none';
+  if (videoBtn) videoBtn.style.display = 'flex';
+  if (voiceBtn) voiceBtn.style.display = 'flex';
   
   console.log('✅ Switched to Doctor Mode');
 }
