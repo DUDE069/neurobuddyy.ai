@@ -1270,41 +1270,51 @@ function getDoctorWarningMessage(status) {
 async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   closeDoctorConnectionModal();
   
-  // Ask for patient name
-  const patientName = prompt('👤 Please enter your name:', '') || 'Anonymous Patient';
+  // ✅ ASK FOR NAME AND AGE
+  const patientName = prompt('Please enter your name:', 'Anonymous Patient');
+  if (!patientName || patientName.trim() === '') {
+    alert('Name is required to connect with doctor');
+    return;
+  }
+  
+  const patientAge = prompt('Please enter your age:', '');
+  if (!patientAge || isNaN(patientAge) || patientAge < 1) {
+    alert('Valid age is required');
+    return;
+  }
   
   try {
     if (!window.firebaseDB) {
-      alert('❌ Firebase not initialized. Please refresh the page.');
+      alert('Firebase not initialized. Please refresh the page.');
       return;
     }
     
     const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
     
-    // Create consultation request
+    // ✅ SAVE NAME AND AGE PROPERLY
     const requestData = {
-      patientName: patientName,
+      patientName: patientName.trim(),
+      age: parseInt(patientAge),  // ✅ Save age as number
       doctorId: doctorId,
       doctorName: doctorName,
       doctorSpecialty: doctorSpecialty,
       urgency: 'normal',
       status: 'pending',
       timestamp: serverTimestamp(),
-      message: `Patient ${patientName} wants to consult with you.`
+      message: `Patient ${patientName} (Age: ${patientAge}) wants to consult with you.`
     };
     
     await addDoc(collection(window.firebaseDB, 'patientRequests'), requestData);
     
-    // Show success message
-    showSuccessModal(doctorName);
-    
+    alert(`Request Sent!\n\nYour consultation request has been sent to Dr. ${doctorName}.\n\nPlease keep this page open to receive updates.`);
     console.log('✅ Consultation request sent:', requestData);
     
   } catch (error) {
-    console.error('Error sending request:', error);
-    alert('❌ Failed to send request. Please try again.');
+    console.error('❌ Error sending request:', error);
+    alert('Failed to send request. Please try again.');
   }
 }
+
 
 function showSuccessModal(doctorName) {
   alert(`✅ Request Sent Successfully!\n\n👨‍⚕️ Doctor: ${doctorName}\n\nYour consultation request has been sent. The doctor will be notified and will respond soon.\n\nPlease keep this page open to receive updates.`);
@@ -4288,32 +4298,44 @@ function patientStartVoiceCall() {
 
 
 
-   // ========== PAGE LOAD ==========
-
-  window.addEventListener('DOMContentLoaded', function() {
+  // ========== PAGE LOAD ==========
+window.addEventListener('DOMContentLoaded', async function() {
+  console.log('🚀 Page loaded');
   loadChatHistory();
   
   // Check if doctor is logged in
   const userMode = localStorage.getItem('userMode');
+  
   if (userMode === 'doctor') {
+    // ✅ DOCTOR MODE
     const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession') || '{}');
     if (doctorData.id) {
       currentDoctor = doctorData;
-      switchToDoctorMode(doctorData);
+      console.log('✅ Doctor session restored:', doctorData.name);
+      await initializeDoctorMode(); // ✅ NEW FUNCTION
     }
   } else {
-    // ✅ ADD THIS: Check for active patient request
+    // ✅ PATIENT/GUEST MODE
+    console.log('✅ Guest mode active');
+    initializePatientMode(); // ✅ NEW FUNCTION
     checkActivePatientRequest();
   }
-    const savedLocation = localStorage.getItem('userLocation');
-    const savedHospital = localStorage.getItem('nearestHospital');
-    
-    if (savedLocation && savedHospital) {
-      const location = JSON.parse(savedLocation);
-      const hospital = JSON.parse(savedHospital);
-      displaySavedLocation(location, hospital);
-    }
-  });  // âœ… FIXED - was ")" before
+  
+  // Load saved location
+  const savedLocation = localStorage.getItem('userLocation');
+  const savedHospital = localStorage.getItem('nearestHospital');
+  
+  if (savedLocation && savedHospital) {
+    const location = JSON.parse(savedLocation);
+    const hospital = JSON.parse(savedHospital);
+    displaySavedLocation(location, hospital);
+  }
+  
+  // Check doctor session and show role modal
+  checkDoctorSession();
+  showRoleModalOnFirstVisit();
+});
+
 </script>
 
 
@@ -4761,12 +4783,19 @@ async function loadPatientList() {
 
 
 
-// Auto-refresh doctor list every 10 seconds
- setInterval(function() {
-  if (doctorListVisible) {
-    loadRealDoctors(); // âœ… Call the REAL function
+// Auto-refresh based on user mode
+setInterval(() => {
+  const userMode = localStorage.getItem('userMode');
+  
+  if (userMode === 'doctor') {
+    // Doctor mode - refresh patient list
+    loadPatientList();
+  } else {
+    // Patient/Guest mode - refresh doctor list
+    loadRealDoctors();
   }
 }, 10000);
+
 
 
 
@@ -4878,33 +4907,7 @@ function toggleDoctorList() {
   }
 }
 
-// Initialize on page load
-window.addEventListener('DOMContentLoaded', function() {
-  loadChatHistory();
-  
-  // ✅ NEW: Check if doctor is logged in
-  const userMode = localStorage.getItem('userMode');
-  if (userMode === 'doctor') {
-    const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession') || '{}');
-    if (doctorData.id) {
-      currentDoctor = doctorData;
-      switchToDoctorMode(doctorData);
-    }
-  }
-  
-  const savedLocation = localStorage.getItem('userLocation');
-  const savedHospital = localStorage.getItem('nearestHospital');
-  
-  if (savedLocation && savedHospital) {
-    const location = JSON.parse(savedLocation);
-    const hospital = JSON.parse(savedHospital);
-    displaySavedLocation(location, hospital);
-  }
-  
-  // ✅ Check doctor session and show role modal
-  checkDoctorSession();
-  showRoleModalOnFirstVisit();
-});
+
 
 // ========== BRAIN HEALTH GALLERY FEATURE ==========
 
