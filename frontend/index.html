@@ -1326,40 +1326,52 @@ function showSuccessModal(doctorName) {
 function displayDoctors(doctors) {
   const doctorList = document.getElementById('doctorList');
   
+  // ✅ SAFETY CHECK
+  if (!doctorList) {
+    console.error('❌ doctorList element not found');
+    return;
+  }
+  
   if (doctors.length === 0) {
     doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No doctors available</p>';
     return;
   }
   
+  // ✅ CLEAR FIRST
   doctorList.innerHTML = '';
   
-  doctors.forEach(doctor => {
-    const card = document.createElement('div');
-    card.className = 'doctor-card';
-    
-    const statusClass = doctor.status === 'available' ? 'status-available' :
+  // ✅ CREATE CARDS WITH PROPER EVENT LISTENERS
+  doctors.forEach((doctor) => {
+    const statusClass = doctor.status === 'available' ? 'status-available' : 
                        doctor.status === 'engaged' ? 'status-engaged' : 'status-offline';
     
-    const statusText = doctor.status === 'available' ? '🟢 Available' :
+    const statusText = doctor.status === 'available' ? '🟢 Available' : 
                       doctor.status === 'engaged' ? '🔴 Engaged' : '⚫ Offline';
     
+    // Create card element
+    const card = document.createElement('div');
+    card.className = 'doctor-card';
     card.innerHTML = `
       <div class="doctor-info">
-        <div class="doctor-name">${doctor.name}</div>
-        <div class="doctor-specialty">${doctor.specialty}</div>
+        <div class="doctor-name">${doctor.name || 'Unknown Doctor'}</div>
+        <div class="doctor-specialty">${doctor.specialty || 'General'}</div>
         <div style="font-size: 0.75rem; color: #666; margin-top: 4px;">${statusText}</div>
       </div>
       <div class="${statusClass} status-indicator"></div>
     `;
     
-    // ✅ CLICK EVENT - SHOW MODAL
-    card.onclick = () => {
+    // ✅ ADD CLICK EVENT PROPERLY
+    card.addEventListener('click', () => {
       showDoctorConnectionModal(doctor);
-    };
+    });
     
+    // Append to list
     doctorList.appendChild(card);
   });
+  
+  console.log(`✅ Displayed ${doctors.length} doctors`);
 }
+
 
 
 
