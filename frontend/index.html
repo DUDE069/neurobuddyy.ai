@@ -3593,7 +3593,6 @@ function toggleDoctorList() {
 }
 
 
-
 // ========== PATIENT REQUEST SYSTEM ==========
 
 function requestDoctorConsultation(doctorId, doctorData) {
@@ -3606,6 +3605,7 @@ function requestDoctorConsultation(doctorId, doctorData) {
   // Show urgency selection modal
   showUrgencySelectionModal(doctorId, doctorData);
 }
+
 
 function showUrgencySelectionModal(doctorId, doctorData) {
   const overlay = document.createElement('div');
@@ -3635,31 +3635,33 @@ function showUrgencySelectionModal(doctorId, doctorData) {
       </div>
       
       <div style="padding: 30px;">
-        <p style="color: #374151; margin-bottom: 20px; font-size: 0.95rem; text-align: center;">Select urgency level for your consultation:</p>
+        <p style="color: #374151; margin-bottom: 20px; font-size: 0.95rem; text-align: center; font-weight: 600;">Please fill your details first:</p>
         
         <div id="patientInfoForm" style="margin-bottom: 20px;">
           <div style="margin-bottom: 15px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.9rem;">Your Name:</label>
-            <input type="text" id="patientNameInput" placeholder="Enter your name" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;" required>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.9rem;">Your Name: <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="patientNameInput" placeholder="Enter your full name" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;" required>
           </div>
           
           <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.9rem;">Your Age:</label>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.9rem;">Your Age: <span style="color: #ef4444;">*</span></label>
             <input type="number" id="patientAgeInput" placeholder="Enter your age" min="1" max="120" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;" required>
           </div>
         </div>
         
+        <p style="color: #6b7280; margin-bottom: 15px; font-size: 0.9rem; text-align: center;">Now select urgency level:</p>
+        
         <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
           
-          <button onclick="submitPatientRequest('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'red')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(239,68,68,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+          <button onclick="validateAndSubmit('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'red')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(239,68,68,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
             🚨 Emergency - Urgent Response Needed
           </button>
           
-          <button onclick="submitPatientRequest('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'blue')" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(59,130,246,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+          <button onclick="validateAndSubmit('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'blue')" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(59,130,246,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
             📋 Priority - First Available Slot
           </button>
           
-          <button onclick="submitPatientRequest('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'green')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(16,185,129,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+          <button onclick="validateAndSubmit('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'green')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(16,185,129,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
             ✅ Normal - When Doctor is Free
           </button>
           
@@ -3683,21 +3685,50 @@ function showUrgencySelectionModal(doctorId, doctorData) {
   });
 }
 
+
+// ✅ VALIDATION FUNCTION (SEPARATE - NOT INSIDE submitPatientRequest)
+function validateAndSubmit(doctorId, doctorData, urgency) {
+  // Get inputs
+  const nameInput = document.getElementById('patientNameInput');
+  const ageInput = document.getElementById('patientAgeInput');
+  
+  const patientName = nameInput.value.trim();
+  const patientAge = ageInput.value.trim();
+  
+  // ✅ VALIDATE NAME
+  if (!patientName) {
+    alert('⚠️ Please enter your name');
+    nameInput.focus();
+    nameInput.style.border = '2px solid #ef4444';
+    return;
+  }
+  
+  // ✅ VALIDATE AGE
+  if (!patientAge) {
+    alert('⚠️ Please enter your age');
+    ageInput.focus();
+    ageInput.style.border = '2px solid #ef4444';
+    return;
+  }
+  
+  const age = parseInt(patientAge);
+  if (age < 1 || age > 120) {
+    alert('⚠️ Please enter a valid age (1-120)');
+    ageInput.focus();
+    ageInput.style.border = '2px solid #ef4444';
+    return;
+  }
+  
+  // ✅ ALL VALID - NOW SUBMIT
+  submitPatientRequest(doctorId, doctorData, urgency);
+}
+
+
+// ✅ SUBMIT FUNCTION (RUNS AFTER VALIDATION PASSES)
 async function submitPatientRequest(doctorId, doctorData, urgency) {
   // Get patient info from modal inputs
   const patientName = document.getElementById('patientNameInput').value.trim();
   const patientAge = document.getElementById('patientAgeInput').value.trim();
-  
-  // Validate
-  if (!patientName) {
-    alert('⚠️ Please enter your name');
-    return;
-  }
-  
-  if (!patientAge || patientAge < 1 || patientAge > 120) {
-    alert('⚠️ Please enter a valid age (1-120)');
-    return;
-  }
   
   // Remove modal
   document.getElementById('urgencyModalOverlay').remove();
@@ -3715,35 +3746,34 @@ async function submitPatientRequest(doctorId, doctorData, urgency) {
     // ✅ CREATE PATIENT REQUEST WITH ALL DATA
     const patientRequest = {
       doctorId: doctorId,
-      doctorName: doctorData.name,
-      doctorSpecialty: doctorData.specialty,
-      name: patientName,           // ✅ SAVED
-      age: parseInt(patientAge),   // ✅ SAVED
+      doctorName: doctorData.name || 'Unknown',
+      doctorSpecialty: doctorData.specialty || 'General',
+      name: patientName,
+      age: patientAge,
       urgency: urgency,
+      status: 'pending',
       timestamp: serverTimestamp(),
-      status: 'pending'
+      message: `${patientName} (Age: ${patientAge}) wants to consult.`
     };
     
+    // Save to Firebase
     const docRef = await addDoc(collection(window.firebaseDB, 'patientRequests'), patientRequest);
     
-    // Store patient request ID in localStorage
-    localStorage.setItem('activePatientRequest', JSON.stringify({
-      id: docRef.id,
-      doctorName: doctorData.name,
-      urgency: urgency,
-      name: patientName,     // ✅ STORED LOCALLY
-      age: patientAge        // ✅ STORED LOCALLY
-    }));
+    console.log('✅ Patient request created with ID:', docRef.id);
     
-    console.log('✅ Patient request submitted:', docRef.id);
+    // Close loading and show success
+    closeEmergencyModal();
+    showEmergencyModal('success', 'Request Sent!', `Your consultation request has been sent to Dr. ${doctorData.name}. Please wait for the doctor to respond.`);
     
-    // Show success
-    let urgencyText = urgency === 'red' ? 'Emergency' : urgency === 'blue' ? 'Priority' : 'Normal';
-    showEmergencyModal('success', 'Request Sent!', `Your ${urgencyText} consultation request has been sent to <strong>Dr. ${doctorData.name}</strong>. The doctor will respond soon. Please stay on this page.`);
+    // Auto-close success modal after 3 seconds
+    setTimeout(() => {
+      closeEmergencyModal();
+    }, 3000);
     
   } catch (error) {
     console.error('❌ Error submitting request:', error);
-    showEmergencyModal('error', 'Request Failed', 'Unable to send consultation request. Please try again or contact support.');
+    closeEmergencyModal();
+    showEmergencyModal('error', 'Request Failed', 'Failed to send request. Please try again.');
   }
 }
 
