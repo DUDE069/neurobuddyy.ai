@@ -1372,6 +1372,51 @@ function displayDoctors(doctors) {
   console.log(`✅ Displayed ${doctors.length} doctors`);
 }
 
+// Display patients in doctor mode
+function displayPatients(patients) {
+  const patientList = document.getElementById('doctorList');
+  
+  // ✅ SAFETY CHECK
+  if (!patientList) {
+    console.error('❌ Patient list container not found');
+    return;
+  }
+  
+  if (!patients || patients.length === 0) {
+    patientList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No patients waiting</p>';
+    return;
+  }
+  
+  // Clear container
+  patientList.innerHTML = '';
+  
+  // Display each patient
+  patients.forEach(patient => {
+    const card = document.createElement('div');
+    card.className = 'doctor-card'; // Reusing same styling
+    
+    card.innerHTML = `
+      <div class="doctor-info">
+        <div class="doctor-name">${patient.patientName || 'Anonymous'}</div>
+        <div class="doctor-specialty">Age: ${patient.age || 'N/A'} • ${patient.urgency || 'Normal'}</div>
+        <div style="font-size: 0.75rem; color: #666; margin-top: 4px">
+          ${patient.message || 'No message'}
+        </div>
+      </div>
+      <div class="status-indicator status-available"></div>
+    `;
+    
+    // ✅ Add click event with proper event listener
+    card.addEventListener('click', () => {
+      startDoctorChat(patient);
+    });
+    
+    patientList.appendChild(card);
+  });
+  
+  console.log(`✅ Displayed ${patients.length} patients`);
+}
+
 
 
 
@@ -4897,47 +4942,55 @@ function toggleDoctorList() {
 
 
 
+// Load patients for doctor view
 async function loadPatientList() {
-  const listContainer = document.getElementById('doctorList');
+  console.log('📋 Loading patient list...');
   
-  // ✅ SAFETY CHECK
-  if (!listContainer) {
+  // ✅ FIX: Look for the correct container element
+  const patientContainer = document.getElementById('doctorListContainer');
+  const patientList = document.getElementById('doctorList'); // This is reused for patients in doctor mode
+  
+  // ✅ CRITICAL SAFETY CHECK
+  if (!patientContainer && !patientList) {
     console.error('❌ doctorList element not found in loadPatientList');
     return;
   }
   
-  listContainer.innerHTML = '<p class="loading-doctors">Loading patients...</p>';
+  // Use whichever element exists
+  const container = patientList || patientContainer;
+  
+  if (!container) {
+    console.error('❌ No container found for patient list');
+    return;
+  }
+  
+  container.innerHTML = '<p class="loading-doctors">Loading patients...</p>';
   
   try {
     if (!window.firebaseDB) {
-      listContainer.innerHTML = '<p class="loading-doctors">⚠️ Firebase not initialized</p>';
+      container.innerHTML = '<p class="loading-doctors">⚠️ Firebase not initialized</p>';
       return;
     }
     
-    // Get current doctor session
-    const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession') || '{}');
-    
-    if (!doctorData || !doctorData.id) {
-      listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">⚠️ Doctor not logged in</p>';
+    if (!currentDoctor || !currentDoctor.id) {
+      container.innerHTML = '<p style="text-align: center; color: #dc2626;">Doctor session not found</p>';
       return;
     }
     
     const { collection, getDocs, query, where, orderBy } = window.firestoreFunctions;
-    const requestsRef = collection(window.firebaseDB, 'patientRequests');
     
-    // Query for PENDING requests only for this doctor
+    // Query for patients assigned to this doctor
+    const requestsRef = collection(window.firebaseDB, 'patientRequests');
     const q = query(
       requestsRef,
-      where('doctorId', '==', doctorData.id),
-      where('status', '==', 'pending'),
-      orderBy('timestamp', 'desc')
+      where('doctorId', '==', currentDoctor.id),
+      where('status', '==', 'pending')
     );
     
     const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {
-      listContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No patients waiting</p>';
-      updatePatientCountBadge(0);
+      container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No patients waiting</p>';
       return;
     }
     
@@ -4946,15 +4999,17 @@ async function loadPatientList() {
       patients.push({ id: doc.id, ...doc.data() });
     });
     
-    console.log(`✅ Loaded ${patients.length} pending patients`);
-    updatePatientCountBadge(patients.length);
+    console.log(`✅ Loaded ${patients.length} patients`);
     displayPatients(patients);
     
   } catch (error) {
     console.error('❌ Error loading patients:', error);
-    listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">Error loading patients</p>';
+    if (container) {
+      container.innerHTML = '<p style="text-align: center; color: #dc2626;">Error loading patients</p>';
+    }
   }
 }
+
 
 
 function selectPatient(patientId, patientData) {
