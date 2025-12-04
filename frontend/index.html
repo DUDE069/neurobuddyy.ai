@@ -3534,8 +3534,6 @@ async function resetPassword(email, resetCode, newPassword) {
   
   // ========== DOCTOR CONNECT (FIXED) ==========
 
-let doctorListVisible = false;
-
 // Load real doctors from Firebase
 async function loadRealDoctors() {
   const doctorList = document.getElementById('doctorList');
@@ -3785,6 +3783,8 @@ async function submitPatientRequest(doctorId, doctorData, urgency) {
 
 let activePatientId = null;
 let conversationInterval = null;
+let doctorListVisible = false; // Track if patient list is open
+
 
 function selectPatient(patientId, patientData) {
   activePatientId = patientId;
@@ -4000,6 +4000,17 @@ function updatePatientCountBadge(count) {
   const badge = document.getElementById('patientCountBadge');
   const btnText = document.getElementById('patientBtnText');
   
+  // ✅ CHECK IF ELEMENTS EXIST
+  if (!badge || !btnText) {
+    console.warn('⚠️ Badge elements not found');
+    return;
+  }
+  
+  // ✅ ONLY UPDATE IF LIST IS CLOSED
+  if (doctorListVisible) {
+    return;
+  }
+  
   if (count > 0) {
     badge.textContent = count;
     badge.style.display = 'flex';
@@ -4009,6 +4020,7 @@ function updatePatientCountBadge(count) {
     btnText.textContent = '📋 Patient List';
   }
 }
+
 
 
 
@@ -4627,18 +4639,20 @@ function initializeDoctorChatArea() {
 function togglePatientList() {
   const container = document.getElementById('doctorListContainer');
   const btn = document.getElementById('connectDoctorBtn');
+  const btnText = document.getElementById('patientBtnText');
   
   if (!doctorListVisible) {
     container.classList.add('expanded');
-    btn.textContent = '🚫 Close Patient List';
-    loadPatientList(); // New function
+    if (btnText) btnText.textContent = '🚫 Close Patient List';
+    loadPatientList();
     doctorListVisible = true;
   } else {
     container.classList.remove('expanded');
-    btn.textContent = '👥 Patient List';
+    if (btnText) btnText.textContent = '📋 Patient List';
     doctorListVisible = false;
   }
 }
+
 // Close patient list (for doctors only)
 function closePatientList() {
   const container = document.getElementById('doctorListContainer');
