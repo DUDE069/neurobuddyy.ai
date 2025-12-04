@@ -1998,9 +1998,112 @@ async function sendConsultationRequest(doctor) {
   }
 }
 
+// ========== STEP 1: DEFINE displayDoctors() FIRST ==========
+
+// Display Doctors (Patient Mode)
+function displayDoctors(doctors) {
+  console.log('🖼️ Displaying doctors:', doctors);
+  
+  const doctorList = document.getElementById('doctorList');
+  
+  if (!doctorList) {
+    console.error('❌ doctorList element not found');
+    return;
+  }
+  
+  if (!doctors || doctors.length === 0) {
+    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">📭 No doctors available</p>';
+    return;
+  }
+  
+  // Clear existing content
+  doctorList.innerHTML = '';
+  
+  // Create doctor cards
+  doctors.forEach(doctor => {
+    const statusClass = doctor.status === 'available' ? 'status-available' :
+                       doctor.status === 'engaged' ? 'status-engaged' : 'status-offline';
+    const statusText = doctor.status === 'available' ? '✅ Available' :
+                      doctor.status === 'engaged' ? '🟡 Busy' : '⚫ Offline';
+    
+    const card = document.createElement('div');
+    card.className = 'doctor-card';
+    card.innerHTML = `
+      <div class="doctor-info">
+        <div class="doctor-name">🩺 ${doctor.name || 'Dr. Unknown'}</div>
+        <div class="doctor-specialty">${doctor.specialty || 'General Medicine'}</div>
+        <div style="font-size: 0.75rem; color: #666; margin-top: 4px">${statusText}</div>
+      </div>
+      <div class="${statusClass} status-indicator"></div>
+    `;
+    
+    // Add click handler
+    card.addEventListener('click', () => {
+      console.log('🔵 Doctor selected:', doctor);
+      showDoctorConnectionModal(doctor);
+    });
+    
+    doctorList.appendChild(card);
+  });
+  
+  console.log(`✅ Displayed ${doctors.length} doctor card(s)`);
+}
+
 // ============================================
 // 6. LOAD REAL DOCTORS FUNCTION
 // ============================================
+// ========== LOAD REAL DOCTORS (PATIENT MODE) ==========
+
+// Display Doctors (Patient Mode) - MUST BE FIRST
+function displayDoctors(doctors) {
+  console.log('🖼️ Displaying doctors:', doctors);
+  
+  const doctorList = document.getElementById('doctorList');
+  
+  if (!doctorList) {
+    console.error('❌ doctorList element not found');
+    return;
+  }
+  
+  if (!doctors || doctors.length === 0) {
+    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">📭 No doctors available</p>';
+    return;
+  }
+  
+  // Clear existing content
+  doctorList.innerHTML = '';
+  
+  // Create doctor cards
+  doctors.forEach(doctor => {
+    const statusClass = doctor.status === 'available' ? 'status-available' :
+                       doctor.status === 'engaged' ? 'status-engaged' : 'status-offline';
+    const statusText = doctor.status === 'available' ? '✅ Available' :
+                      doctor.status === 'engaged' ? '🟡 Busy' : '⚫ Offline';
+    
+    const card = document.createElement('div');
+    card.className = 'doctor-card';
+    card.innerHTML = `
+      <div class="doctor-info">
+        <div class="doctor-name">🩺 ${doctor.name || 'Dr. Unknown'}</div>
+        <div class="doctor-specialty">${doctor.specialty || 'General Medicine'}</div>
+        <div style="font-size: 0.75rem; color: #666; margin-top: 4px">${statusText}</div>
+      </div>
+      <div class="${statusClass} status-indicator"></div>
+    `;
+    
+    // Add click handler
+    card.addEventListener('click', () => {
+      console.log('🔵 Doctor selected:', doctor);
+      showDoctorConnectionModal(doctor);
+    });
+    
+    doctorList.appendChild(card);
+  });
+  
+  console.log(`✅ Displayed ${doctors.length} doctor card(s)`);
+}
+
+
 // Load Real Doctors (Patient Mode)
 async function loadRealDoctors() {
   console.log('🏥 Loading real doctors from Firebase...');
@@ -2040,12 +2143,15 @@ async function loadRealDoctors() {
       return;
     }
     
+    // ✅ CORRECT WAY to build array
     const doctors = [];
     querySnapshot.forEach((doc) => {
       doctors.push({ id: doc.id, ...doc.data() });
     });
     
     console.log(`✅ Loaded ${doctors.length} doctor(s) from Firebase`);
+    
+    // ✅ Call displayDoctors
     displayDoctors(doctors);
     
   } catch (error) {
@@ -2057,7 +2163,6 @@ async function loadRealDoctors() {
     window.isLoadingDoctors = false;
   }
 }
-
 
 
 // Password Reset Functions
