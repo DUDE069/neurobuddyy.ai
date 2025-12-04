@@ -3877,7 +3877,7 @@ let conversationInterval = null;
 
 // Initialize Doctor Mode
 async function initializeDoctorMode() {
-  console.log('🔵 DOCTOR MODE INITIALIZED');
+  console.log('🩺 DOCTOR MODE INITIALIZED');
   
   // ✅ HIDE EMERGENCY BUTTON
   const emergencyBtn = document.querySelector('.emergency');
@@ -3895,12 +3895,13 @@ async function initializeDoctorMode() {
   const doctorListContainer = document.getElementById('doctorListContainer');
   if (doctorListContainer) {
     doctorListContainer.classList.remove('expanded');
-    doctorListContainer.innerHTML = '';
+    doctorListContainer.innerHTML = '<div id="doctorList"></div>'; // ✅ Create doctorList element
   }
   
   // ✅ UPDATE BUTTON TO "PATIENT LIST"
   const btn = document.getElementById('connectDoctorBtn');
   const btnText = document.getElementById('patientBtnText');
+  const badge = document.getElementById('patientCountBadge');
   
   if (btnText) {
     btnText.textContent = '📋 Patient List';
@@ -3912,34 +3913,43 @@ async function initializeDoctorMode() {
     btn.onclick = togglePatientList;
   }
   
-  // ✅ HIDE DOCTOR LIST PANEL
-  const doctorList = document.getElementById('doctorList');
-  if (doctorList) {
-    doctorList.innerHTML = '';
-  }
-  
   // ✅ SHOW DOCTOR CHAT GREETING
   initializeDoctorChatArea();
   
-  // ✅ LOAD PATIENT REQUESTS
-  await loadPatientList();
-  
-  // ✅ AUTO-REFRESH PATIENT LIST EVERY 5 SECONDS (faster notification)
+  // ✅ CLEAR ANY EXISTING INTERVALS
   if (window.doctorRefreshInterval) {
     clearInterval(window.doctorRefreshInterval);
+    window.doctorRefreshInterval = null;
   }
+  
+  // ✅ AUTO-REFRESH WITH SAFETY CHECKS
   window.doctorRefreshInterval = setInterval(() => {
-    if (localStorage.getItem('userMode') === 'doctor') {
-      loadPatientList();
+    // Only refresh if:
+    // 1. Still in doctor mode
+    // 2. Patient list is visible
+    // 3. Not currently loading
+    if (localStorage.getItem('userMode') === 'doctor' && 
+        patientListVisible && 
+        !window.isLoadingPatients) {
+      
+      // Check if container exists before loading
+      const doctorList = document.getElementById('doctorList');
+      if (doctorList) {
+        console.log('🔄 Auto-refreshing patient list...');
+        loadPatientList();
+      } else {
+        console.warn('⚠️ doctorList not found, skipping auto-refresh');
+      }
     }
   }, 5000); // 5 seconds for faster updates
   
   console.log('✅ Doctor mode fully activated');
 }
 
+
 // Initialize Patient/Guest Mode
 function initializePatientMode() {
-  console.log('🟢 PATIENT MODE INITIALIZED');
+  console.log('👤 PATIENT MODE INITIALIZED');
   
   // ✅ SHOW EMERGENCY BUTTON
   const emergencyBtn = document.querySelector('.emergency');
@@ -3953,11 +3963,11 @@ function initializePatientMode() {
     hospitalSection.style.display = 'block';
   }
   
-  // ✅ CLEAR PATIENT LIST CONTAINER
+  // ✅ CLEAR PATIENT LIST CONTAINER AND CREATE doctorList element
   const patientListContainer = document.getElementById('doctorListContainer');
   if (patientListContainer) {
     patientListContainer.classList.remove('expanded');
-    patientListContainer.innerHTML = '';
+    patientListContainer.innerHTML = '<div id="doctorList"></div>'; // ✅ Create doctorList element
   }
   
   // ✅ UPDATE BUTTON TO "CONNECT TO DOCTOR"
@@ -3965,13 +3975,13 @@ function initializePatientMode() {
   const btnText = document.getElementById('patientBtnText');
   
   if (btnText) {
-    btnText.textContent = '👨‍⚕️ Connect to Doctor';
+    btnText.textContent = '🩺 Connect to Doctor';
   } else if (btn) {
-    btn.textContent = '👨‍⚕️ Connect to Doctor';
+    btn.textContent = '🩺 Connect to Doctor';
   }
   
   if (btn) {
-    btn.onclick = toggleDoctorList;
+    btn.onclick = togglePatientList; // ✅ Use togglePatientList (same function for both modes)
   }
   
   // ✅ RESET CHAT WINDOW TO DEFAULT
@@ -3986,18 +3996,14 @@ function initializePatientMode() {
     searchBar.style.display = 'flex';
   }
   
-  // ✅ LOAD DOCTOR LIST
-  loadRealDoctors();
-  
-  // ✅ AUTO-REFRESH DOCTOR LIST EVERY 10 SECONDS
+  // ✅ CLEAR ANY EXISTING INTERVALS
   if (window.patientRefreshInterval) {
     clearInterval(window.patientRefreshInterval);
+    window.patientRefreshInterval = null;
   }
-  window.patientRefreshInterval = setInterval(() => {
-    if (localStorage.getItem('userMode') !== 'doctor') {
-      loadRealDoctors();
-    }
-  }, 10000);
+  
+  // ✅ DON'T AUTO-LOAD - Load only when button is clicked
+  // Doctors will be loaded when user clicks "Connect to Doctor"
   
   console.log('✅ Patient mode fully activated');
 }
@@ -4946,25 +4952,76 @@ function togglePatientList() {
 }
 
 
-// Close patient list (for doctors only)
-function closePatientList() {
-  const container = document.getElementById('doctorListContainer');
-  const btn = document.getElementById('connectDoctorBtn');
+// Load Patient List (Doctor Mode)
+async function loadPatientList() {
+  console.log('📋 Loading patient list...');
   
-  // Always close, never toggle in doctor mode
-  container.classList.remove('expanded');
-  btn.textContent = '🔵 Patient List';
-  doctorListVisible = false;
+  // ✅ PREVENT MULTIPLE SIMULTANEOUS LOADS
+  if (window.isLoadingPatients) {
+    console.log('⏳ Already loading patients, skipping...');
+    return;
+  }
   
-  console.log('✅ Patient list closed');
+  window.isLoadingPatients = true;
+  
+  // ✅ FIND THE CONTAINER
+  const doctorList = document.getElementById('doctorList');
+  
+  if (!doctorList) {
+    console.error('❌ doctorList element not found in loadPatientList');
+    window.isLoadingPatients = false;
+    return; // ✅ EXIT EARLY - DON'T CONTINUE
+  }
+  
+  doctorList.innerHTML = '<p class="loading-doctors">⏳ Loading patients...</p>';
+  
+  try {
+    if (!window.firebaseDB) {
+      doctorList.innerHTML = '<p class="loading-doctors">⚠️ Firebase not initialized</p>';
+      window.isLoadingPatients = false;
+      return;
+    }
+    
+    if (!currentDoctor || !currentDoctor.id) {
+      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">⚠️ Doctor session not found</p>';
+      window.isLoadingPatients = false;
+      return;
+    }
+    
+    const { collection, getDocs, query, where } = window.firestoreFunctions;
+    const requestsRef = collection(window.firebaseDB, 'patientRequests');
+    const q = query(
+      requestsRef,
+      where('doctorId', '==', currentDoctor.id),
+      where('status', '==', 'pending')
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">📭 No patients waiting</p>';
+      window.isLoadingPatients = false;
+      return;
+    }
+    
+    const patients = [];
+    querySnapshot.forEach((doc) => {
+      patients.push({ id: doc.id, ...doc.data() });
+    });
+    
+    console.log(`✅ Loaded ${patients.length} patient(s)`);
+    displayPatients(patients);
+    
+  } catch (error) {
+    console.error('❌ Error loading patients:', error);
+    if (doctorList) {
+      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❌ Error loading patients</p>';
+    }
+  } finally {
+    window.isLoadingPatients = false;
+  }
 }
 
-// Auto-refresh patient list every 5 seconds for doctors
-setInterval(function() {
-  if (localStorage.getItem('userMode') === 'doctor' && doctorListVisible) {
-    loadPatientList(); // Refresh silently
-  }
-}, 5000);
 
 // Toggle Doctor List (for patients)
 function toggleDoctorList() {
