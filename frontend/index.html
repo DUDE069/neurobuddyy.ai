@@ -4752,42 +4752,64 @@ function switchToDoctorMode(doctorData) {
   console.log('✅ Switched to Doctor Mode');
 }
 
-function initializeDoctorChatArea() {
+// Initialize Doctor Chat Area with Welcome Message
+async function initializeDoctorChatArea() {
   const chatWindow = document.getElementById('chatWindow');
+  if (!chatWindow) return;
+  
   const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession') || '{}');
+  const doctorName = doctorData.name || 'Doctor';
+  
+  // ✅ GET PATIENT COUNT
+  let patientCount = 0;
+  try {
+    if (window.firebaseDB && doctorData && doctorData.id) {
+      const { collection, getDocs, query, where } = window.firestoreFunctions;
+      const requestsRef = collection(window.firebaseDB, 'patientRequests');
+      const q = query(
+        requestsRef,
+        where('doctorId', '==', doctorData.id),
+        where('status', '==', 'pending')
+      );
+      const querySnapshot = await getDocs(q);
+      patientCount = querySnapshot.size;
+    }
+  } catch (error) {
+    console.error('Error getting patient count:', error);
+  }
+  
+  // ✅ SHOW PATIENT COUNT IN WELCOME MESSAGE
+  const patientMessage = patientCount === 0 
+    ? 'No patients waiting at the moment.' 
+    : patientCount === 1 
+      ? '📋 <strong>1 patient</strong> is waiting for consultation.' 
+      : `📋 <strong>${patientCount} patients</strong> are waiting for consultation.`;
   
   chatWindow.innerHTML = `
-    <div style="text-align: center; padding: 40px 20px;">
-      <div style="font-size: 3rem; margin-bottom: 20px;">👨‍⚕️</div>
-      <h2 style="color: #2563eb; margin-bottom: 10px;">Dr. ${doctorData.name || 'Doctor'}</h2>
-      <p style="color: #6b7280; font-size: 1rem; margin-bottom: 30px;">${doctorData.specialty || 'Specialist'}</p>
-      
-      <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-        <p style="color: #1e40af; font-size: 1.1rem; margin: 0;">
-          🎉 Hello Doctor, ready to help people!
-        </p>
-      </div>
-      
-      <div style="background: #f9fafb; padding: 20px; border-radius: 12px; border: 2px solid #e5e7eb;">
-        <p style="color: #374151; margin: 0; font-size: 0.95rem;">
-          📱 <strong>Phone notifications available</strong><br>
-          Select a patient from the Patient List to start consultation
-        </p>
-      </div>
+    <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+                padding: 25px;
+                border-radius: 15px;
+                text-align: center;
+                margin: 20px;
+                border: 2px solid #2563eb;">
+      <div style="font-size: 3rem; margin-bottom: 15px;">👨‍⚕️</div>
+      <h2 style="color: #1e40af; margin: 0 0 10px 0;">Welcome, Dr. ${doctorName}!</h2>
+      <p style="color: #1e40af; font-size: 1.1rem; margin: 10px 0;">
+        ${patientMessage}
+      </p>
+      <p style="color: #3b82f6; font-size: 0.95rem; margin-top: 15px;">
+        👈 Click "Patient List" button to view waiting patients
+      </p>
     </div>
   `;
   
-  // Hide user input temporarily
+  // Hide search bar in doctor mode when no patient selected
   const searchBar = document.querySelector('.search-bar');
   if (searchBar) {
     searchBar.style.display = 'none';
   }
   
-  // Hide top typing box and suggestions
-  const topTypingBox = document.getElementById('topTypingBox');
-  const suggestionsBox = document.getElementById('suggestionsBox');
-  if (topTypingBox) topTypingBox.classList.remove('active');
-  if (suggestionsBox) suggestionsBox.classList.remove('active');
+  console.log(`✅ Doctor chat area initialized (${patientCount} patients waiting)`);
 }
 
 function togglePatientList() {
@@ -4826,6 +4848,40 @@ setInterval(function() {
     loadPatientList(); // Refresh silently
   }
 }, 5000);
+
+// Toggle Doctor List (for patients)
+function toggleDoctorList() {
+  const container = document.getElementById('doctorListContainer');
+  const btn = document.getElementById('connectDoctorBtn');
+  const btnText = document.getElementById('patientBtnText');
+  
+  if (!container || !btn) {
+    console.error('❌ Doctor list container or button not found');
+    return;
+  }
+  
+  if (!doctorListVisible) {
+    // Open doctor list
+    container.classList.add('expanded');
+    if (btnText) {
+      btnText.textContent = '🚫 Close Doctor List';
+    } else {
+      btn.textContent = '🚫 Close Doctor List';
+    }
+    loadRealDoctors(); // Load doctors when opening
+    doctorListVisible = true;
+  } else {
+    // Close doctor list
+    container.classList.remove('expanded');
+    if (btnText) {
+      btnText.textContent = '👨‍⚕️ Connect to Doctor';
+    } else {
+      btn.textContent = '👨‍⚕️ Connect to Doctor';
+    }
+    doctorListVisible = false;
+  }
+}
+
 
 
 
