@@ -3795,6 +3795,136 @@ let activePatientId = null;
 let conversationInterval = null;
 let doctorListVisible = false; // Track if patient list is open
 
+// ========== MODE INITIALIZATION FUNCTIONS ==========
+
+// Initialize Doctor Mode
+async function initializeDoctorMode() {
+  console.log('🔵 DOCTOR MODE INITIALIZED');
+  
+  // ✅ HIDE EMERGENCY BUTTON
+  const emergencyBtn = document.querySelector('.emergency');
+  if (emergencyBtn) {
+    emergencyBtn.style.display = 'none';
+  }
+  
+  // ✅ HIDE HOSPITAL SECTION
+  const hospitalSection = document.querySelector('.hospital-section');
+  if (hospitalSection) {
+    hospitalSection.style.display = 'none';
+  }
+  
+  // ✅ CLEAR DOCTOR LIST CONTAINER
+  const doctorListContainer = document.getElementById('doctorListContainer');
+  if (doctorListContainer) {
+    doctorListContainer.classList.remove('expanded');
+    doctorListContainer.innerHTML = '';
+  }
+  
+  // ✅ UPDATE BUTTON TO "PATIENT LIST"
+  const btn = document.getElementById('connectDoctorBtn');
+  const btnText = document.getElementById('patientBtnText');
+  
+  if (btnText) {
+    btnText.textContent = '📋 Patient List';
+  } else if (btn) {
+    btn.textContent = '📋 Patient List';
+  }
+  
+  if (btn) {
+    btn.onclick = togglePatientList;
+  }
+  
+  // ✅ HIDE DOCTOR LIST PANEL
+  const doctorList = document.getElementById('doctorList');
+  if (doctorList) {
+    doctorList.innerHTML = '';
+  }
+  
+  // ✅ SHOW DOCTOR CHAT GREETING
+  initializeDoctorChatArea();
+  
+  // ✅ LOAD PATIENT REQUESTS
+  await loadPatientList();
+  
+  // ✅ AUTO-REFRESH PATIENT LIST EVERY 5 SECONDS (faster notification)
+  if (window.doctorRefreshInterval) {
+    clearInterval(window.doctorRefreshInterval);
+  }
+  window.doctorRefreshInterval = setInterval(() => {
+    if (localStorage.getItem('userMode') === 'doctor') {
+      loadPatientList();
+    }
+  }, 5000); // 5 seconds for faster updates
+  
+  console.log('✅ Doctor mode fully activated');
+}
+
+// Initialize Patient/Guest Mode
+function initializePatientMode() {
+  console.log('🟢 PATIENT MODE INITIALIZED');
+  
+  // ✅ SHOW EMERGENCY BUTTON
+  const emergencyBtn = document.querySelector('.emergency');
+  if (emergencyBtn) {
+    emergencyBtn.style.display = 'block';
+  }
+  
+  // ✅ SHOW HOSPITAL SECTION
+  const hospitalSection = document.querySelector('.hospital-section');
+  if (hospitalSection) {
+    hospitalSection.style.display = 'block';
+  }
+  
+  // ✅ CLEAR PATIENT LIST CONTAINER
+  const patientListContainer = document.getElementById('doctorListContainer');
+  if (patientListContainer) {
+    patientListContainer.classList.remove('expanded');
+    patientListContainer.innerHTML = '';
+  }
+  
+  // ✅ UPDATE BUTTON TO "CONNECT TO DOCTOR"
+  const btn = document.getElementById('connectDoctorBtn');
+  const btnText = document.getElementById('patientBtnText');
+  
+  if (btnText) {
+    btnText.textContent = '👨‍⚕️ Connect to Doctor';
+  } else if (btn) {
+    btn.textContent = '👨‍⚕️ Connect to Doctor';
+  }
+  
+  if (btn) {
+    btn.onclick = toggleDoctorList;
+  }
+  
+  // ✅ RESET CHAT WINDOW TO DEFAULT
+  const chatWindow = document.getElementById('chatWindow');
+  if (chatWindow) {
+    chatWindow.innerHTML = '<div class="bot-msg">Hello! 👋 Type your health question below and I\'ll help you find answers.</div>';
+  }
+  
+  // ✅ SHOW SEARCH BAR
+  const searchBar = document.querySelector('.search-bar');
+  if (searchBar) {
+    searchBar.style.display = 'flex';
+  }
+  
+  // ✅ LOAD DOCTOR LIST
+  loadRealDoctors();
+  
+  // ✅ AUTO-REFRESH DOCTOR LIST EVERY 10 SECONDS
+  if (window.patientRefreshInterval) {
+    clearInterval(window.patientRefreshInterval);
+  }
+  window.patientRefreshInterval = setInterval(() => {
+    if (localStorage.getItem('userMode') !== 'doctor') {
+      loadRealDoctors();
+    }
+  }, 10000);
+  
+  console.log('✅ Patient mode fully activated');
+}
+
+
 
 function selectPatient(patientId, patientData) {
   activePatientId = patientId;
@@ -4016,18 +4146,20 @@ function updatePatientCountBadge(count) {
     return;
   }
   
-  // ✅ ONLY UPDATE IF LIST IS CLOSED
-  if (doctorListVisible) {
-    return;
-  }
-  
+  // ✅ ALWAYS SHOW BADGE IF COUNT > 0 (persistent notification)
   if (count > 0) {
     badge.textContent = count;
     badge.style.display = 'flex';
-    btnText.textContent = `📋 ${count} Patient${count > 1 ? 's' : ''} Waiting`;
+    
+    // ✅ UPDATE TEXT ONLY IF LIST IS CLOSED
+    if (!doctorListVisible) {
+      btnText.textContent = `📋 ${count} Patient${count > 1 ? 's' : ''} Waiting`;
+    }
   } else {
     badge.style.display = 'none';
-    btnText.textContent = '📋 Patient List';
+    if (!doctorListVisible) {
+      btnText.textContent = '📋 Patient List';
+    }
   }
 }
 
@@ -4779,24 +4911,6 @@ async function loadPatientList() {
     listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">Error: ' + error.message + '</p>';
   }
 }
-
-
-
-
-// Auto-refresh based on user mode
-setInterval(() => {
-  const userMode = localStorage.getItem('userMode');
-  
-  if (userMode === 'doctor') {
-    // Doctor mode - refresh patient list
-    loadPatientList();
-  } else {
-    // Patient/Guest mode - refresh doctor list
-    loadRealDoctors();
-  }
-}, 10000);
-
-
 
 
 function selectPatient(patientId, patientData) {
