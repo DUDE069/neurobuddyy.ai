@@ -4899,6 +4899,13 @@ function toggleDoctorList() {
 
 async function loadPatientList() {
   const listContainer = document.getElementById('doctorList');
+  
+  // ✅ SAFETY CHECK
+  if (!listContainer) {
+    console.error('❌ doctorList element not found in loadPatientList');
+    return;
+  }
+  
   listContainer.innerHTML = '<p class="loading-doctors">Loading patients...</p>';
   
   try {
@@ -4908,75 +4915,44 @@ async function loadPatientList() {
     }
     
     // Get current doctor session
-    const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession'));
+    const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession') || '{}');
+    
     if (!doctorData || !doctorData.id) {
-      listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">Please login as doctor first</p>';
+      listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">⚠️ Doctor not logged in</p>';
       return;
     }
     
     const { collection, getDocs, query, where, orderBy } = window.firestoreFunctions;
+    const requestsRef = collection(window.firebaseDB, 'patientRequests');
     
-    // ✅ FULL QUERY WITH INDEX - NOW IT WORKS!
-    const patientsRef = collection(window.firebaseDB, 'patientRequests');
+    // Query for PENDING requests only for this doctor
     const q = query(
-      patientsRef,
+      requestsRef,
       where('doctorId', '==', doctorData.id),
       where('status', '==', 'pending'),
-      orderBy('timestamp', 'desc')  // ✅ Now this works with the index
+      orderBy('timestamp', 'desc')
     );
     
     const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {
-      listContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No patient requests yet.</p>';
+      listContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No patients waiting</p>';
       updatePatientCountBadge(0);
       return;
     }
     
-    let html = '';
-    querySnapshot.forEach((docSnap) => {
-      const patient = docSnap.data();
-      const urgency = patient.urgency || 'green';
-      const timestamp = patient.timestamp?.toDate ? patient.timestamp.toDate() : new Date();
-      const timeAgo = getTimeAgo(timestamp);
-      
-      let borderColor = '#10b981';
-      let urgencyLabel = '🟢 Routine';
-      
-      if (urgency === 'red') {
-        borderColor = '#ef4444';
-        urgencyLabel = '🔴 Critical';
-      } else if (urgency === 'blue') {
-        borderColor = '#3b82f6';
-        urgencyLabel = '🔵 Priority';
-      }
-      
-      html += `
-        <div class="doctor-card" onclick="selectPatient('${docSnap.id}', ${JSON.stringify(patient).replace(/"/g, '&quot;')})" 
-             style="background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); 
-                    border-left: 5px solid ${borderColor}; 
-                    cursor: pointer;">
-          <div class="doctor-info">
-            <div class="doctor-name">${patient.name || 'Anonymous Patient'}</div>
-            <div class="doctor-specialty">Age: ${patient.age || 'N/A'} • ${urgencyLabel}</div>
-            <div style="font-size: 0.75rem; color: #999; margin-top: 4px;">${timeAgo}</div>
-          </div>
-          <button onclick="event.stopPropagation(); cancelPatient('${docSnap.id}')" 
-                  style="background: #dc2626; color: white; border: none; padding: 8px 15px; 
-                         border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold;">
-            Cancel
-          </button>
-        </div>
-      `;
+    const patients = [];
+    querySnapshot.forEach((doc) => {
+      patients.push({ id: doc.id, ...doc.data() });
     });
     
-    listContainer.innerHTML = html;
-    updatePatientCountBadge(querySnapshot.size);
-    console.log(`✅ Loaded ${querySnapshot.size} patients`);
+    console.log(`✅ Loaded ${patients.length} pending patients`);
+    updatePatientCountBadge(patients.length);
+    displayPatients(patients);
     
   } catch (error) {
     console.error('❌ Error loading patients:', error);
-    listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">Error: ' + error.message + '</p>';
+    listContainer.innerHTML = '<p style="text-align: center; color: #dc2626;">Error loading patients</p>';
   }
 }
 
