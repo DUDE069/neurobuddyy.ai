@@ -1496,9 +1496,298 @@ function startDoctorChat(patient) {
 }
 
 
-// ✅ SEND MESSAGE FROM DOCTOR TO PATIENT
-function sendDoctorMessage() {
+// ✅ SEND MESSAGE FROM DOCTOR TO PATIENT - FIXED
+async function sendDoctorMessage() {
   const input = document.getElementById('doctorConsultationInput');
+  
+  if (!input) return;
+  
+  const message = input.value.trim();
+  
+  if (!message) {
+    alert('Please enter a message');
+    return;
+  }
+  
+  // Add message to chat IMMEDIATELY (optimistic update)
+  const chatWindow = document.getElementById('chatWindow');
+  
+  if (chatWindow) {
+    chatWindow.innerHTML += `
+      <div class="user-msg">${message}</div>
+    `;
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+  
+  input.value = '';
+  
+  // ✅ SEND TO FIREBASE
+  try {
+    if (!window.activePatient || !window.activePatient.id) {
+      console.error('❌ No active patient found');
+      return;
+    }
+    
+    if (!window.firebaseDB) {
+      console.error('❌ Firebase not initialized');
+      return;
+    }
+    
+    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+    
+    // ✅ SAVE MESSAGE TO FIREBASE
+    await addDoc(collection(window.firebaseDB, 'conversations'), {
+      patientRequestId: window.activePatient.id,  // ✅ CORRECT FIELD
+      doctorId: currentDoctor?.id || 'unknown',
+      patientName: window.activePatient.patientName,
+      sender: 'doctor',
+      message: message,
+      timestamp: serverTimestamp()
+    });
+    
+    console.log('✅ Doctor message sent:', message);
+    
+  } catch (error) {
+    console.error('❌ Error sending message:', error);
+  }
+}
+
+// ========== PATIENT LISTENS FOR DOCTOR ACCEPTANCE - FIXED ==========
+
+function startListeningForDoctorAcceptance(requestId, doctorName) {
+  console.log('👂 Listening for doctor acceptance...');
+  
+  if (!window.firebaseDB) return;
+  
+  // ✅ Prevent duplicate listeners
+  if (window.acceptanceListener) {
+    console.log('⚠️ Already listening, cleaning up old listener...');
+    window.acceptanceListener();
+  }
+  
+  const { doc, onSnapshot } = window.firestoreFunctions;
+  
+  // ✅ LISTEN TO REQUEST DOCUMENT
+  const unsubscribe = onSnapshot(
+    doc(window.firebaseDB, 'patientRequests', requestId),
+    (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        
+        console.log('📡 Request status update:', data.status);
+        
+        // ✅ CHECK IF DOCTOR ACCEPTED
+        if (data.status === 'accepted' && !data.notified) {
+          // Stop listening
+          unsubscribe();
+          window.acceptanceListener = null;
+          
+          // ✅ SHOW NOTIFICATION TO PATIENT
+          showDoctorAcceptanceNotification(doctorName, requestId, data);
+        }
+      }
+    },
+    (error) => {
+      console.error('❌ Error listening for acceptance:', error);
+    }
+  );
+  
+  // Store unsubscribe function for cleanup
+  window.acceptanceListener = unsubscribe;
+  console.log('✅ Real-time listener activated for request:', requestId);
+}
+
+// ✅ SHOW NOTIFICATION WHEN DOCTOR ACCEPTS - FIXED
+function showDoctorAcceptanceNotification(doctorName, requestId, patientData) {
+  console.log('🔔 Doctor accepted! Showing notification...');
+  
+  // ✅ CREATE CUSTOM NOTIFICATION MODAL
+  const modalHTML = `
+    <div id="acceptanceNotification" class="modal-overlay" style="display: flex;">
+      <div class="modal-content" style="max-width: 450px; text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 15px;">🎉</div>
+        <h2 style="color: #10b981; margin: 0 0 15px 0;">Request Accepted!</h2>
+        <p style="font-size: 1.1rem; color: #333; margin-bottom: 20px;">
+          <strong>Dr. ${doctorName}</strong> has accepted your consultation request and is ready to talk with you.
+        </p>
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 25px;">
+          Do you want to start the consultation now?
+        </p>
+        <div style="display: flex; gap: 10px;">
+          <button 
+            onclick="declineConsultation('${requestId}')" 
+            style="
+              flex: 1;
+              padding: 14px;
+              background: #dc2626;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-weight: bold;
+              font-size: 1rem;
+              cursor: pointer;
+            "
+          >
+            Later
+          </button>
+          <button 
+            onclick="startPatientConsultation('${doctorName}', '${requestId}', ${JSON.stringify(patientData).replace(/"/g, '&quot;')})" 
+            style="
+              flex: 1;
+              padding: 14px;
+              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-weight: bold;
+              font-size: 1rem;
+              cursor: pointer;
+            "
+          >
+            Connect Now
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Remove existing notification if any
+  const existing = document.getElementById('acceptanceNotification');
+  if (existing) existing.remove();
+  
+  // Add to page
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// ✅ PATIENT ACCEPTS TO START CONSULTATION - NEW
+async function startPatientConsultation(doctorName, requestId, patientData) {
+  console.log('🤝 Patient accepted consultation');
+  
+  try {
+    // ✅ MARK AS NOTIFIED IN FIREBASE
+    if (window.firebaseDB) {
+      const { doc, updateDoc } = window.firestoreFunctions;
+      
+      await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
+        notified: true,
+        consultationStarted: true,
+        startedAt: new Date().toISOString()
+      });
+    }
+    
+    // ✅ CLOSE NOTIFICATION
+    const modal = document.getElementById('acceptanceNotification');
+    if (modal) modal.remove();
+    
+    // ✅ SHOW SUCCESS MESSAGE
+    alert(`Consultation Started! You are now connected with Dr. ${doctorName}.`);
+    
+    // ✅ CONVERT CHAT INTERFACE TO CONSULTATION MODE
+    convertPatientToConsultationMode(doctorName, patientData);
+    
+  } catch (error) {
+    console.error('❌ Error starting consultation:', error);
+    alert('Failed to start consultation. Please try again.');
+  }
+}
+
+
+// ✅ CONVERT PATIENT CHAT TO CONSULTATION MODE - NEW
+function convertPatientToConsultationMode(doctorName, patientData) {
+  console.log('🔄 Converting to consultation mode...');
+  
+  // Store consultation info
+  window.activeConsultation = {
+    doctorName: doctorName,
+    patientData: patientData,
+    startedAt: new Date().toISOString()
+  };
+  
+  // ✅ HIDE NORMAL SEARCH BAR
+  const searchBar = document.querySelector('.search-bar');
+  if (searchBar) {
+    searchBar.style.display = 'none';
+  }
+  
+  // ✅ UPDATE CHAT WINDOW WITH GREETING
+  const chatWindow = document.getElementById('chatWindow');
+  if (chatWindow) {
+    chatWindow.innerHTML = `
+      <div class="bot-msg" style="background: #10b981;">
+        <strong>✅ Consultation Started!</strong><br>
+        You are now connected with <strong>Dr. ${doctorName}</strong>.<br>
+        You can start chatting with the doctor below.
+      </div>
+    `;
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+  
+  // ✅ CREATE NEW CONSULTATION CONTROLS
+  const chatSection = document.querySelector('.chat-section');
+  if (!chatSection) return;
+  
+  // Remove existing consultation bar if any
+  const existing = document.getElementById('patientConsultationControls');
+  if (existing) existing.remove();
+  
+  // ✅ CREATE CONSULTATION BAR
+  const consultationHTML = `
+    <div id="patientConsultationControls" style="
+      flex: 0 0 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 3px solid #2563eb;
+      background: white;
+      padding: 12px 16px;
+    ">
+      <input 
+        type="text" 
+        id="patientConsultationInput" 
+        placeholder="Type your message to Dr. ${doctorName}..."
+        style="
+          flex: 1;
+          border: 2px solid #9fbff0c1;
+          border-radius: 8px;
+          padding: 10px 12px;
+          font-size: 0.95rem;
+          outline: none;
+        "
+      />
+      <button 
+        onclick="sendPatientMessage()" 
+        class="btn send"
+        style="padding: 10px 15px;"
+      >
+        Send
+      </button>
+      <button 
+        onclick="startVoiceCall()" 
+        class="btn mic"
+        style="padding: 10px 15px;"
+      >
+        📞 Voice Call
+      </button>
+      <button 
+        onclick="startVideoCall()" 
+        class="btn upload"
+        style="padding: 10px 15px; background: #10b981;"
+      >
+        📹 Video Call
+      </button>
+    </div>
+  `;
+  
+  chatSection.insertAdjacentHTML('beforeend', consultationHTML);
+  
+  console.log('✅ Patient consultation mode activated');
+}
+
+
+// ✅ SEND MESSAGE FROM PATIENT TO DOCTOR - NEW
+async function sendPatientMessage() {
+  const input = document.getElementById('patientConsultationInput');
   
   if (!input) return;
   
@@ -1521,126 +1810,39 @@ function sendDoctorMessage() {
   
   input.value = '';
   
-  // TODO: Send to Firebase and notify patient
-  console.log('📤 Doctor message sent:', message);
+  // TODO: Send to Firebase and notify doctor
+  console.log('📤 Patient message sent:', message);
 }
 
 
-// ✅ END CONSULTATION
-function endConsultation() {
-  const confirmed = confirm('Are you sure you want to end this consultation?');
+// ✅ PATIENT DECLINES CONSULTATION - UPDATED
+async function declineConsultation(requestId) {
+  console.log('❌ Patient declined consultation');
   
-  if (!confirmed) return;
-  
-  // Clear active patient
-  window.activePatient = null;
-  
-  // Remove consultation controls
-  const controls = document.getElementById('doctorConsultationControls');
-  if (controls) controls.remove();
-  
-  // Show search bar again
-  const searchBar = document.querySelector('.search-bar');
-  if (searchBar) {
-    searchBar.style.display = 'flex';
-  }
-  
-  // Clear chat window
-  const chatWindow = document.getElementById('chatWindow');
-  if (chatWindow) {
-    chatWindow.innerHTML = `
-      <div class="bot-msg">
-        Consultation ended. You can now accept new patients.
-      </div>
-    `;
-  }
-  
-  console.log('✅ Consultation ended');
-  alert('Consultation ended successfully.');
-}
-
-
-// ========== PATIENT LISTENS FOR DOCTOR ACCEPTANCE ==========
-
-// Patient listens for doctor acceptance
-function startListeningForDoctorAcceptance(requestId, doctorName) {
-  console.log('👂 Listening for doctor acceptance...');
-  
-  if (!window.firebaseDB) return;
-  
-  const { doc, onSnapshot } = window.firestoreFunctions;
-  
-  // ✅ LISTEN TO REQUEST DOCUMENT
-  const unsubscribe = onSnapshot(
-    doc(window.firebaseDB, 'patientRequests', requestId),
-    (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        const data = docSnapshot.data();
-        
-        console.log('📡 Request status update:', data.status);
-        
-        // ✅ CHECK IF DOCTOR ACCEPTED
-        if (data.status === 'accepted' && !data.notified) {
-          // Stop listening
-          unsubscribe();
-          
-          // ✅ SHOW NOTIFICATION TO PATIENT
-          showDoctorAcceptanceNotification(doctorName, requestId);
-        }
-      }
-    },
-    (error) => {
-      console.error('❌ Error listening for acceptance:', error);
+  try {
+    // ✅ NOTIFY DOCTOR THAT PATIENT DECLINED
+    if (window.firebaseDB) {
+      const { doc, updateDoc } = window.firestoreFunctions;
+      
+      await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
+        status: 'declined',
+        notified: true,
+        declinedAt: new Date().toISOString()
+      });
     }
-  );
-  
-  // Store unsubscribe function for cleanup
-  window.acceptanceListener = unsubscribe;
+    
+    // ✅ CLOSE NOTIFICATION
+    const modal = document.getElementById('acceptanceNotification');
+    if (modal) modal.remove();
+    
+    alert('You can connect with the doctor later from your request history.');
+    
+  } catch (error) {
+    console.error('❌ Error declining:', error);
+  }
 }
 
 
-// Show notification when doctor accepts
-function showDoctorAcceptanceNotification(doctorName, requestId) {
-  console.log('🔔 Doctor accepted! Showing notification...');
-  
-  // ✅ CREATE CUSTOM NOTIFICATION MODAL
-  const modalHTML = `
-    <div id="acceptanceNotification" class="modal-overlay" style="display: flex;">
-      <div class="modal-content" style="max-width: 450px; text-align: center;">
-        <div style="font-size: 4rem; margin-bottom: 15px;">✅</div>
-        <h2 style="color: #10b981; margin: 0 0 15px 0;">Request Accepted!</h2>
-        <p style="font-size: 1.1rem; color: #333; margin-bottom: 20px;">
-          <strong>Dr. ${doctorName}</strong> has accepted your consultation request 
-          and is ready to talk with you.
-        </p>
-        <p style="font-size: 0.9rem; color: #666; margin-bottom: 25px;">
-          Do you want to start the consultation now?
-        </p>
-        <div style="display: flex; gap: 10px;">
-          <button onclick="declineConsultation('${requestId}')" 
-                  style="flex: 1; padding: 14px; background: #dc2626; color: white; 
-                         border: none; border-radius: 8px; font-weight: bold; 
-                         font-size: 1rem; cursor: pointer;">
-            Later
-          </button>
-          <button onclick="startConsultation('${doctorName}', '${requestId}')" 
-                  style="flex: 1; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
-                         color: white; border: none; border-radius: 8px; 
-                         font-weight: bold; font-size: 1rem; cursor: pointer;">
-            Connect Now
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  // Remove existing notification if any
-  const existing = document.getElementById('acceptanceNotification');
-  if (existing) existing.remove();
-  
-  // Add to page
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-}
 
 // ========== PATIENT ACCEPTS TO START CONSULTATION ==========
 
