@@ -3663,17 +3663,18 @@ function showUrgencySelectionModal(doctorId, doctorData) {
 }
 
 async function submitPatientRequest(doctorId, doctorData, urgency) {
-  // Get patient info
+  // Get patient info from modal inputs
   const patientName = document.getElementById('patientNameInput').value.trim();
   const patientAge = document.getElementById('patientAgeInput').value.trim();
   
+  // Validate
   if (!patientName) {
-    alert('❌ Please enter your name');
+    alert('⚠️ Please enter your name');
     return;
   }
   
   if (!patientAge || patientAge < 1 || patientAge > 120) {
-    alert('❌ Please enter a valid age (1-120)');
+    alert('⚠️ Please enter a valid age (1-120)');
     return;
   }
   
@@ -3681,7 +3682,7 @@ async function submitPatientRequest(doctorId, doctorData, urgency) {
   document.getElementById('urgencyModalOverlay').remove();
   
   // Show loading
-  showEmergencyModal('sending', '📤 Sending Request...', 'Please wait while we notify the doctor.');
+  showEmergencyModal('sending', 'Sending Request...', 'Please wait while we notify the doctor.');
   
   try {
     if (!window.firebaseDB) {
@@ -3690,13 +3691,13 @@ async function submitPatientRequest(doctorId, doctorData, urgency) {
     
     const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
     
-    // Create patient request
+    // ✅ CREATE PATIENT REQUEST WITH ALL DATA
     const patientRequest = {
       doctorId: doctorId,
       doctorName: doctorData.name,
       doctorSpecialty: doctorData.specialty,
-      name: patientName,
-      age: parseInt(patientAge),
+      name: patientName,           // ✅ SAVED
+      age: parseInt(patientAge),   // ✅ SAVED
       urgency: urgency,
       timestamp: serverTimestamp(),
       status: 'pending'
@@ -3708,18 +3709,20 @@ async function submitPatientRequest(doctorId, doctorData, urgency) {
     localStorage.setItem('activePatientRequest', JSON.stringify({
       id: docRef.id,
       doctorName: doctorData.name,
-      urgency: urgency
+      urgency: urgency,
+      name: patientName,     // ✅ STORED LOCALLY
+      age: patientAge        // ✅ STORED LOCALLY
     }));
     
     console.log('✅ Patient request submitted:', docRef.id);
     
     // Show success
     let urgencyText = urgency === 'red' ? 'Emergency' : urgency === 'blue' ? 'Priority' : 'Normal';
-    showEmergencyModal('success', '✅ Request Sent!', `Your ${urgencyText} consultation request has been sent to <strong>Dr. ${doctorData.name}</strong>. The doctor will respond soon. Please stay on this page.`);
+    showEmergencyModal('success', 'Request Sent!', `Your ${urgencyText} consultation request has been sent to <strong>Dr. ${doctorData.name}</strong>. The doctor will respond soon. Please stay on this page.`);
     
   } catch (error) {
     console.error('❌ Error submitting request:', error);
-    showEmergencyModal('error', '❌ Request Failed', 'Unable to send consultation request. Please try again or contact support.');
+    showEmergencyModal('error', 'Request Failed', 'Unable to send consultation request. Please try again or contact support.');
   }
 }
 
@@ -3727,74 +3730,88 @@ async function submitPatientRequest(doctorId, doctorData, urgency) {
 
 // ========== PHASE 3: ACTIVE CONVERSATION AREA ==========
 
+// ========== PHASE 3: ACTIVE CONVERSATION AREA ==========
+
 let activePatientId = null;
 let conversationInterval = null;
 
 function selectPatient(patientId, patientData) {
-  // Set active patient
   activePatientId = patientId;
-  
-  // Update chat area to show conversation
   activateConversationArea(patientId, patientData);
-  
-  // Show search bar for typing
+
   const searchBar = document.querySelector('.search-bar');
-  if (searchBar) {
-    searchBar.style.display = 'flex';
-  }
-  
-  // Update input placeholder
+  if (searchBar) searchBar.style.display = 'flex';
+
   const userInput = document.getElementById('userInput');
   if (userInput) {
     userInput.placeholder = `Type your message to ${patientData.name || 'patient'}...`;
   }
-  
-  // Load conversation history
+
   loadConversationHistory(patientId);
-  
-  // Start real-time updates
   startConversationPolling(patientId);
-  
+
   console.log('✅ Conversation activated with patient:', patientId);
 }
 
 function activateConversationArea(patientId, patientData) {
-  const chatWindow = document.getElementById('chatWindow');
-  const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession') || '{}');
-  
-  let urgencyColor = '#10b981';
-  if (patientData.urgency === 'red') urgencyColor = '#ef4444';
-  if (patientData.urgency === 'blue') urgencyColor = '#3b82f6';
-  
+  const chatWindow = document.getElementById('chatWindow');   // ✅ fixed
+
+  // Determine urgency display and color
+  let urgencyColor = '#10b981'; // Green default
+  let urgencyLabel = '🟢 Routine';
+
+  if (patientData.urgency === 'red') {
+    urgencyColor = '#ef4444';
+    urgencyLabel = '🔴 Critical';
+  } else if (patientData.urgency === 'blue') {
+    urgencyColor = '#3b82f6';
+    urgencyLabel = '🔵 Priority';
+  }
+
   chatWindow.innerHTML = `
-    <div style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid ${urgencyColor};">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <h3 style="margin: 0; color: #111827; font-size: 1.2rem;">👤 ${patientData.name || 'Patient'}</h3>
-          <p style="margin: 5px 0 0 0; color: #6b7280; font-size: 0.9rem;">Age: ${patientData.age || 'N/A'} • Urgency: ${patientData.urgency.toUpperCase()}</p>
-        </div>
-        <div style="display: flex; gap: 10px;">
-          <button onclick="startVideoCall('${patientId}')" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
-            📹 Video
-          </button>
-          <button onclick="startVoiceCall('${patientId}')" style="background: #3b82f6; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
-            📞 Voice
-          </button>
-          <button onclick="endConsultation('${patientId}')" style="background: #dc2626; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
-            ❌ End
-          </button>
-        </div>
+    <div style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+                padding: 20px;
+                border-radius: 12px;
+                margin-bottom: 20px;
+                border-left: 5px solid ${urgencyColor}">
+      <div style="text-align: center; margin-bottom: 15px;">
+        <div style="font-size: 3rem;">👤</div>
+      </div>
+      <div style="text-align: center;">
+        <h3 style="margin: 0 0 10px 0; color: #111827; font-size: 1.3rem; font-weight: bold;">
+          ${patientData.name || 'Anonymous Patient'}
+        </h3>
+        <p style="margin: 5px 0; color: #6b7280; font-size: 1rem;">
+          <strong>Age:</strong> ${patientData.age || 'N/A'} years
+        </p>
+        <p style="margin: 10px 0 0 0; font-size: 1.1rem; font-weight: 600; color: ${urgencyColor};">
+          ${urgencyLabel}
+        </p>
       </div>
     </div>
+
     <div id="conversationMessages" style="min-height: 300px;"></div>
   `;
-  
-  // Hide top typing box and suggestions
-  const topTypingBox = document.getElementById('topTypingBox');
-  const suggestionsBox = document.getElementById('suggestionsBox');
-  if (topTypingBox) topTypingBox.classList.remove('active');
-  if (suggestionsBox) suggestionsBox.classList.remove('active');
-}
+
+  const searchBar = document.querySelector('.search-bar');
+  if (searchBar) searchBar.style.display = 'flex';
+
+  const userInput = document.getElementById('userInput');
+  if (userInput) {
+    userInput.placeholder = `Type your message to ${patientData.name || 'patient'}...`;
+  }
+
+  // Hide top typing box and suggestions (now INSIDE function)
+  const topTypingBoxEl = document.getElementById('topTypingBox');
+  const suggestionsBoxEl = document.getElementById('suggestionsBox');
+  if (topTypingBoxEl) topTypingBoxEl.classList.remove('active');
+  if (suggestionsBoxEl) suggestionsBoxEl.classList.remove('active');
+
+  loadConversationHistory(patientId);
+  startConversationPolling(patientId);
+
+  console.log('✅ Conversation header rendered for patient:', patientId);
+   }
 
 async function loadConversationHistory(patientId) {
   const messagesContainer = document.getElementById('conversationMessages');
@@ -4556,6 +4573,19 @@ function togglePatientList() {
     doctorListVisible = false;
   }
 }
+// Close patient list (for doctors only)
+function closePatientList() {
+  const container = document.getElementById('doctorListContainer');
+  const btn = document.getElementById('connectDoctorBtn');
+  
+  // Always close, never toggle in doctor mode
+  container.classList.remove('expanded');
+  btn.textContent = '🔵 Patient List';
+  doctorListVisible = false;
+  
+  console.log('✅ Patient list closed');
+}
+
 
 async function loadPatientList() {
   const listContainer = document.getElementById('doctorList');
@@ -4586,22 +4616,24 @@ async function loadPatientList() {
       if (urgency === 'red') borderColor = '#ef4444';
       if (urgency === 'blue') borderColor = '#3b82f6';
 
-      html += `
-        <div class="patient-card"
-             style="background: #f9fafb; border-left: 5px solid ${borderColor}; padding: 15px; margin-bottom: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s;"
-             onclick="selectPatient('${docSnap.id}', ${JSON.stringify(patient).replace(/"/g, '&quot;')})">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="flex: 1;">
-              <div style="font-weight: bold; color: #111827; font-size: 1rem; margin-bottom: 5px;">${patient.name || 'Anonymous Patient'}</div>
-              <div style="font-size: 0.85rem; color: #6b7280;">Age: ${patient.age || 'N/A'} • ${timeAgo}</div>
-            </div>
-            <button onclick="event.stopPropagation(); cancelPatient('${docSnap.id}')"
-                    style="background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
-              Cancel
-            </button>
-          </div>
-        </div>
-      `;
+     html += `
+  <div class="doctor-card" onclick="selectPatient('${docSnap.id}', ${JSON.stringify(patient).replace(/"/g, '&quot;')})" 
+       style="background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); 
+              border-left: 5px solid ${borderColor}; 
+              cursor: pointer;">
+    <div class="doctor-info">
+      <div class="doctor-name">${patient.name || 'Anonymous Patient'}</div>
+      <div class="doctor-specialty">Age: ${patient.age || 'N/A'} • ${urgencyLabel}</div>
+      <div style="font-size: 0.75rem; color: #999; margin-top: 4px;">${timeAgo}</div>
+    </div>
+    <button onclick="event.stopPropagation(); cancelPatient('${docSnap.id}')" 
+            style="background: #dc2626; color: white; border: none; padding: 8px 15px; 
+                   border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold;">
+      Cancel
+    </button>
+  </div>
+`;
+
     });
 
     listContainer.innerHTML = html;
