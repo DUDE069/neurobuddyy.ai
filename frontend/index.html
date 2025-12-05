@@ -4417,37 +4417,6 @@ async function resetPassword(email, resetCode, newPassword) {
     }
   }
 
-  async function sendDoctorMessage(patientId, message) {
-  try {
-    if (!window.firebaseDB) {
-      alert('Firebase not initialized');
-      return;
-    }
-    
-    const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession') || '{}');
-    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
-    
-    // Add message to conversation
-    await addDoc(collection(window.firebaseDB, 'conversations'), {
-      patientRequestId: patientId,
-      sender: 'doctor',
-      senderName: 'Dr. ' + doctorData.name,
-      message: message,
-      timestamp: serverTimestamp()
-    });
-    
-    console.log('✅ Doctor message sent');
-    
-    // Reload conversation
-    loadConversationHistory(patientId);
-    
-  } catch (error) {
-    console.error('❌ Error sending message:', error);
-    alert('Failed to send message: ' + error.message);
-  }
-}
-
-
   // ========== DOCTOR CONNECT ==========
   
   // ========== DOCTOR CONNECT (FIXED) ==========
