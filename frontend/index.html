@@ -1529,6 +1529,7 @@ function startDoctorChat(patient) {
 
 // ✅ SEND MESSAGE FROM DOCTOR TO PATIENT - FULLY FIXED
 async function sendDoctorMessage() {
+   console.log('🚨 sendDoctorMessage CALLED!'); // ← ADD THIS LINE FIRST
   const input = document.getElementById('doctorConsultationInput');
   
   if (!input) {
