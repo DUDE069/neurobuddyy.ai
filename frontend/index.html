@@ -1416,6 +1416,15 @@ async function acceptPatientRequest(patient) {
 function startDoctorChat(patient) {
   console.log('🩺 Starting doctor chat with patient:', patient);
   
+  // ✅ ADD THIS VALIDATION - CRITICAL FIX
+  if (!patient || !patient.id) {
+    console.error('❌ CRITICAL: Patient object missing ID!', patient);
+    alert('Error: Cannot start chat - patient data incomplete. Please refresh and try again.');
+    return; // Stop execution
+  }
+  
+  console.log('✅ Patient ID confirmed:', patient.id);
+  
   // ✅ Store active patient info WITH REQUEST ID
   window.activePatient = {
     id: patient.id,  // ✅ THIS IS THE REQUEST ID
@@ -1424,6 +1433,10 @@ function startDoctorChat(patient) {
     message: patient.message,
     doctorId: patient.doctorId
   };
+
+  // ✅ ADD THIS DEBUG LOG
+  console.log('✅ window.activePatient set:', window.activePatient);
+  
   
   // Update chat window
   const chatWindow = document.getElementById('chatWindow');
