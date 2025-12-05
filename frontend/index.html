@@ -1786,7 +1786,9 @@ async function startPatientConsultation(doctorName, requestId, patientData) {
     alert(`Consultation Started! You are now connected with Dr. ${doctorName}.`);
     
     // ✅ CONVERT CHAT INTERFACE TO CONSULTATION MODE
-    convertPatientToConsultationMode(doctorName, patientData);
+     // Convert chat interface to consultation mode
+  convertPatientToConsultationMode(doctorName, requestId, patientData);  // ✅ Add requestId
+
     
   } catch (error) {
     console.error('❌ Error starting consultation:', error);
@@ -1796,15 +1798,20 @@ async function startPatientConsultation(doctorName, requestId, patientData) {
 
 
 // ✅ CONVERT PATIENT CHAT TO CONSULTATION MODE - NEW
-function convertPatientToConsultationMode(doctorName, patientData) {
+function convertPatientToConsultationMode(doctorName, requestId, patientData) {  // ✅ Add requestId parameter
   console.log('🔄 Converting to consultation mode...');
   
-  // Store consultation info
+  // ✅ Store consultation info WITH REQUEST ID
   window.activeConsultation = {
     doctorName: doctorName,
+    requestId: requestId,  // ✅ ADD THIS LINE
+    patientName: patientData?.patientName || 'Patient',
     patientData: patientData,
     startedAt: new Date().toISOString()
   };
+  
+  console.log('✅ Stored activeConsultation:', window.activeConsultation);  // ✅ ADD DEBUG LOG
+
   
   // ✅ HIDE NORMAL SEARCH BAR
   const searchBar = document.querySelector('.search-bar');
@@ -1888,7 +1895,7 @@ function convertPatientToConsultationMode(doctorName, patientData) {
 }
 
 
-// ✅ SEND MESSAGE FROM PATIENT TO DOCTOR - NEW
+// ✅ KEEP AND FIX THIS ONE
 async function sendPatientMessage() {
   const input = document.getElementById('patientConsultationInput');
   
@@ -1901,21 +1908,53 @@ async function sendPatientMessage() {
     return;
   }
   
+  // ✅ ADD VALIDATION
+  console.log('🔍 Checking window.activeConsultation:', window.activeConsultation);
+  
+  if (!window.activeConsultation || !window.activeConsultation.requestId) {
+    console.error('❌ No active consultation or request ID missing');
+    alert('❌ Error: Consultation session lost. Please refresh the page.');
+    return;
+  }
+  
+  console.log('✅ Request ID found:', window.activeConsultation.requestId);
+  
   // Add message to chat
   const chatWindow = document.getElementById('chatWindow');
   
   if (chatWindow) {
-    chatWindow.innerHTML += `
-      <div class="user-msg">${message}</div>
-    `;
+    chatWindow.innerHTML += `<div class="user-msg">${message}</div>`;
     chatWindow.scrollTop = chatWindow.scrollHeight;
   }
   
   input.value = '';
   
-  // TODO: Send to Firebase and notify doctor
-  console.log('📤 Patient message sent:', message);
+  // ✅ SEND TO FIREBASE
+  try {
+    if (!window.firebaseDB) {
+      console.error('❌ Firebase not initialized');
+      alert('❌ Database not connected. Please refresh.');
+      return;
+    }
+    
+    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+    
+    await addDoc(collection(window.firebaseDB, 'conversations'), {
+      patientRequestId: window.activeConsultation.requestId,
+      patientName: window.activeConsultation.patientName || 'Patient',
+      sender: 'patient',
+      message: message,
+      timestamp: serverTimestamp()
+    });
+    
+    console.log('✅ Patient message sent successfully:', message);
+    
+  } catch (error) {
+    console.error('❌ Error sending message:', error);
+    alert('❌ Failed to send message: ' + error.message);
+  }
 }
+
 
 
 // ✅ PATIENT DECLINES CONSULTATION - UPDATED
@@ -5250,34 +5289,6 @@ function startPatientConversationPolling(requestId) {
       loadPatientConversation(requestId);
     }
   }, 3000);
-}
-
-async function sendPatientMessage(requestId, message) {
-  try {
-    if (!window.firebaseDB) {
-      alert('Firebase not initialized');
-      return;
-    }
-    
-    const requestData = JSON.parse(localStorage.getItem('activePatientRequest') || '{}');
-    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
-    
-    // Add message
-    await addDoc(collection(window.firebaseDB, 'conversations'), {
-      patientRequestId: requestId,
-      sender: 'patient',
-      senderName: 'You',
-      message: message,
-      timestamp: serverTimestamp()
-    });
-    
-    console.log('✅ Patient message sent');
-    loadPatientConversation(requestId);
-    
-  } catch (error) {
-    console.error('❌ Error sending message:', error);
-    alert('Failed to send message: ' + error.message);
-  }
 }
 
 function cancelPatientRequest() {
