@@ -1670,39 +1670,52 @@ function startVideoCall() {
 }
 
 
-// ✅ END CONSULTATION
 function endConsultation() {
   const confirmed = confirm('Are you sure you want to end this consultation?');
   
   if (!confirmed) return;
   
-  // Clear active patient
+  console.log('🛑 Ending consultation...');
+  
+  // ✅ Stop message listener
+  if (window.messageListener) {
+    window.messageListener();
+    window.messageListener = null;
+    console.log('✅ Message listener stopped');
+  }
+  
+  // ✅ Clear active patient
   window.activePatient = null;
   
-  // Remove consultation controls
+  // ✅ Remove consultation controls
   const controls = document.getElementById('doctorConsultationControls');
-  if (controls) controls.remove();
+  if (controls) {
+    controls.remove();
+    console.log('✅ Consultation controls removed');
+  }
   
-  // Show search bar again
+  // ✅ Show search bar again
   const searchBar = document.querySelector('.search-bar');
   if (searchBar) {
     searchBar.style.display = 'flex';
+    console.log('✅ Search bar restored');
   }
   
-  // Clear chat window
+  // ✅ Clear chat window and show welcome message
   const chatWindow = document.getElementById('chatWindow');
   if (chatWindow) {
     chatWindow.innerHTML = `
       <div class="bot-msg">
-        Consultation ended. You can now accept new patients.
+        ✅ <strong>Consultation ended.</strong><br>
+        You can now accept new patients from the Patient List.
       </div>
     `;
+    console.log('✅ Chat window reset');
   }
   
-  console.log('✅ Consultation ended');
-  alert('Consultation ended successfully.');
+  console.log('✅ Consultation ended successfully');
+  alert('✅ Consultation ended successfully.');
 }
-
 
 
 // ========== PATIENT LISTENS FOR DOCTOR ACCEPTANCE - FIXED ==========
@@ -1978,18 +1991,31 @@ function startListeningToDoctorMessages(requestId) {
   window.messageListener = unsubscribe;
 }
 
-// Helper function to display messages (same as doctor side)
+// Helper function to display messages
 function displayMessageInChat(message, sender) {
   const chatWindow = document.getElementById('chatWindow');
   if (!chatWindow) return;
   
-  const className = sender === 'doctor' ? 'bot-msg' : 'user-msg';
+  // ✅ FIX: Determine correct CSS class based on sender
+  let className;
+  
+  // Check if we're in doctor mode
+  const isDoctorMode = window.activePatient != null;
+  
+  if (isDoctorMode) {
+    // Doctor interface: patient=left(blue), doctor=right(green)
+    className = sender === 'patient' ? 'bot-msg' : 'user-msg';
+  } else {
+    // Patient interface: doctor=left(blue), patient=right(green)
+    className = sender === 'doctor' ? 'bot-msg' : 'user-msg';
+  }
   
   chatWindow.innerHTML += `<div class="${className}">${message}</div>`;
   chatWindow.scrollTop = chatWindow.scrollHeight;
   
-  console.log('💬 New message displayed from:', sender);
+  console.log('💬 New message displayed from:', sender, '| class:', className);
 }
+
 
 
 
@@ -5091,33 +5117,6 @@ function startConversationPolling(patientId) {
       loadConversationHistory(patientId);
     }
   }, 3000);
-}
-
-function endConsultation(patientId) {
-  if (!confirm('End this consultation? The patient will be notified.')) {
-    return;
-  }
-  
-  // Clear active patient
-  activePatientId = null;
-  
-  // Stop polling
-  if (conversationInterval) {
-    clearInterval(conversationInterval);
-    conversationInterval = null;
-  }
-  
-  // Hide search bar
-  const searchBar = document.querySelector('.search-bar');
-  if (searchBar) {
-    searchBar.style.display = 'none';
-  }
-  
-  // Reset to doctor welcome screen
-  initializeDoctorChatArea();
-  
-  // Cancel patient from list
-  cancelPatient(patientId);
 }
 
 function startVideoCall(patientId) {
