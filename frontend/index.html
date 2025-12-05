@@ -6141,6 +6141,17 @@ function toggleMenu() {
   }
 }
 
+// ✅ FORCE CACHE CLEAR - ADD THIS
+console.log('🔄 Script version: 2.0 - ' + new Date().toISOString());
+
+// Verify functions exist
+console.log('✅ Functions loaded:', {
+  startDoctorChat: typeof startDoctorChat,
+  sendDoctorMessage: typeof sendDoctorMessage,
+  loadPatientList: typeof loadPatientList
+});
+
+
 
 </script>
 </body>
