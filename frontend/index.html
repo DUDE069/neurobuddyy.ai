@@ -1525,7 +1525,57 @@ function startDoctorChat(patient) {
   chatSection.insertAdjacentHTML('beforeend', consultationHTML);
   
   console.log('✅ Doctor consultation mode activated with Voice/Video call buttons');
+
+  // ✅ ADD THIS - Start listening for patient messages
+  startListeningToPatientMessages(patient.id);
 }
+
+// ✅ LISTEN FOR PATIENT MESSAGES IN REAL-TIME
+function startListeningToPatientMessages(requestId) {
+  console.log('👂 Doctor listening for patient messages...');
+  
+  if (!window.firebaseDB) return;
+  
+  const { collection, query, where, orderBy, onSnapshot } = window.firestoreFunctions;
+  
+  // Listen to conversations collection
+  const q = query(
+    collection(window.firebaseDB, 'conversations'),
+    where('patientRequestId', '==', requestId),
+    orderBy('timestamp', 'asc')
+  );
+  
+  // Real-time listener
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === 'added') {
+        const msg = change.doc.data();
+        
+        // Only show patient messages (don't duplicate doctor's own messages)
+        if (msg.sender === 'patient') {
+          displayMessageInChat(msg.message, 'patient');
+        }
+      }
+    });
+  });
+  
+  // Store unsubscribe function for cleanup
+  window.messageListener = unsubscribe;
+}
+
+// Helper function to display messages
+function displayMessageInChat(message, sender) {
+  const chatWindow = document.getElementById('chatWindow');
+  if (!chatWindow) return;
+  
+  const className = sender === 'patient' ? 'bot-msg' : 'user-msg';
+  
+  chatWindow.innerHTML += `<div class="${className}">${message}</div>`;
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  
+  console.log('💬 New message displayed from:', sender);
+}
+
 
 // ✅ SEND MESSAGE FROM DOCTOR TO PATIENT - FULLY FIXED
 async function sendDoctorMessage() {
@@ -1892,7 +1942,55 @@ function convertPatientToConsultationMode(doctorName, requestId, patientData) { 
   chatSection.insertAdjacentHTML('beforeend', consultationHTML);
   
   console.log('✅ Patient consultation mode activated');
+   startListeningToDoctorMessages(requestId);
 }
+
+// ✅ LISTEN FOR DOCTOR MESSAGES IN REAL-TIME
+function startListeningToDoctorMessages(requestId) {
+  console.log('👂 Patient listening for doctor messages...');
+  
+  if (!window.firebaseDB) return;
+  
+  const { collection, query, where, orderBy, onSnapshot } = window.firestoreFunctions;
+  
+  // Listen to conversations collection
+  const q = query(
+    collection(window.firebaseDB, 'conversations'),
+    where('patientRequestId', '==', requestId),
+    orderBy('timestamp', 'asc')
+  );
+  
+  // Real-time listener
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === 'added') {
+        const msg = change.doc.data();
+        
+        // Only show doctor messages (don't duplicate patient's own messages)
+        if (msg.sender === 'doctor') {
+          displayMessageInChat(msg.message, 'doctor');
+        }
+      }
+    });
+  });
+  
+  // Store unsubscribe function for cleanup
+  window.messageListener = unsubscribe;
+}
+
+// Helper function to display messages (same as doctor side)
+function displayMessageInChat(message, sender) {
+  const chatWindow = document.getElementById('chatWindow');
+  if (!chatWindow) return;
+  
+  const className = sender === 'doctor' ? 'bot-msg' : 'user-msg';
+  
+  chatWindow.innerHTML += `<div class="${className}">${message}</div>`;
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  
+  console.log('💬 New message displayed from:', sender);
+}
+
 
 
 // ✅ KEEP AND FIX THIS ONE
