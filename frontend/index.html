@@ -1327,14 +1327,13 @@ function displayPatients(patients) {
   console.log('🖼️ Displaying patients:', patients);
   
   const doctorList = document.getElementById('doctorList');
-  
   if (!doctorList) {
     console.error('❌ doctorList element not found');
     return;
   }
   
   if (!patients || patients.length === 0) {
-    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">📭 No patients waiting</p>';
+    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No patients waiting</p>';
     return;
   }
   
@@ -1347,26 +1346,46 @@ function displayPatients(patients) {
     card.className = 'doctor-card';
     card.innerHTML = `
       <div class="doctor-info">
-        <div class="doctor-name">👤 ${patient.patientName || 'Anonymous Patient'}</div>
+        <div class="doctor-name">${patient.patientName || 'Anonymous Patient'}</div>
         <div class="doctor-specialty">Age: ${patient.age || 'N/A'} • ${patient.urgency || 'Normal'}</div>
-        <div style="font-size: 0.75rem; color: #666; margin-top: 4px">
-          ${patient.message || 'Waiting for consultation'}
-        </div>
+        <div style="font-size: 0.75rem; color: #666; margin-top: 4px;">${patient.message || 'Waiting for consultation'}</div>
       </div>
       <div class="status-indicator status-available"></div>
     `;
     
-    // ✅ CORRECT - Add click handler
     card.addEventListener('click', () => {
       console.log('🔵 Patient card clicked:', patient);
-      acceptPatientRequest(patient);  // ✅ THIS IS CORRECT!
+      acceptPatientRequest(patient);
     });
     
     doctorList.appendChild(card);
   });
   
   console.log(`✅ Displayed ${patients.length} patient card(s)`);
+  
+  // ✅ UPDATE BANNER WITH NEW PATIENT COUNT
+  updateDoctorBanner(patients.length);
 }
+
+// ✅ ADD THIS NEW FUNCTION
+function updateDoctorBanner(patientCount) {
+  const chatWindow = document.getElementById('chatWindow');
+  if (!chatWindow) return;
+  
+  // Only update if doctor is NOT in active consultation
+  if (window.activePatient) return;
+  
+  // Find and update the welcome banner
+  const firstMessage = chatWindow.querySelector('.bot-msg');
+  if (firstMessage) {
+    firstMessage.innerHTML = `
+      <strong>👨‍⚕️ Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
+      Ready to help patients today.<br>
+      <span style="font-size: 1.1rem; font-weight: bold;">📋 ${patientCount} patient(s) waiting</span>
+    `;
+  }
+}
+
 
 // ========== DOCTOR ACCEPTS PATIENT REQUEST ==========
 
@@ -1375,8 +1394,7 @@ function displayPatients(patients) {
 async function acceptPatientRequest(patient) {
   console.log('👨‍⚕️ Doctor accepting patient:', patient);
   
-  // SHOW CONFIRMATION DIALOG
-  const confirmed = confirm(`Patient: ${patient.patientName || 'Unknown'}\nAge: ${patient.age || 'Not provided'}\nMessage: ${patient.message || 'None'}\n\nDo you want to start consultation with this patient?`);
+  const confirmed = confirm(`Patient: ${patient.patientName}\nAge: ${patient.age}\nMessage: ${patient.message}\n\nDo you want to start consultation with this patient?`);
   
   if (!confirmed) {
     console.log('❌ Doctor declined');
@@ -1391,18 +1409,19 @@ async function acceptPatientRequest(patient) {
     
     const { doc, updateDoc } = window.firestoreFunctions;
     
-    // UPDATE REQUEST STATUS TO ACCEPTED
     await updateDoc(doc(window.firebaseDB, 'patientRequests', patient.id), {
       status: 'accepted',
       acceptedAt: new Date().toISOString(),
-      notified: false // Will be set to true after patient is notified
+      notified: false
     });
     
     console.log('✅ Patient request accepted');
-    alert(`Request Accepted! You can now start consultation with ${patient.patientName}.`);
     
-    // START CHAT WITH PATIENT
-    startDoctorChat(patient);
+    // ✅ CONVERT CHAT BOX TO CONSULTATION MODE
+    convertToConsultationWaitingMode(patient);
+    
+    // ✅ Listen for patient response
+    listenForPatientResponse(patient);
     
   } catch (error) {
     console.error('❌ Error accepting patient:', error);
@@ -1410,6 +1429,98 @@ async function acceptPatientRequest(patient) {
   }
 }
 
+// ✅ ADD THIS NEW FUNCTION
+function convertToConsultationWaitingMode(patient) {
+  console.log('🔄 Converting to consultation waiting mode...');
+  
+  // Hide normal search bar (AI chat)
+  const searchBar = document.querySelector('.search-bar');
+  if (searchBar) searchBar.style.display = 'none';
+  
+  // Update chat window
+  const chatWindow = document.getElementById('chatWindow');
+  if (chatWindow) {
+    chatWindow.innerHTML = `
+      <div class="bot-msg" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+        <strong>✅ Consultation Request Accepted!</strong><br>
+        Patient: <strong>${patient.patientName}</strong> (Age: ${patient.age})
+      </div>
+      <div class="bot-msg" style="background: #fbbf24;">
+        <strong>⏳ Waiting for Patient Response...</strong><br>
+        You have accepted ${patient.patientName}'s consultation request.<br>
+        Waiting for patient to join the conversation...
+      </div>
+    `;
+  }
+  
+  console.log('✅ Converted to waiting mode');
+}
+
+
+// ✅ Show waiting banner (doctor side)
+function showWaitingForPatientBanner(patient) {
+  const chatWindow = document.getElementById('chatWindow');
+  if (!chatWindow) return;
+  
+  chatWindow.innerHTML = `
+    <div class="bot-msg" style="background: #fbbf24;">
+      <strong>⏳ Waiting for Patient Response...</strong><br>
+      You have accepted <strong>${patient.patientName}</strong>'s consultation request.<br>
+      Waiting for patient to join the conversation...
+    </div>
+  `;
+}
+
+// ✅ Listen for patient response (accept or decline)
+function listenForPatientResponse(patient) {
+  console.log('👂 Listening for patient response...');
+  
+  if (!window.firebaseDB) return;
+  
+  const { doc, onSnapshot } = window.firestoreFunctions;
+  
+  const unsubscribe = onSnapshot(doc(window.firebaseDB, 'patientRequests', patient.id), (docSnapshot) => {
+    if (docSnapshot.exists()) {
+      const data = docSnapshot.data();
+      console.log('📡 Patient request status:', data.status);
+      
+      if (data.status === 'declined') {
+        // Patient declined
+        unsubscribe();
+        
+        alert(`❌ ${patient.patientName} declined the consultation.`);
+        
+        // ✅ RESET TO NORMAL CHAT BOX
+        resetDoctorToNormalChat();
+        
+      } else if (data.consultationStarted === true) {
+        // ✅ Patient accepted - start full consultation
+        unsubscribe();
+        startDoctorChat(patient);
+      }
+    }
+  });
+  
+  window.patientResponseListener = unsubscribe;
+}
+
+// ✅ ADD THIS FUNCTION
+function resetDoctorToNormalChat() {
+  console.log('🔄 Resetting doctor interface to normal chat...');
+  
+  // Clear active patient
+  window.activePatient = null;
+  
+  // Show search bar (AI chat)
+  const searchBar = document.querySelector('.search-bar');
+  if (searchBar) searchBar.style.display = 'flex';
+  
+  // Reload patient list and show welcome banner
+  initializeDoctorChatArea();
+  loadPatientList();
+  
+  console.log('✅ Doctor interface reset');
+}
 
 // ✅ ADD THIS NEW FUNCTION - START DOCTOR CHAT WITH PATIENT
 // ✅ START DOCTOR CHAT WITH PATIENT - FIXED
@@ -1670,38 +1781,48 @@ function startVideoCall() {
 }
 
 
-function endConsultation() {
+async function endConsultation() {
   const confirmed = confirm('Are you sure you want to end this consultation?');
   
   if (!confirmed) return;
   
   console.log('🛑 Ending consultation...');
   
-  // ✅ Stop message listener
+  try {
+    // ✅ Notify Firebase that doctor ended consultation
+    if (window.activePatient && window.activePatient.id && window.firebaseDB) {
+      const { doc, updateDoc, serverTimestamp } = window.firestoreFunctions;
+      
+      await updateDoc(doc(window.firebaseDB, 'patientRequests', window.activePatient.id), {
+        status: 'ended',
+        endedAt: serverTimestamp(),
+        endedBy: 'doctor'
+      });
+      
+      console.log('✅ Consultation ended in Firebase');
+    }
+  } catch (error) {
+    console.error('❌ Error updating Firebase:', error);
+  }
+  
+  // Stop message listener
   if (window.messageListener) {
     window.messageListener();
     window.messageListener = null;
-    console.log('✅ Message listener stopped');
   }
   
-  // ✅ Clear active patient
+  // Clear active patient
   window.activePatient = null;
   
-  // ✅ Remove consultation controls
+  // Remove consultation controls
   const controls = document.getElementById('doctorConsultationControls');
-  if (controls) {
-    controls.remove();
-    console.log('✅ Consultation controls removed');
-  }
+  if (controls) controls.remove();
   
-  // ✅ Show search bar again
+  // Show search bar again
   const searchBar = document.querySelector('.search-bar');
-  if (searchBar) {
-    searchBar.style.display = 'flex';
-    console.log('✅ Search bar restored');
-  }
+  if (searchBar) searchBar.style.display = 'flex';
   
-  // ✅ Clear chat window and show welcome message
+  // Clear chat window
   const chatWindow = document.getElementById('chatWindow');
   if (chatWindow) {
     chatWindow.innerHTML = `
@@ -1710,7 +1831,6 @@ function endConsultation() {
         You can now accept new patients from the Patient List.
       </div>
     `;
-    console.log('✅ Chat window reset');
   }
   
   console.log('✅ Consultation ended successfully');
@@ -1860,21 +1980,20 @@ async function startPatientConsultation(doctorName, requestId, patientData) {
 }
 
 
-// ✅ CONVERT PATIENT CHAT TO CONSULTATION MODE - NEW
-function convertPatientToConsultationMode(doctorName, requestId, patientData) {  // ✅ Add requestId parameter
+// ✅ CONVERT PATIENT CHAT TO CONSULTATION MODE - COMPLETE VERSION
+function convertPatientToConsultationMode(doctorName, requestId, patientData) {
   console.log('🔄 Converting to consultation mode...');
   
   // ✅ Store consultation info WITH REQUEST ID
   window.activeConsultation = {
     doctorName: doctorName,
-    requestId: requestId,  // ✅ ADD THIS LINE
+    requestId: requestId,
     patientName: patientData?.patientName || 'Patient',
     patientData: patientData,
     startedAt: new Date().toISOString()
   };
   
-  console.log('✅ Stored activeConsultation:', window.activeConsultation);  // ✅ ADD DEBUG LOG
-
+  console.log('✅ Stored activeConsultation:', window.activeConsultation);
   
   // ✅ HIDE NORMAL SEARCH BAR
   const searchBar = document.querySelector('.search-bar');
@@ -1955,8 +2074,14 @@ function convertPatientToConsultationMode(doctorName, requestId, patientData) { 
   chatSection.insertAdjacentHTML('beforeend', consultationHTML);
   
   console.log('✅ Patient consultation mode activated');
-   startListeningToDoctorMessages(requestId);
+  
+  // ✅ START LISTENING FOR DOCTOR MESSAGES
+  startListeningToDoctorMessages(requestId);
+  
+  // ✅ START LISTENING FOR CONSULTATION END
+  listenForConsultationEnd(requestId);
 }
+
 
 // ✅ LISTEN FOR DOCTOR MESSAGES IN REAL-TIME
 function startListeningToDoctorMessages(requestId) {
@@ -2081,33 +2206,33 @@ async function sendPatientMessage() {
 
 
 
-// ✅ PATIENT DECLINES CONSULTATION - UPDATED
 async function declineConsultation(requestId) {
   console.log('❌ Patient declined consultation');
   
   try {
-    // ✅ NOTIFY DOCTOR THAT PATIENT DECLINED
+    // ✅ Update Firebase - mark as declined
     if (window.firebaseDB) {
       const { doc, updateDoc } = window.firestoreFunctions;
-      
       await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
         status: 'declined',
         notified: true,
-        declinedAt: new Date().toISOString()
+        declinedAt: new Date().toISOString(),
+        declineReason: 'Patient chose to connect later'
       });
+      
+      console.log('✅ Request marked as declined in Firebase');
     }
     
-    // ✅ CLOSE NOTIFICATION
+    // Close notification
     const modal = document.getElementById('acceptanceNotification');
     if (modal) modal.remove();
     
-    alert('You can connect with the doctor later from your request history.');
+    alert('✅ You can connect with the doctor later from your consultation history.');
     
   } catch (error) {
-    console.error('❌ Error declining:', error);
+    console.error('❌ Error declining consultation:', error);
   }
 }
-
 
 
 // ========== PATIENT ACCEPTS TO START CONSULTATION ==========
@@ -5743,64 +5868,36 @@ function switchToDoctorMode(doctorData) {
 }
 
 // Initialize Doctor Chat Area with Welcome Message
-async function initializeDoctorChatArea() {
+function initializeDoctorChatArea() {
+  console.log('✅ Doctor chat area initialized');
+  
   const chatWindow = document.getElementById('chatWindow');
   if (!chatWindow) return;
   
-  const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession') || '{}');
-  const doctorName = doctorData.name || 'Doctor';
+  // ✅ Get patient count
+  const patientCount = document.querySelectorAll('.doctor-card').length || 0;
   
-  // ✅ GET PATIENT COUNT
-  let patientCount = 0;
-  try {
-    if (window.firebaseDB && doctorData && doctorData.id) {
-      const { collection, getDocs, query, where } = window.firestoreFunctions;
-      const requestsRef = collection(window.firebaseDB, 'patientRequests');
-      const q = query(
-        requestsRef,
-        where('doctorId', '==', doctorData.id),
-        where('status', '==', 'pending')
-      );
-      const querySnapshot = await getDocs(q);
-      patientCount = querySnapshot.size;
-    }
-  } catch (error) {
-    console.error('Error getting patient count:', error);
-  }
-  
-  // ✅ SHOW PATIENT COUNT IN WELCOME MESSAGE
-  const patientMessage = patientCount === 0 
-    ? 'No patients waiting at the moment.' 
-    : patientCount === 1 
-      ? '📋 <strong>1 patient</strong> is waiting for consultation.' 
-      : `📋 <strong>${patientCount} patients</strong> are waiting for consultation.`;
-  
+  // ✅ Show welcome banner with patient count
   chatWindow.innerHTML = `
-    <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-                padding: 25px;
-                border-radius: 15px;
-                text-align: center;
-                margin: 20px;
-                border: 2px solid #2563eb;">
-      <div style="font-size: 3rem; margin-bottom: 15px;">👨‍⚕️</div>
-      <h2 style="color: #1e40af; margin: 0 0 10px 0;">Welcome, Dr. ${doctorName}!</h2>
-      <p style="color: #1e40af; font-size: 1.1rem; margin: 10px 0;">
-        ${patientMessage}
-      </p>
-      <p style="color: #3b82f6; font-size: 0.95rem; margin-top: 15px;">
-        👈 Click "Patient List" button to view waiting patients
-      </p>
+    <div class="bot-msg" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white;">
+      <strong>👨‍⚕️ Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
+      Ready to help patients today.<br>
+      <span style="font-size: 1.1rem; font-weight: bold;">📋 ${patientCount} patient(s) waiting</span>
+    </div>
+    <div class="bot-msg">
+      👋 Hello Doctor! While you wait for patients, feel free to ask me any medical questions or use me to research symptoms and conditions.
     </div>
   `;
   
-  // Hide search bar in doctor mode when no patient selected
+  // ✅ IMPORTANT: Make sure search bar is visible and working
   const searchBar = document.querySelector('.search-bar');
   if (searchBar) {
-    searchBar.style.display = 'none';
+    searchBar.style.display = 'flex';
   }
   
   console.log(`✅ Doctor chat area initialized (${patientCount} patients waiting)`);
 }
+
 
 // Global flag to track visibility
 let patientListVisible = false;
