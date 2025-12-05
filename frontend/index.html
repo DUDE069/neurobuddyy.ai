@@ -1529,6 +1529,9 @@ async function sendDoctorMessage() {
     alert('Please enter a message');
     return;
   }
+  // ✅ ADD THIS DEBUG LOG
+  console.log('🔍 activePatient check:', window.activePatient);
+  console.log('🔍 activePatient.id:', window.activePatient?.id);
   
   // Add message to chat IMMEDIATELY (optimistic update)
   const chatWindow = document.getElementById('chatWindow');
