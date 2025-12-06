@@ -5,13 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1400,maximum-scale=2.0,user-scalable=yes">
   <title>NEUROBUDDYY.ai</title>
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   
   <!-- ========== FIREBASE INTEGRATION ========== -->
   <script type="module">
     // Import Firebase modules
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs,getDoc, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // ✅ ADD THIS LINE - Firebase Authentication
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDnsuheauVnhqUcIhCyEXCNSNBdS1PQkII",
@@ -25,17 +28,23 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
+    const auth = getAuth(app);
     // Make Firebase available globally
     window.firebaseDB = db;
     window.firebaseApp = app;
-   window.firestoreFunctions = { collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc, onSnapshot };
-
+    window.firebaseAuth = auth;
+    window.firestoreFunctions = { collection, addDoc, getDocs,getDoc, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc, onSnapshot };
+    window.authFunctions = {
+    createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential
+    };
 
     console.log("✅ Firebase initialized successfully!");
-    console.log("📊 Firestore ready:", db);
+    console.log("📊 Firestore Auth ready:", auth);
+    
   </script>
   <!-- ========== END FIREBASE INTEGRATION ========== -->
+
+  
 
 
   <style>
@@ -912,26 +921,139 @@
     🎀 NEURO BUDDYY
   </header>
 
-  <!-- Role Selection Modal (First Visit) -->
+<!-- Role Selection Modal - First Visit -->
 <div id="roleModal" class="modal-overlay" style="display: none;">
   <div class="modal-content role-modal">
-    <h2>👋 Welcome to NEUROBUDDYY.AI</h2>
-    <p style="font-size: 1.1rem; color: #666; margin: 20px 0;">Are you a healthcare professional?</p>
+    <h2>Welcome to NEUROBUDDYY.AI</h2>
+    <p style="font-size: 1.1rem; color: #666; margin: 20px 0;">Are you a healthcare professional or a patient?</p>
     
     <div class="role-buttons">
-      <button class="btn-role btn-doctor" onclick="showDoctorRegister()">
-       🩺 Yes, I'm a Doctor
+      <!-- Doctor Option -->
+      <button class="btn-role btn-doctor" onclick="showDoctorLogin()">
+        👨‍⚕️ I'm a Doctor
       </button>
-      <button class="btn-role btn-guest" onclick="closeRoleModal()">
-       👤 Continue as Guest
+      
+      <!-- Patient Login Option -->
+      <button class="btn-role" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;" onclick="showPatientAuth()">
+        🧑 I'm a Patient (Login/Register)
+      </button>
+      
+      <!-- Guest Option -->
+      <button class="btn-role btn-guest" onclick="continueAsGuest()">
+        👤 Continue as Guest (No Login Required)
       </button>
     </div>
     
     <p style="margin-top: 20px; font-size: 0.9rem; color: #999;">
-      Already registered? <a href="#" onclick="showDoctorLogin(); event.preventDefault();" style="color: #2563eb; font-weight: bold;">Login here</a>
+      <strong>Benefits of Creating an Account:</strong><br>
+      • Access consultation history from any device<br>
+      • Save chat history permanently<br>
+      • Faster future consultations (no need to re-enter details)
     </p>
   </div>
 </div>
+
+<!-- ✅ PATIENT LOGIN/REGISTER MODAL -->
+<div id="patientAuthModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content doctor-form-modal">
+    <button class="modal-close" onclick="closePatientAuth()">×</button>
+    
+    <!-- Login Form -->
+    <div id="patientLoginForm">
+      <h2>Patient Login</h2>
+      <p style="color: #666; margin-bottom: 20px;">Access your consultation history</p>
+      
+      <form onsubmit="loginPatient(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="patientLoginEmail" placeholder="you@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="patientLoginPassword" placeholder="Enter your password" required>
+          <p style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
+            <a href="#" onclick="showPatientPasswordReset(); event.preventDefault();" style="color: #2563eb; font-size: 0.9rem; text-decoration: none; font-weight: 600;">
+              Forgot Password?
+            </a>
+          </p>
+        </div>
+        
+        <div class="form-buttons">
+          <button type="submit" class="btn-submit">
+            <span id="patientLoginBtnText">Login</span>
+            <span id="patientLoginBtnLoader" style="display: none;">Logging in...</span>
+          </button>
+          <button type="button" class="btn-cancel" onclick="closePatientAuth()">Cancel</button>
+        </div>
+      </form>
+      
+      <p class="form-footer">
+        Don't have an account? 
+        <a href="#" onclick="showPatientRegister(); event.preventDefault();">Register here</a>
+      </p>
+    </div>
+    
+    <!-- Register Form -->
+    <div id="patientRegisterForm" style="display: none;">
+      <h2>Patient Registration</h2>
+      <p style="color: #666; margin-bottom: 20px;">Create your account</p>
+      
+      <form onsubmit="registerPatient(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="patientRegName" placeholder="John Doe" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" id="patientRegAge" placeholder="25" min="1" max="120" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="patientRegEmail" placeholder="you@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="patientRegPassword" placeholder="Minimum 6 characters" required minlength="6">
+        </div>
+        
+        <div class="form-buttons">
+          <button type="submit" class="btn-submit">
+            <span id="patientRegBtnText">Register</span>
+            <span id="patientRegBtnLoader" style="display: none;">Processing...</span>
+          </button>
+          <button type="button" class="btn-cancel" onclick="closePatientAuth()">Cancel</button>
+        </div>
+      </form>
+      
+      <p class="form-footer">
+        Already have an account? 
+        <a href="#" onclick="showPatientLogin(); event.preventDefault();">Login here</a>
+      </p>
+    </div>
+    
+    <!-- Forgot Password Form -->
+    <div id="patientPasswordResetForm" style="display: none;">
+      <h2>Reset Password</h2>
+      <p style="color: #666; margin-bottom: 20px;">Enter your email to receive a password reset link</p>
+      
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="patientResetEmail" placeholder="you@example.com">
+      </div>
+      
+      <button class="btn-submit" onclick="sendPatientPasswordReset()">Send Reset Link</button>
+      
+      <p class="form-footer">
+        <a href="#" onclick="showPatientLogin(); event.preventDefault();">Back to Login</a>
+      </p>
+    </div>
+  </div>
+</div>
+
 
 <!-- Doctor Registration Modal -->
 <div id="doctorRegModal" class="modal-overlay" style="display: none;">
@@ -1035,37 +1157,645 @@
   </div>
 </div>
 
-<!-- Add this modal after your login modal -->
+<!-- ✅ DOCTOR PASSWORD RESET MODAL (SIMPLIFIED) -->
 <div id="passwordResetModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
-    <button class="modal-close" onclick="closePasswordReset()">✕</button>
-    <h2>🔑 Reset Password</h2>
+    <button class="modal-close" onclick="closePasswordReset()">×</button>
+    <h2>Reset Password</h2>
     
-    <div id="resetStep1">
-      <p style="color: #666; margin-bottom: 20px;">Enter your email to receive a reset code</p>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="resetEmail" placeholder="doctor@example.com">
-      </div>
-      <button class="btn-submit" onclick="requestResetCode()">Send Reset Code</button>
+    <p style="color: #666; margin-bottom: 20px;">
+      Enter your email address and we'll send you a secure link to reset your password.
+    </p>
+    
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="resetEmail" placeholder="doctor@example.com">
     </div>
     
-    <div id="resetStep2" style="display: none;">
-      <p style="color: #666; margin-bottom: 20px;">Enter the 6-digit code and your new password</p>
-      <div class="form-group">
-        <label>Reset Code</label>
-        <input type="text" id="resetCode" placeholder="123456" maxlength="6">
-      </div>
-      <div class="form-group">
-        <label>New Password</label>
-        <input type="password" id="newPassword" placeholder="Minimum 6 characters" minlength="6">
-      </div>
-      <button class="btn-submit" onclick="submitPasswordReset()">Reset Password</button>
+    <div class="form-buttons">
+      <button class="btn-submit" onclick="requestResetCode()">
+        Send Reset Link
+      </button>
+      <button class="btn-cancel" onclick="closePasswordReset()">
+        Cancel
+      </button>
+    </div>
+    
+    <p class="form-footer">
+      <a href="#" onclick="showDoctorLogin(); event.preventDefault();">
+        Back to Login
+      </a>
+    </p>
+  </div>
+</div>
+
+<!-- ✅ ENHANCED SYMPTOM DETAILS MODAL -->
+<div id="symptomModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content" style="max-width: 600px;">
+    <button class="modal-close" onclick="closeSymptomModal()">×</button>
+    
+    <!-- Image Section -->
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img id="symptomImage" src="" alt="Symptom" 
+        style="width: 100%; max-width: 400px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+    </div>
+    
+    <!-- Title -->
+    <h2 id="symptomTitle" style="color: #2563eb; margin: 0 0 15px 0;">Symptom Name</h2>
+    
+    <!-- Category Badge -->
+    <div style="margin-bottom: 15px;">
+      <span id="symptomCategory" 
+        style="background: #dbeafe; color: #1e40af; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
+        Category
+      </span>
+    </div>
+    
+    <!-- Description -->
+    <div id="symptomDescription" 
+      style="color: #374151; line-height: 1.8; font-size: 1rem; margin-bottom: 20px;">
+      Description will appear here...
+    </div>
+    
+    <!-- Additional Info -->
+    <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #2563eb;">
+      <strong style="color: #1e40af;">💡 When to Seek Help:</strong>
+      <p id="symptomAdvice" style="margin: 10px 0 0 0; color: #1e40af; font-size: 0.95rem;">
+        Advice will appear here...
+      </p>
+    </div>
+    
+    <div style="margin-top: 20px; text-align: center;">
+      <button class="btn-submit" onclick="closeSymptomModal()">Close</button>
     </div>
   </div>
 </div>
 
+<!-- ✅ CALL INVITATION MODAL (For patient receiving call) -->
+<div id="callInvitationModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content" style="max-width: 450px; text-align: center;">
+    <h2 style="color: #2563eb; margin: 0 0 15px 0;">📞 Incoming Call</h2>
+    
+    <div style="font-size: 4rem; margin: 20px 0;">👨‍⚕️</div>
+    
+    <p style="font-size: 1.2rem; font-weight: bold; margin: 10px 0;" id="callerName">
+      Dr. John Doe
+    </p>
+    
+    <p style="color: #666; margin: 10px 0;" id="callType">
+      Voice Call
+    </p>
+    
+    <div style="display: flex; gap: 15px; margin-top: 30px;">
+      <button onclick="declineCall()" 
+        style="flex: 1; padding: 15px; background: #dc2626; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">
+        ❌ Decline
+      </button>
+      <button onclick="acceptCall()" 
+        style="flex: 1; padding: 15px; background: #10b981; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">
+        ✅ Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ ACTIVE CALL MODAL -->
+<div id="activeCallModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content" style="max-width: 800px; background: #1f2937;">
+    
+    <!-- Call Header -->
+    <div style="background: #374151; padding: 15px; border-radius: 10px 10px 0 0; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h3 style="color: white; margin: 0;" id="activeCallTitle">Dr. John Doe</h3>
+        <p style="color: #9ca3af; margin: 5px 0 0 0; font-size: 0.9rem;" id="callDuration">00:00</p>
+      </div>
+      <div style="background: #ef4444; padding: 8px 15px; border-radius: 20px;">
+        <span style="color: white; font-weight: bold;">● LIVE</span>
+      </div>
+    </div>
+    
+    <!-- Video Container -->
+    <div style="position: relative; background: #111827; padding: 20px; min-height: 400px;">
+      
+      <!-- Remote Video (other person) -->
+      <video id="remoteVideo" autoplay playsinline 
+        style="width: 100%; max-height: 500px; border-radius: 10px; background: #000;">
+      </video>
+      
+      <!-- Local Video (yourself - small overlay) -->
+      <video id="localVideo" autoplay muted playsinline 
+        style="position: absolute; top: 30px; right: 30px; width: 200px; height: 150px; border-radius: 10px; border: 3px solid white; background: #000;">
+      </video>
+      
+      <!-- Audio Only Indicator -->
+      <div id="audioOnlyIndicator" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+        <div style="font-size: 6rem;">🎤</div>
+        <p style="color: white; font-size: 1.5rem; margin-top: 20px;">Audio Call</p>
+      </div>
+    </div>
+    
+    <!-- Call Controls -->
+    <div style="background: #374151; padding: 20px; border-radius: 0 0 10px 10px; display: flex; justify-content: center; gap: 15px;">
+      
+      <!-- Mute Audio Button -->
+      <button id="muteBtn" onclick="toggleMute()" 
+        style="padding: 15px 20px; background: #6b7280; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; font-size: 1.5rem;">
+        🎤
+      </button>
+      
+      <!-- Toggle Video Button (only for video calls) -->
+      <button id="videoBtn" onclick="toggleVideo()" 
+        style="display: none; padding: 15px 20px; background: #6b7280; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; font-size: 1.5rem;">
+        📹
+      </button>
+      
+      <!-- End Call Button -->
+      <button onclick="endCall()" 
+        style="padding: 15px 20px; background: #dc2626; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; font-size: 1.5rem;">
+        📞
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
 <script>
+  // ========== WEBRTC / PEERJS INITIALIZATION ==========
+
+let peer = null;
+let currentCall = null;
+let localStream = null;
+let remoteStream = null;
+let callInProgress = false;
+
+// Initialize PeerJS
+function initializePeerJS(userId) {
+  try {
+    // Create peer with user's UID as ID
+    peer = new Peer(userId, {
+      debug: 2, // Show debug logs
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      }
+    });
+    
+    peer.on('open', (id) => {
+      console.log('✅ PeerJS connected with ID:', id);
+    });
+    
+    peer.on('error', (error) => {
+      console.error('❌ PeerJS error:', error);
+    });
+    
+    // Listen for incoming calls
+    peer.on('call', (incomingCall) => {
+      console.log('📞 Incoming call from:', incomingCall.peer);
+      handleIncomingCall(incomingCall);
+    });
+    
+    console.log('✅ PeerJS initialized');
+    
+  } catch (error) {
+    console.error('❌ Failed to initialize PeerJS:', error);
+  }
+}
+
+
+// ========== WEBRTC CALL FUNCTIONS ==========
+
+// Start voice call (Doctor initiates)
+async function startVoiceCall() {
+  if (!window.activePatient || !window.activePatient.id) {
+    alert('❌ No active patient. Please select a patient first.');
+    return;
+  }
+  
+  const patientName = window.activePatient.patientName || 'Patient';
+  
+  if (!confirm(`📞 Start voice call with ${patientName}?`)) {
+    return;
+  }
+  
+  try {
+    console.log('📞 Starting voice call...');
+    
+    // Get patient's userId from request
+    const patientData = await getPatientFromRequest(window.activePatient.id);
+    
+    if (!patientData || !patientData.userId) {
+      alert('❌ Cannot start call: Patient not logged in or user ID not found.');
+      return;
+    }
+    
+    // Send call invitation to patient
+    await sendCallInvitation(patientData.userId, 'voice', patientName);
+    
+    // Get local audio stream
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    
+    // Show "Calling..." UI
+    showCallingUI(patientName, 'voice');
+    
+  } catch (error) {
+    console.error('❌ Error starting voice call:', error);
+    
+    if (error.name === 'NotAllowedError') {
+      alert('❌ Microphone access denied. Please allow microphone access in your browser settings.');
+    } else {
+      alert('❌ Failed to start call: ' + error.message);
+    }
+  }
+}
+
+// Start video call (Doctor initiates)
+async function startVideoCall() {
+  if (!window.activePatient || !window.activePatient.id) {
+    alert('❌ No active patient. Please select a patient first.');
+    return;
+  }
+  
+  const patientName = window.activePatient.patientName || 'Patient';
+  
+  if (!confirm(`📹 Start video call with ${patientName}?`)) {
+    return;
+  }
+  
+  try {
+    console.log('📹 Starting video call...');
+    
+    // Get patient's userId
+    const patientData = await getPatientFromRequest(window.activePatient.id);
+    
+    if (!patientData || !patientData.userId) {
+      alert('❌ Cannot start call: Patient not logged in or user ID not found.');
+      return;
+    }
+    
+    // Send call invitation
+    await sendCallInvitation(patientData.userId, 'video', patientName);
+    
+    // Get local audio + video stream
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    
+    // Show "Calling..." UI
+    showCallingUI(patientName, 'video');
+    
+  } catch (error) {
+    console.error('❌ Error starting video call:', error);
+    
+    if (error.name === 'NotAllowedError') {
+      alert('❌ Camera/Microphone access denied. Please allow access in your browser settings.');
+    } else {
+      alert('❌ Failed to start call: ' + error.message);
+    }
+  }
+}
+
+// Get patient data from request ID
+async function getPatientFromRequest(requestId) {
+  try {
+    const { doc, getDoc } = window.firestoreFunctions;
+    const docRef = doc(window.firebaseDB, 'patientRequests', requestId);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data();
+    }
+    
+    return null;
+    
+  } catch (error) {
+    console.error('❌ Error getting patient data:', error);
+    return null;
+  }
+}
+
+// Send call invitation via Firebase
+async function sendCallInvitation(recipientUserId, callType, callerName) {
+  try {
+    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+    
+    const currentUser = window.firebaseAuth.currentUser;
+    
+    if (!currentUser) {
+      throw new Error('You must be logged in to make calls');
+    }
+    
+    const invitationData = {
+      callerId: currentUser.uid,
+      callerName: callerName,
+      recipientId: recipientUserId,
+      callType: callType, // 'voice' or 'video'
+      status: 'pending',
+      timestamp: serverTimestamp()
+    };
+    
+    await addDoc(collection(window.firebaseDB, 'callInvitations'), invitationData);
+    
+    console.log('✅ Call invitation sent to:', recipientUserId);
+    
+  } catch (error) {
+    console.error('❌ Error sending call invitation:', error);
+    throw error;
+  }
+}
+
+// Show "Calling..." UI
+function showCallingUI(recipientName, callType) {
+  document.getElementById('activeCallModal').style.display = 'flex';
+  document.getElementById('activeCallTitle').textContent = `Calling ${recipientName}...`;
+  document.getElementById('callDuration').textContent = 'Connecting...';
+  
+  // Show appropriate UI
+  if (callType === 'voice') {
+    document.getElementById('remoteVideo').style.display = 'none';
+    document.getElementById('localVideo').style.display = 'none';
+    document.getElementById('audioOnlyIndicator').style.display = 'block';
+    document.getElementById('videoBtn').style.display = 'none';
+  } else {
+    document.getElementById('remoteVideo').style.display = 'block';
+    document.getElementById('localVideo').style.display = 'block';
+    document.getElementById('audioOnlyIndicator').style.display = 'none';
+    document.getElementById('videoBtn').style.display = 'inline-block';
+    
+    // Show local video preview
+    document.getElementById('localVideo').srcObject = localStream;
+  }
+}
+
+// Listen for incoming call invitations (Patient side)
+function listenForCallInvitations() {
+  const currentUser = window.firebaseAuth.currentUser;
+  
+  if (!currentUser) return;
+  
+  const { collection, query, where, onSnapshot } = window.firestoreFunctions;
+  
+  const q = query(
+    collection(window.firebaseDB, 'callInvitations'),
+    where('recipientId', '==', currentUser.uid),
+    where('status', '==', 'pending')
+  );
+  
+  onSnapshot(q, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === 'added') {
+        const invitation = { id: change.doc.id, ...change.doc.data() };
+        showIncomingCallNotification(invitation);
+      }
+    });
+  });
+  
+  console.log('👂 Listening for call invitations...');
+}
+
+// Show incoming call notification
+function showIncomingCallNotification(invitation) {
+  console.log('📞 Incoming call from:', invitation.callerName);
+  
+  // Store invitation data
+  window.currentCallInvitation = invitation;
+  
+  // Update modal
+  document.getElementById('callerName').textContent = invitation.callerName;
+  document.getElementById('callType').textContent = invitation.callType === 'video' ? '📹 Video Call' : '📞 Voice Call';
+  
+  // Show modal
+  document.getElementById('callInvitationModal').style.display = 'flex';
+  
+  // Play ringtone (optional)
+  // playRingtone();
+}
+
+// Accept incoming call (Patient)
+async function acceptCall() {
+  if (!window.currentCallInvitation) {
+    alert('❌ No active call invitation');
+    return;
+  }
+  
+  try {
+    console.log('✅ Accepting call...');
+    
+    const invitation = window.currentCallInvitation;
+    
+    // Hide invitation modal
+    document.getElementById('callInvitationModal').style.display = 'none';
+    
+    // Get user media
+    const constraints = {
+      audio: true,
+      video: invitation.callType === 'video'
+    };
+    
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    
+    // Update invitation status in Firebase
+    const { doc, updateDoc } = window.firestoreFunctions;
+    await updateDoc(doc(window.firebaseDB, 'callInvitations', invitation.id), {
+      status: 'accepted'
+    });
+    
+    // Call the peer
+    currentCall = peer.call(invitation.callerId, localStream);
+    
+    currentCall.on('stream', (remoteStream) => {
+      handleRemoteStream(remoteStream, invitation.callType);
+    });
+    
+    // Show call UI
+    showActiveCallUI(invitation.callerName, invitation.callType);
+    
+  } catch (error) {
+    console.error('❌ Error accepting call:', error);
+    alert('❌ Failed to accept call: ' + error.message);
+  }
+}
+
+// Decline incoming call
+async function declineCall() {
+  if (!window.currentCallInvitation) return;
+  
+  try {
+    // Update invitation status
+    const { doc, updateDoc } = window.firestoreFunctions;
+    await updateDoc(doc(window.firebaseDB, 'callInvitations', window.currentCallInvitation.id), {
+      status: 'declined'
+    });
+    
+    // Hide modal
+    document.getElementById('callInvitationModal').style.display = 'none';
+    
+    window.currentCallInvitation = null;
+    
+    console.log('❌ Call declined');
+    
+  } catch (error) {
+    console.error('❌ Error declining call:', error);
+  }
+}
+
+// Handle incoming call (Doctor side - when patient accepts)
+function handleIncomingCall(incomingCall) {
+  currentCall = incomingCall;
+  
+  // Answer with local stream
+  currentCall.answer(localStream);
+  
+  // Listen for remote stream
+  currentCall.on('stream', (remoteStream) => {
+    const callType = document.getElementById('videoBtn').style.display === 'none' ? 'voice' : 'video';
+    handleRemoteStream(remoteStream, callType);
+  });
+}
+
+// Handle remote stream
+function handleRemoteStream(stream, callType) {
+  remoteStream = stream;
+  
+  console.log('✅ Received remote stream');
+  
+  if (callType === 'video') {
+    document.getElementById('remoteVideo').srcObject = stream;
+    document.getElementById('remoteVideo').style.display = 'block';
+    document.getElementById('audioOnlyIndicator').style.display = 'none';
+  } else {
+    // Audio only - just play audio, don't show video
+    const audio = new Audio();
+    audio.srcObject = stream;
+    audio.play();
+  }
+  
+  // Start call timer
+  startCallTimer();
+  
+  callInProgress = true;
+}
+
+// Show active call UI
+function showActiveCallUI(personName, callType) {
+  document.getElementById('activeCallModal').style.display = 'flex';
+  document.getElementById('activeCallTitle').textContent = personName;
+  
+  if (callType === 'voice') {
+    document.getElementById('remoteVideo').style.display = 'none';
+    document.getElementById('localVideo').style.display = 'none';
+    document.getElementById('audioOnlyIndicator').style.display = 'block';
+    document.getElementById('videoBtn').style.display = 'none';
+  } else {
+    document.getElementById('remoteVideo').style.display = 'block';
+    document.getElementById('localVideo').style.display = 'block';
+    document.getElementById('localVideo').srcObject = localStream;
+    document.getElementById('audioOnlyIndicator').style.display = 'none';
+    document.getElementById('videoBtn').style.display = 'inline-block';
+  }
+}
+
+// Call timer
+let callStartTime = null;
+let callTimerInterval = null;
+
+function startCallTimer() {
+  callStartTime = Date.now();
+  
+  callTimerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    
+    document.getElementById('callDuration').textContent = 
+      `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }, 1000);
+}
+
+// Toggle mute
+function toggleMute() {
+  if (!localStream) return;
+  
+  const audioTrack = localStream.getAudioTracks()[0];
+  
+  if (audioTrack) {
+    audioTrack.enabled = !audioTrack.enabled;
+    
+    const btn = document.getElementById('muteBtn');
+    if (audioTrack.enabled) {
+      btn.textContent = '🎤';
+      btn.style.background = '#6b7280';
+    } else {
+      btn.textContent = '🔇';
+      btn.style.background = '#dc2626';
+    }
+  }
+}
+
+// Toggle video
+function toggleVideo() {
+  if (!localStream) return;
+  
+  const videoTrack = localStream.getVideoTracks()[0];
+  
+  if (videoTrack) {
+    videoTrack.enabled = !videoTrack.enabled;
+    
+    const btn = document.getElementById('videoBtn');
+    if (videoTrack.enabled) {
+      btn.textContent = '📹';
+      btn.style.background = '#6b7280';
+    } else {
+      btn.textContent = '📵';
+      btn.style.background = '#dc2626';
+    }
+  }
+}
+
+// End call
+async function endCall() {
+  if (!confirm('End this call?')) return;
+  
+  try {
+    // Stop all tracks
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+      localStream = null;
+    }
+    
+    if (remoteStream) {
+      remoteStream.getTracks().forEach(track => track.stop());
+      remoteStream = null;
+    }
+    
+    // Close PeerJS call
+    if (currentCall) {
+      currentCall.close();
+      currentCall = null;
+    }
+    
+    // Stop timer
+    if (callTimerInterval) {
+      clearInterval(callTimerInterval);
+      callTimerInterval = null;
+    }
+    
+    // Hide call UI
+    document.getElementById('activeCallModal').style.display = 'none';
+    
+    callInProgress = false;
+    
+    console.log('✅ Call ended');
+    
+  } catch (error) {
+    console.error('❌ Error ending call:', error);
+  }
+}
+
+
 
 // ============================================
 // DOCTOR LOGIN MODAL FUNCTIONS
@@ -1094,30 +1824,206 @@ function closeDoctorDashboard() {
   document.getElementById('doctorDashboard').style.display = 'none';
 }
 
-// Logout doctor
-function logoutDoctor() {
-  if (!confirm('🚪 Logout?\n\nAre you sure you want to logout?')) {
+// ✅ DOCTOR LOGOUT
+async function logoutDoctor() {
+  if (!confirm('Logout? Are you sure you want to logout?')) return;
+  
+  try {
+    // Clear session data
+    localStorage.removeItem('userMode');
+    localStorage.removeItem('activeDoctorSession');
+    sessionStorage.removeItem('doctorSession');
+    
+    // Sign out from Firebase Auth
+    const { signOut } = window.authFunctions;
+    await signOut(window.firebaseAuth);
+    
+    console.log('✅ Doctor logged out');
+    
+    // Reload page
+    location.reload();
+    
+  } catch (error) {
+    console.error('❌ Logout error:', error);
+    alert('❌ Logout failed: ' + error.message);
+  }
+}
+
+
+// ========== PATIENT AUTHENTICATION ==========
+
+// Show/Hide patient auth modals
+function showPatientAuth() {
+  document.getElementById('patientAuthModal').style.display = 'flex';
+  document.getElementById('patientLoginForm').style.display = 'block';
+  document.getElementById('patientRegisterForm').style.display = 'none';
+  document.getElementById('patientPasswordResetForm').style.display = 'none';
+}
+
+function closePatientAuth() {
+  document.getElementById('patientAuthModal').style.display = 'none';
+}
+
+function showPatientLogin() {
+  document.getElementById('patientLoginForm').style.display = 'block';
+  document.getElementById('patientRegisterForm').style.display = 'none';
+  document.getElementById('patientPasswordResetForm').style.display = 'none';
+}
+
+function showPatientRegister() {
+  document.getElementById('patientLoginForm').style.display = 'none';
+  document.getElementById('patientRegisterForm').style.display = 'block';
+  document.getElementById('patientPasswordResetForm').style.display = 'none';
+}
+
+function showPatientPasswordReset() {
+  document.getElementById('patientLoginForm').style.display = 'none';
+  document.getElementById('patientRegisterForm').style.display = 'none';
+  document.getElementById('patientPasswordResetForm').style.display = 'block';
+}
+
+// ✅ PATIENT REGISTRATION
+async function registerPatient(event) {
+  event.preventDefault();
+  
+  const name = document.getElementById('patientRegName').value.trim();
+  const age = parseInt(document.getElementById('patientRegAge').value);
+  const email = document.getElementById('patientRegEmail').value.trim();
+  const password = document.getElementById('patientRegPassword').value;
+  
+  // Show loading
+  document.getElementById('patientRegBtnText').style.display = 'none';
+  document.getElementById('patientRegBtnLoader').style.display = 'inline';
+  
+  try {
+    // Create Firebase Auth account
+    const { createUserWithEmailAndPassword } = window.authFunctions;
+    const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+    const user = userCredential.user;
+    
+    // Save patient data to Firestore
+    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+    await addDoc(collection(window.firebaseDB, 'patients'), {
+      userId: user.uid,
+      name: name,
+      age: age,
+      email: email,
+      registeredAt: serverTimestamp(),
+      role: 'patient'
+    });
+    
+    console.log('✅ Patient registered:', user.uid);
+    alert('✅ Registration successful! You are now logged in.');
+    
+    // Close modal and initialize patient mode
+    closePatientAuth();
+    initializePatientMode();
+    
+  } catch (error) {
+    console.error('❌ Registration error:', error);
+    
+    if (error.code === 'auth/email-already-in-use') {
+      alert('❌ This email is already registered. Please login instead.');
+    } else if (error.code === 'auth/weak-password') {
+      alert('❌ Password should be at least 6 characters.');
+    } else {
+      alert('❌ Registration failed: ' + error.message);
+    }
+  } finally {
+    // Hide loading
+    document.getElementById('patientRegBtnText').style.display = 'inline';
+    document.getElementById('patientRegBtnLoader').style.display = 'none';
+  }
+}
+
+// ✅ PATIENT LOGIN
+async function loginPatient(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('patientLoginEmail').value.trim();
+  const password = document.getElementById('patientLoginPassword').value;
+  
+  // Show loading
+  document.getElementById('patientLoginBtnText').style.display = 'none';
+  document.getElementById('patientLoginBtnLoader').style.display = 'inline';
+  
+  try {
+    const { signInWithEmailAndPassword } = window.authFunctions;
+    const userCredential = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+    const user = userCredential.user;
+    
+    console.log('✅ Patient logged in:', user.uid);
+    alert('✅ Welcome back!');
+    
+    // Close modal and initialize patient mode
+    closePatientAuth();
+    initializePatientMode();
+    
+  } catch (error) {
+    console.error('❌ Login error:', error);
+    
+    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+      alert('❌ Invalid email or password.');
+    } else if (error.code === 'auth/invalid-credential') {
+      alert('❌ Invalid credentials. Please check your email and password.');
+    } else {
+      alert('❌ Login failed: ' + error.message);
+    }
+  } finally {
+    // Hide loading
+    document.getElementById('patientLoginBtnText').style.display = 'inline';
+    document.getElementById('patientLoginBtnLoader').style.display = 'none';
+  }
+}
+
+// ✅ SEND PASSWORD RESET EMAIL
+async function sendPatientPasswordReset() {
+  const email = document.getElementById('patientResetEmail').value.trim();
+  
+  if (!email) {
+    alert('Please enter your email address.');
     return;
   }
   
-  // Clear all doctor session data
-  localStorage.removeItem('userMode');
-  localStorage.removeItem('activeDoctorSession');
-  sessionStorage.removeItem('doctorSession');
-  currentDoctor = null;
-  activePatientId = null;
-  
-  // Clear any active intervals
-  if (conversationInterval) {
-    clearInterval(conversationInterval);
-    conversationInterval = null;
+  try {
+    const { sendPasswordResetEmail } = window.authFunctions;
+    await sendPasswordResetEmail(window.firebaseAuth, email);
+    
+    alert('✅ Password reset email sent! Check your inbox.');
+    showPatientLogin();
+    
+  } catch (error) {
+    console.error('❌ Password reset error:', error);
+    
+    if (error.code === 'auth/user-not-found') {
+      alert('❌ No account found with this email.');
+    } else {
+      alert('❌ Failed to send reset email: ' + error.message);
+    }
   }
-  
-  console.log('✅ Doctor logged out');
-  
-  // Reload page to reset to patient mode
-  location.reload();
 }
+
+// ✅ PATIENT LOGOUT
+async function logoutPatient() {
+  if (!confirm('Are you sure you want to logout?')) return;
+  
+  try {
+    const { signOut } = window.authFunctions;
+    await signOut(window.firebaseAuth);
+    
+    console.log('✅ Patient logged out');
+    alert('✅ Logged out successfully.');
+    
+    // Reload page
+    location.reload();
+    
+  } catch (error) {
+    console.error('❌ Logout error:', error);
+    alert('❌ Logout failed: ' + error.message);
+  }
+}
+
+
 
 
 // ============================================
@@ -1269,14 +2175,32 @@ function getDoctorWarningMessage(status) {
 async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   closeDoctorConnectionModal();
   
-  // ✅ ASK FOR NAME AND AGE
-  const patientName = prompt('Please enter your name:', 'Anonymous Patient');
+  // ✅ Check if user is logged in
+  const user = window.firebaseAuth.currentUser;
+  let patientName, patientAge;
+  
+  if (user) {
+    // Get patient data from Firebase
+    const patientData = await getPatientData(user.uid);
+    if (patientData) {
+      patientName = patientData.name;
+      patientAge = patientData.age;
+    } else {
+      // Fallback if data missing
+      patientName = prompt('Please enter your name:', 'Anonymous Patient');
+      patientAge = prompt('Please enter your age:', '');
+    }
+  } else {
+    // Guest mode - ask for details
+    patientName = prompt('Please enter your name:', 'Anonymous Patient');
+    patientAge = prompt('Please enter your age:', '');
+  }
+  
   if (!patientName || patientName.trim() === '') {
     alert('Name is required to connect with doctor');
     return;
   }
   
-  const patientAge = prompt('Please enter your age:', '');
   if (!patientAge || isNaN(patientAge) || patientAge < 1) {
     alert('Valid age is required');
     return;
@@ -1290,10 +2214,10 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
     
     const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
     
-    // ✅ SAVE NAME AND AGE PROPERLY
+    // ✅ Save request with userId (if logged in)
     const requestData = {
       patientName: patientName.trim(),
-      age: parseInt(patientAge),  // ✅ Save age as number
+      age: parseInt(patientAge),
       doctorId: doctorId,
       doctorName: doctorName,
       doctorSpecialty: doctorSpecialty,
@@ -1303,10 +2227,20 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
       message: `Patient ${patientName} (Age: ${patientAge}) wants to consult with you.`
     };
     
-    await addDoc(collection(window.firebaseDB, 'patientRequests'), requestData);
+    // ✅ Add userId if user is logged in
+    if (user) {
+      requestData.userId = user.uid;
+      requestData.userEmail = user.email;
+    }
     
-    alert(`Request Sent!\n\nYour consultation request has been sent to Dr. ${doctorName}.\n\nPlease keep this page open to receive updates.`);
-    console.log('✅ Consultation request sent:', requestData);
+    const docRef = await addDoc(collection(window.firebaseDB, 'patientRequests'), requestData);
+    
+    alert(`✅ Request Sent!\n\nYour consultation request has been sent to Dr. ${doctorName}.\n\nKeep this page open to receive updates.`);
+    
+    console.log('✅ Consultation request sent:', docRef.id);
+    
+    // Listen for doctor acceptance
+    startListeningForDoctorAcceptance(docRef.id, doctorName);
     
   } catch (error) {
     console.error('❌ Error sending request:', error);
@@ -1314,10 +2248,34 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   }
 }
 
-
-function showSuccessModal(doctorName) {
-  alert(`✅ Request Sent Successfully!\n\n👨‍⚕️ Doctor: ${doctorName}\n\nYour consultation request has been sent. The doctor will be notified and will respond soon.\n\nPlease keep this page open to receive updates.`);
+// ✅ GET PATIENT DATA BY USER ID
+async function getPatientData(userId) {
+  try {
+    const { collection, query, where, getDocs } = window.firestoreFunctions;
+    
+    const q = query(
+      collection(window.firebaseDB, 'patients'),
+      where('userId', '==', userId)
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      return {
+        id: doc.id,
+        ...doc.data()
+      };
+    }
+    
+    return null;
+    
+  } catch (error) {
+    console.error('❌ Error getting patient data:', error);
+    return null;
+  }
 }
+
 
 // ============================================
 // UPDATE displayDoctors TO USE NEW MODAL
@@ -1391,41 +2349,43 @@ function updateDoctorBanner(patientCount) {
 
 // When doctor clicks patient card
 // DOCTOR ACCEPTS PATIENT REQUEST (When doctor clicks patient card)
-async function acceptPatientRequest(patient) {
-  console.log('👨‍⚕️ Doctor accepting patient:', patient);
-  
-  const confirmed = confirm(`Patient: ${patient.patientName}\nAge: ${patient.age}\nMessage: ${patient.message}\n\nDo you want to start consultation with this patient?`);
-  
-  if (!confirmed) {
-    console.log('❌ Doctor declined');
+async function acceptPatientRequest(requestId, patientName, urgency) {
+  if (!confirm(`Accept consultation request from ${patientName}?`)) {
     return;
   }
   
   try {
-    if (!window.firebaseDB) {
-      alert('Firebase not initialized');
-      return;
-    }
-    
     const { doc, updateDoc } = window.firestoreFunctions;
     
-    await updateDoc(doc(window.firebaseDB, 'patientRequests', patient.id), {
-      status: 'accepted',
-      acceptedAt: new Date().toISOString(),
-      notified: false
+    // Update request status
+    await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
+      status: 'active',
+      acceptedAt: new Date().toISOString()
     });
     
-    console.log('✅ Patient request accepted');
+    // ✅ STORE ACTIVE PATIENT DATA GLOBALLY (for calls)
+    const { getDoc } = window.firestoreFunctions;
+    const requestDoc = await getDoc(doc(window.firebaseDB, 'patientRequests', requestId));
     
-    // ✅ CONVERT CHAT BOX TO CONSULTATION MODE
-    convertToConsultationWaitingMode(patient);
+    if (requestDoc.exists()) {
+      window.activePatient = {
+        id: requestId,
+        ...requestDoc.data()
+      };
+      console.log('✅ Active patient stored:', window.activePatient);
+    }
     
-    // ✅ Listen for patient response
-    listenForPatientResponse(patient);
+    alert(`✅ Request Accepted!\n\nYou are now consulting with ${patientName}.`);
+    
+    // Hide requests panel and show consultation interface
+    document.getElementById('doctorRequestsPanel').style.display = 'none';
+    
+    // Initialize doctor consultation mode
+    startDoctorConsultation(requestId, patientName);
     
   } catch (error) {
-    console.error('❌ Error accepting patient:', error);
-    alert('Failed to accept patient. Please try again.');
+    console.error('❌ Error accepting request:', error);
+    alert('Failed to accept request. Please try again.');
   }
 }
 
@@ -1937,6 +2897,9 @@ function showDoctorAcceptanceNotification(doctorName, requestId, patientData) {
     </div>
   `;
   
+
+
+  
   // Remove existing notification if any
   const existing = document.getElementById('acceptanceNotification');
   if (existing) existing.remove();
@@ -2409,6 +3372,141 @@ function startVideoCall() {
   // TODO: Implement WebRTC video call
 }
 
+// ========== ENHANCED SYMPTOM DATABASE ==========
+
+const symptomDatabase = {
+  // Neurological Symptoms
+  'headache': {
+    name: 'Headache',
+    category: 'Neurological',
+    image: 'https://images.unsplash.com/photo-1584515933487-779824d29309?w=500',
+    description: 'A headache is pain or discomfort in the head, scalp, or neck area. It can range from mild to severe and may be throbbing, constant, sharp, or dull. Common types include tension headaches, migraines, and cluster headaches. Headaches can be caused by stress, dehydration, lack of sleep, eye strain, sinus infections, or underlying medical conditions. Most headaches are not serious and can be treated with rest, hydration, and over-the-counter pain relievers.',
+    advice: 'Seek immediate medical attention if you experience sudden severe headache, headache with fever and stiff neck, headache after head injury, or headache with confusion or loss of consciousness.'
+  },
+  
+  'dizziness': {
+    name: 'Dizziness',
+    category: 'Neurological',
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500',
+    description: 'Dizziness is a feeling of lightheadedness, unsteadiness, or spinning sensation (vertigo). It can affect your balance and coordination, making you feel like you or your surroundings are moving when they are not. Common causes include inner ear problems, low blood pressure, dehydration, anxiety, medication side effects, or neurological conditions. Episodes can last from seconds to hours and may be accompanied by nausea or vomiting.',
+    advice: 'Consult a doctor if dizziness is frequent, severe, accompanied by chest pain, rapid heartbeat, difficulty breathing, or if it occurs after a head injury. Immediate care is needed if you experience sudden severe dizziness with double vision or difficulty speaking.'
+  },
+  
+  'numbness': {
+    name: 'Numbness & Tingling',
+    category: 'Neurological',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500',
+    description: 'Numbness is a loss or decrease in sensation in a part of your body, often accompanied by tingling (pins and needles sensation). It commonly occurs in hands, feet, arms, or legs. Causes include nerve compression (like carpal tunnel syndrome), poor circulation, diabetes, vitamin deficiencies, multiple sclerosis, or prolonged pressure on a nerve. Temporary numbness from sitting in one position too long is usually harmless, but persistent or unexplained numbness requires medical evaluation.',
+    advice: 'Seek immediate medical attention if numbness occurs suddenly, affects one side of your body, is accompanied by weakness or difficulty speaking, follows a head injury, or involves loss of bowel or bladder control. These could indicate stroke or spinal cord injury.'
+  },
+  
+  'seizure': {
+    name: 'Seizures',
+    category: 'Neurological',
+    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500',
+    description: 'A seizure is a sudden, uncontrolled electrical disturbance in the brain that can cause changes in behavior, movements, feelings, or consciousness. Symptoms vary widely and may include convulsions, muscle stiffness, loss of awareness, staring spells, temporary confusion, or uncontrollable jerking movements. Seizures can be caused by epilepsy, high fever, head trauma, stroke, brain tumors, infections, low blood sugar, or drug withdrawal. Not all seizures involve convulsions, and some may appear as brief lapses in awareness.',
+    advice: 'Call emergency services immediately if a seizure lasts more than 5 minutes, the person has multiple seizures without regaining consciousness, has difficulty breathing after the seizure, or is injured during the seizure. First-time seizures always require medical evaluation.'
+  },
+  
+  'memory-loss': {
+    name: 'Memory Loss',
+    category: 'Neurological',
+    image: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=500',
+    description: 'Memory loss (amnesia) is the inability to recall information or past experiences. It can be temporary or permanent, and may affect recent memories (short-term) or distant memories (long-term). Mild forgetfulness is normal with aging, but significant memory loss can indicate serious conditions. Causes include head injury, stroke, dementia, Alzheimer\'s disease, vitamin B12 deficiency, thyroid problems, medication side effects, stress, depression, or alcohol abuse. Memory problems may also involve difficulty learning new information or confusion about time and place.',
+    advice: 'Consult a doctor if memory loss interferes with daily activities, worsens over time, is accompanied by confusion or personality changes, or if you forget recent events but remember distant past clearly. Sudden severe memory loss requires immediate medical attention.'
+  },
+  
+  // Respiratory Symptoms
+  'cough': {
+    name: 'Persistent Cough',
+    category: 'Respiratory',
+    image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=500',
+    description: 'A persistent cough is one that lasts more than 8 weeks in adults or 4 weeks in children. It can be dry (non-productive) or wet (productive, bringing up mucus). Common causes include post-nasal drip, asthma, acid reflux, chronic bronchitis, allergies, smoking, or certain blood pressure medications. Less commonly, it can indicate more serious conditions like pneumonia, tuberculosis, lung cancer, or heart problems. A cough is the body\'s way of clearing the airways, but chronic coughing can disrupt sleep, cause fatigue, and affect quality of life.',
+    advice: 'See a doctor if cough lasts more than 3 weeks, produces blood or thick discolored mucus, is accompanied by high fever, shortness of breath, chest pain, wheezing, or unexplained weight loss. Seek immediate care for severe difficulty breathing.'
+  },
+  
+  'shortness-breath': {
+    name: 'Shortness of Breath',
+    category: 'Respiratory',
+    image: 'https://images.unsplash.com/photo-1584515933487-779824d29309?w=500',
+    description: 'Shortness of breath (dyspnea) is difficulty breathing or feeling like you cannot get enough air. It can occur suddenly (acute) or develop gradually (chronic). Common causes include asthma, COPD, heart disease, anxiety, anemia, pneumonia, blood clots in lungs, or being out of shape. You may feel breathless during physical activity, at rest, or when lying down. Associated symptoms may include wheezing, chest tightness, rapid heartbeat, or bluish lips. Chronic shortness of breath significantly impacts daily activities and quality of life.',
+    advice: 'Call emergency services immediately if shortness of breath is sudden and severe, accompanied by chest pain, fainting, or blue lips. Seek urgent medical care if breathing difficulty worsens rapidly, occurs with swelling in feet and ankles, or is accompanied by high fever.'
+  },
+  
+  'chest-pain': {
+    name: 'Chest Pain',
+    category: 'Cardiovascular',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500',
+    description: 'Chest pain is discomfort or pain felt anywhere in the chest area, from the neck to the upper abdomen. It can feel like sharp stabbing, dull aching, crushing pressure, or burning sensation. While some chest pain is related to heart problems (angina, heart attack), many cases are caused by less serious conditions like indigestion, muscle strain, anxiety, rib problems, or lung conditions. Heart-related chest pain often spreads to the jaw, shoulders, arms, or back. The character, location, duration, and triggers of chest pain help determine its cause.',
+    advice: 'Call emergency services immediately if chest pain is sudden and severe, crushing or squeezing, radiating to jaw or left arm, accompanied by sweating, nausea, shortness of breath, or lasting more than a few minutes. Do not drive yourself - wait for ambulance. Even if pain subsides, seek immediate evaluation for potential heart attack.'
+  },
+  
+  // Pain Symptoms
+  'back-pain': {
+    name: 'Back Pain',
+    category: 'Musculoskeletal',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500',
+    description: 'Back pain is one of the most common medical complaints, affecting the lower back (lumbar), middle back (thoracic), or upper back and neck (cervical) regions. Pain can be acute (lasting days to weeks) or chronic (lasting more than 3 months). Causes include muscle or ligament strain, bulging or ruptured discs, arthritis, osteoporosis, poor posture, lifting heavy objects improperly, or prolonged sitting. Most back pain improves with rest, gentle exercise, and over-the-counter pain relievers within a few weeks. Chronic back pain may indicate underlying structural problems.',
+    advice: 'Seek medical attention if back pain follows a fall or injury, is severe and doesn\'t improve with rest, causes numbness or weakness in legs, is accompanied by unexplained weight loss or fever, or causes loss of bowel or bladder control (emergency - call immediately).'
+  },
+  
+  'joint-pain': {
+    name: 'Joint Pain',
+    category: 'Musculoskeletal',
+    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500',
+    description: 'Joint pain (arthralgia) is discomfort, aches, or soreness in any of the body\'s joints - knees, hips, shoulders, elbows, wrists, or fingers. It can range from mild to debilitating and may be constant or intermittent. Common causes include osteoarthritis (wear and tear), rheumatoid arthritis (autoimmune), gout, bursitis, sprains, infections, or lupus. Joint pain may be accompanied by swelling, stiffness, redness, warmth, or reduced range of motion. Age, previous injuries, obesity, and family history increase risk. Managing weight and staying active can help prevent and reduce joint pain.',
+    advice: 'Consult a doctor if joint pain is severe, sudden, accompanied by significant swelling or redness, lasts more than a few weeks, or limits daily activities. Seek immediate care if joint pain follows an injury with severe swelling and deformity, or if accompanied by high fever and inability to move the joint.'
+  },
+  
+  // Digestive Symptoms
+  'nausea': {
+    name: 'Nausea & Vomiting',
+    category: 'Digestive',
+    image: 'https://images.unsplash.com/photo-1584515933487-779824d29309?w=500',
+    description: 'Nausea is an uncomfortable sensation of wanting to vomit, often felt in the back of the throat and stomach. It may or may not lead to actual vomiting. Common causes include food poisoning, stomach flu (gastroenteritis), morning sickness during pregnancy, motion sickness, migraine, anxiety, medication side effects, or eating too much. More serious causes include appendicitis, bowel obstruction, pancreatitis, liver disease, or concussion. Persistent nausea can lead to dehydration and electrolyte imbalances, especially if accompanied by frequent vomiting.',
+    advice: 'Seek immediate medical care if nausea is accompanied by severe abdominal pain, chest pain, severe headache, stiff neck, confusion, signs of dehydration (dark urine, dizziness), or if you suspect food poisoning affecting multiple people. Persistent vomiting for more than 24 hours requires medical evaluation.'
+  },
+  
+  'abdominal-pain': {
+    name: 'Abdominal Pain',
+    category: 'Digestive',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500',
+    description: 'Abdominal pain is discomfort anywhere in the belly area, from below the ribs to the pelvis. It can be cramping, sharp, dull, or burning, and may be localized to one area or spread throughout the abdomen. Common causes include indigestion, gas, constipation, stomach virus, food intolerance, menstrual cramps, or urinary tract infection. More serious causes include appendicitis, gallstones, kidney stones, ulcers, inflammatory bowel disease, or hernias. The location, type, and duration of pain provide important clues about the cause.',
+    advice: 'Call emergency services if abdominal pain is sudden and severe, accompanied by vomiting blood, bloody stools, high fever, rigid abdomen, or if you are pregnant. Seek urgent care for pain lasting several hours, accompanied by fever, inability to pass gas, tenderness when touching abdomen, or yellowing of skin.'
+  }
+};
+
+// ========== SYMPTOM MODAL FUNCTIONS ==========
+
+// Open symptom modal with details
+function showSymptomDetails(symptomId) {
+  const symptom = symptomDatabase[symptomId];
+  
+  if (!symptom) {
+    alert('Symptom information not available');
+    return;
+  }
+  
+  // Update modal content
+  document.getElementById('symptomImage').src = symptom.image;
+  document.getElementById('symptomImage').alt = symptom.name;
+  document.getElementById('symptomTitle').textContent = symptom.name;
+  document.getElementById('symptomCategory').textContent = symptom.category;
+  document.getElementById('symptomDescription').textContent = symptom.description;
+  document.getElementById('symptomAdvice').textContent = symptom.advice;
+  
+  // Show modal
+  document.getElementById('symptomModal').style.display = 'flex';
+  
+  console.log('📋 Showing symptom details:', symptom.name);
+}
+
+// Close symptom modal
+function closeSymptomModal() {
+  document.getElementById('symptomModal').style.display = 'none';
+}
+
+
 
 // ============================================
 // 1. SYMPTOMS GALLERY FUNCTIONS
@@ -2441,8 +3539,33 @@ function closeGallery() {
 }
 
 function showImageInfo(title, description) {
-  alert(`📌 ${title}\n\n${description}`);
+  // Map title to symptom ID
+  const symptomMap = {
+    'Headache': 'headache',
+    'Dizziness': 'dizziness',
+    'Numbness': 'numbness',
+    'Seizure': 'seizure',
+    'Memory Loss': 'memory-loss',
+    'Persistent Cough': 'cough',
+    'Shortness of Breath': 'shortness-breath',
+    'Chest Pain': 'chest-pain',
+    'Back Pain': 'back-pain',
+    'Joint Pain': 'joint-pain',
+    'Nausea': 'nausea',
+    'Abdominal Pain': 'abdominal-pain'
+  };
+  
+  const symptomId = symptomMap[title];
+  
+  if (symptomId && symptomDatabase[symptomId]) {
+    // Show enhanced modal
+    showSymptomDetails(symptomId);
+  } else {
+    // Fallback to simple alert if symptom not in database
+    alert(`📌 ${title}\n\n${description}`);
+  }
 }
+
 
 function showUploadMessage() {
   alert('📤 Upload Feature\n\nImage upload functionality will be available in the next update. For now, please describe your symptoms in the chat.');
@@ -2903,175 +4026,62 @@ async function loadRealDoctors() {
 }
 
 
-// Password Reset Functions
+// ========== DOCTOR PASSWORD RESET ==========
+
+// Show password reset modal
 function showPasswordReset() {
   document.getElementById('doctorLoginModal').style.display = 'none';
   document.getElementById('passwordResetModal').style.display = 'flex';
   document.getElementById('resetStep1').style.display = 'block';
-  document.getElementById('resetStep2').style.display = 'none';
 }
 
+// Close password reset modal
 function closePasswordReset() {
   document.getElementById('passwordResetModal').style.display = 'none';
   document.getElementById('resetEmail').value = '';
-  document.getElementById('resetCode').value = '';
-  document.getElementById('newPassword').value = '';
-  document.getElementById('resetStep1').style.display = 'block';
-  document.getElementById('resetStep2').style.display = 'none';
 }
 
+// ✅ SEND PASSWORD RESET EMAIL (FIREBASE AUTH)
 async function requestResetCode() {
   const email = document.getElementById('resetEmail').value.trim();
   
   if (!email) {
-    alert('⚠️ Please enter your email');
+    alert('❌ Please enter your email address.');
     return;
   }
   
   try {
-    if (!window.firebaseDB) {
-      alert('❌ Firebase not initialized');
-      return;
-    }
+    // ✅ Use Firebase Auth to send password reset email
+    const { sendPasswordResetEmail } = window.authFunctions;
+    await sendPasswordResetEmail(window.firebaseAuth, email);
     
-    const { collection, query, where, getDocs, updateDoc, doc } = window.firestoreFunctions;
-    const doctorsRef = collection(window.firebaseDB, 'doctors');
-    const q = query(doctorsRef, where('email', '==', email));
-    const snapshot = await getDocs(q);
+    alert('✅ Password Reset Email Sent!\n\nPlease check your email inbox and click the reset link.\n\nAfter resetting your password, return here to login with your new password.');
     
-    if (snapshot.empty) {
-      alert('❌ No account found with this email');
-      return;
-    }
+    console.log('✅ Password reset email sent to:', email);
     
-    // Generate 6-digit reset code
-    const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
-    const resetExpiry = Date.now() + (30 * 60 * 1000); // 30 minutes
-    
-    // Store reset token in Firestore
-    const doctorDoc = snapshot.docs[0];
-    await updateDoc(doc(window.firebaseDB, 'doctors', doctorDoc.id), {
-      resetToken: resetToken,
-      resetExpiry: resetExpiry
-    });
-    
-    // Show reset code (in production, send via email)
-    alert(`✅ Reset Code Generated!\n\n🔢 Code: ${resetToken}\n\n⏰ Valid for 30 minutes\n\n📋 Share this code with the doctor.`);
-    console.log('🔑 Password Reset Code:', resetToken);
-    
-    // Move to step 2
-    document.getElementById('resetStep1').style.display = 'none';
-    document.getElementById('resetStep2').style.display = 'block';
-    
-  } catch (error) {
-    console.error('Reset error:', error);
-    alert('❌ Error generating reset code: ' + error.message);
-  }
-}
-
-async function submitPasswordReset() {
-  const email = document.getElementById('resetEmail').value.trim();
-  const code = document.getElementById('resetCode').value.trim();
-  const newPassword = document.getElementById('newPassword').value;
-  
-  if (!code || !newPassword) {
-    alert('⚠️ Please fill all fields');
-    return;
-  }
-  
-  if (newPassword.length < 6) {
-    alert('⚠️ Password must be at least 6 characters');
-    return;
-  }
-  
-  try {
-    const { collection, query, where, getDocs, updateDoc, doc } = window.firestoreFunctions;
-    const doctorsRef = collection(window.firebaseDB, 'doctors');
-    const q = query(doctorsRef, where('email', '==', email));
-    const snapshot = await getDocs(q);
-    
-    if (snapshot.empty) {
-      alert('❌ Account not found');
-      return;
-    }
-    
-    const doctorDoc = snapshot.docs[0];
-    const doctorData = doctorDoc.data();
-    
-    // Verify reset code
-    if (doctorData.resetToken !== code) {
-      alert('❌ Invalid reset code');
-      return;
-    }
-    
-    // Check expiry
-    if (Date.now() > doctorData.resetExpiry) {
-      alert('❌ Reset code expired. Please request a new one.');
-      return;
-    }
-    
-    // Update password and clear reset token
-    await updateDoc(doc(window.firebaseDB, 'doctors', doctorDoc.id), {
-      password: newPassword,
-      resetToken: null,
-      resetExpiry: null
-    });
-    
-    alert('✅ Password reset successful!\n\nYou can now login with your new password.');
-    
-    // Return to login
+    // Close modal and show login
     closePasswordReset();
     showDoctorLogin();
     
   } catch (error) {
-    console.error('Reset error:', error);
-    alert('❌ Error resetting password: ' + error.message);
+    console.error('❌ Password reset error:', error);
+    
+    if (error.code === 'auth/user-not-found') {
+      alert('❌ No doctor account found with this email.\n\nPlease check your email or register a new account.');
+    } else if (error.code === 'auth/invalid-email') {
+      alert('❌ Invalid email address format.');
+    } else if (error.code === 'auth/too-many-requests') {
+      alert('❌ Too many reset attempts. Please wait a few minutes and try again.');
+    } else {
+      alert('❌ Failed to send reset email: ' + error.message);
+    }
   }
 }
 
 
 
-function showPasswordReset() {
-  document.getElementById('doctorLoginModal').style.display = 'none';
-  document.getElementById('passwordResetModal').style.display = 'flex';
-}
 
-function closePasswordReset() {
-  document.getElementById('passwordResetModal').style.display = 'none';
-  document.getElementById('resetStep1').style.display = 'block';
-  document.getElementById('resetStep2').style.display = 'none';
-}
 
-async function requestResetCode() {
-  const email = document.getElementById('resetEmail').value;
-  if (!email) {
-    alert('Please enter your email');
-    return;
-  }
-  
-  const code = await sendPasswordResetEmail(email);
-  if (code) {
-    document.getElementById('resetStep1').style.display = 'none';
-    document.getElementById('resetStep2').style.display = 'block';
-  }
-}
-
-async function submitPasswordReset() {
-  const email = document.getElementById('resetEmail').value;
-  const code = document.getElementById('resetCode').value;
-  const newPassword = document.getElementById('newPassword').value;
-  
-  if (!code || !newPassword) {
-    alert('Please fill all fields');
-    return;
-  }
-  
-  const success = await resetPassword(email, code, newPassword);
-  if (success) {
-    closePasswordReset();
-    showDoctorLogin();
-  }
-}
 </script>
 
 
@@ -5545,43 +6555,128 @@ function patientStartVoiceCall() {
 
 
 
-  // ========== PAGE LOAD ==========
-window.addEventListener('DOMContentLoaded', async function() {
+ // ========== PAGE LOAD INITIALIZATION ==========
+window.addEventListener('load', async () => {
   console.log('🚀 Page loaded');
-  loadChatHistory();
   
-  // Check if doctor is logged in
-  const userMode = localStorage.getItem('userMode');
+  // ✅ CHECK FIREBASE AUTH STATE FIRST
+  const { onAuthStateChanged } = window.authFunctions;
   
-  if (userMode === 'doctor') {
-    // ✅ DOCTOR MODE
-    const doctorData = JSON.parse(localStorage.getItem('activeDoctorSession') || '{}');
-    if (doctorData.id) {
-      currentDoctor = doctorData;
-      console.log('✅ Doctor session restored:', doctorData.name);
-      await initializeDoctorMode(); // ✅ NEW FUNCTION
+  onAuthStateChanged(window.firebaseAuth, async (user) => {
+    if (user) {
+      // User is logged in
+      console.log('✅ User authenticated:', user.uid);
+
+      // ✅ INITIALIZE PEERJS
+    initializePeerJS(user.uid);
+    
+    // ✅ LISTEN FOR CALL INVITATIONS
+    listenForCallInvitations();
+      
+      // Check if user is doctor or patient
+      const userMode = await checkUserRole(user.uid);
+      
+      if (userMode === 'doctor') {
+        // Initialize doctor mode
+        const doctorData = await getDoctorData(user.uid);
+        if (doctorData) {
+          localStorage.setItem('activeDoctorSession', JSON.stringify(doctorData));
+          localStorage.setItem('userMode', 'doctor');
+          initializeDoctorMode();
+        }
+      } else if (userMode === 'patient') {
+        // Initialize patient mode
+        localStorage.setItem('userMode', 'patient');
+        initializePatientMode();
+      }
+    } else {
+      // No user logged in - show role modal
+      console.log('❌ No user authenticated');
+      
+      // Check for existing session (doctor only - they use custom auth)
+      const doctorSession = localStorage.getItem('activeDoctorSession');
+      const userMode = localStorage.getItem('userMode');
+      
+      if (userMode === 'doctor' && doctorSession) {
+        console.log('✅ Doctor session restored');
+        initializeDoctorMode();
+      } else if (userMode === 'guest') {
+        console.log('✅ Guest mode active');
+        initializePatientMode();
+      } else {
+        // First visit - show role selection
+        document.getElementById('roleModal').style.display = 'flex';
+      }
     }
-  } else {
-    // ✅ PATIENT/GUEST MODE
-    console.log('✅ Guest mode active');
-    initializePatientMode(); // ✅ NEW FUNCTION
-    checkActivePatientRequest();
-  }
+  });
   
-  // Load saved location
-  const savedLocation = localStorage.getItem('userLocation');
-  const savedHospital = localStorage.getItem('nearestHospital');
-  
-  if (savedLocation && savedHospital) {
-    const location = JSON.parse(savedLocation);
-    const hospital = JSON.parse(savedHospital);
-    displaySavedLocation(location, hospital);
-  }
-  
-  // Check doctor session and show role modal
-  checkDoctorSession();
-  showRoleModalOnFirstVisit();
+  // Load hospitals
+  loadHospitalsFromFirebase();
 });
+
+// ✅ CHECK USER ROLE (doctor or patient)
+async function checkUserRole(userId) {
+  try {
+    const { collection, query, where, getDocs } = window.firestoreFunctions;
+    
+    // Check if user is a doctor
+    const doctorQuery = query(
+      collection(window.firebaseDB, 'doctors'),
+      where('userId', '==', userId)
+    );
+    const doctorSnapshot = await getDocs(doctorQuery);
+    
+    if (!doctorSnapshot.empty) {
+      return 'doctor';
+    }
+    
+    // Check if user is a patient
+    const patientQuery = query(
+      collection(window.firebaseDB, 'patients'),
+      where('userId', '==', userId)
+    );
+    const patientSnapshot = await getDocs(patientQuery);
+    
+    if (!patientSnapshot.empty) {
+      return 'patient';
+    }
+    
+    return null;
+    
+  } catch (error) {
+    console.error('❌ Error checking user role:', error);
+    return null;
+  }
+}
+
+// ✅ GET DOCTOR DATA BY USER ID
+async function getDoctorData(userId) {
+  try {
+    const { collection, query, where, getDocs } = window.firestoreFunctions;
+    
+    const q = query(
+      collection(window.firebaseDB, 'doctors'),
+      where('userId', '==', userId)
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      return {
+        id: doc.id,
+        userId: userId,
+        ...doc.data()
+      };
+    }
+    
+    return null;
+    
+  } catch (error) {
+    console.error('❌ Error getting doctor data:', error);
+    return null;
+  }
+}
 
 </script>
 
@@ -5633,10 +6728,14 @@ function showRoleModalOnFirstVisit() {
   }
 }
 
-// Close role selection modal (user chose guest)
-function closeRoleModal() {
+// Continue as guest (no login)
+function continueAsGuest() {
   document.getElementById('roleModal').style.display = 'none';
+  localStorage.setItem('userMode', 'guest');
+  initializePatientMode();
+  console.log('✅ Guest mode active');
 }
+
 
 // Show doctor registration form
 function showDoctorRegister() {
@@ -5664,163 +6763,133 @@ function closeDoctorLogin() {
   document.getElementById('doctorLoginForm').reset();
 }
 
-// Register doctor
+// ✅ DOCTOR REGISTRATION WITH FIREBASE AUTH
 async function registerDoctor(event) {
   event.preventDefault();
   
-  const regBtn = document.getElementById('regBtnText');
-  const regLoader = document.getElementById('regBtnLoader');
+  const name = document.getElementById('docName').value.trim();
+  const email = document.getElementById('docEmail').value.trim();
+  const password = document.getElementById('docPassword').value;
+  const specialty = document.getElementById('docSpecialty').value;
+  const phone = document.getElementById('docPhone').value.trim();
+  const license = document.getElementById('docLicense').value.trim();
   
   // Show loading
-  regBtn.style.display = 'none';
-  regLoader.style.display = 'inline';
-  
-  const doctorData = {
-    name: document.getElementById('docName').value,
-    email: document.getElementById('docEmail').value,
-    password: document.getElementById('docPassword').value,
-    specialty: document.getElementById('docSpecialty').value,
-    phone: document.getElementById('docPhone').value,
-    license: document.getElementById('docLicense').value
-  };
+  document.getElementById('regBtnText').style.display = 'none';
+  document.getElementById('regBtnLoader').style.display = 'inline';
   
   try {
-    // ✅ NEW FIREBASE CODE STARTS HERE ⬇️
+    // ✅ Create Firebase Auth account
+    const { createUserWithEmailAndPassword } = window.authFunctions;
+    const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+    const user = userCredential.user;
     
-    // Check if Firebase is initialized
-    if (!window.firebaseDB) {
-      throw new Error('Firebase not initialized');
-    }
-    
-    const { collection, getDocs, query, where, addDoc, serverTimestamp } = window.firestoreFunctions;
-    const doctorsRef = collection(window.firebaseDB, 'doctors');
-    
-    // Check if email already exists
-    const q = query(doctorsRef, where('email', '==', doctorData.email));
-    const querySnapshot = await getDocs(q);
-    
-    if (!querySnapshot.empty) {
-      // Hide loading
-      regBtn.style.display = 'inline';
-      regLoader.style.display = 'none';
-      alert('❌ Email already registered!');
-      return;
-    }
-    
-    // Save to Firestore
-    const docRef = await addDoc(doctorsRef, {
-      name: doctorData.name,
-      email: doctorData.email,
-      password: btoa(doctorData.password), // Simple encoding
-      specialty: doctorData.specialty,
-      phone: doctorData.phone,
-      license: doctorData.license,
+    // ✅ Save doctor data to Firestore
+    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+    const docRef = await addDoc(collection(window.firebaseDB, 'doctors'), {
+      userId: user.uid,  // ✅ Link to Firebase Auth
+      name: name,
+      email: email,
+      specialty: specialty,
+      phone: phone,
+      license: license,
       status: 'available',
-      registeredAt: serverTimestamp()
+      registeredAt: serverTimestamp(),
+      verified: false,  // Admin must verify
+      role: 'doctor'
     });
     
-    console.log('✅ Doctor registered with ID:', docRef.id);
+    console.log('✅ Doctor registered:', docRef.id);
+    alert('✅ Registration successful! You are now logged in.');
     
-    // Save to localStorage
-    localStorage.setItem('doctorSession', JSON.stringify({
+    // Save session and initialize
+    const doctorData = {
       id: docRef.id,
-      name: doctorData.name,
-      email: doctorData.email,
-      specialty: doctorData.specialty,
-      phone: doctorData.phone,
+      userId: user.uid,
+      name: name,
+      email: email,
+      specialty: specialty,
+      phone: phone,
+      license: license,
       status: 'available'
-    }));
+    };
     
-    // ✅ NEW FIREBASE CODE ENDS HERE ⬆️
+    localStorage.setItem('activeDoctorSession', JSON.stringify(doctorData));
+    localStorage.setItem('userMode', 'doctor');
     
-    // Hide loading
-    regBtn.style.display = 'inline';
-    regLoader.style.display = 'none';
-    
-    // Success
-    alert('✅ Registration successful!\n\nYou can now login with your credentials.');
+    // Close modal and initialize doctor mode
     closeDoctorRegister();
-    showDoctorLogin();
+    initializeDoctorMode();
     
   } catch (error) {
-    // Hide loading on error
-    regBtn.style.display = 'inline';
-    regLoader.style.display = 'none';
+    console.error('❌ Registration error:', error);
     
-    console.error('Registration error:', error);
-    alert('❌ Registration failed: ' + error.message);
+    if (error.code === 'auth/email-already-in-use') {
+      alert('❌ This email is already registered. Please login instead.');
+    } else if (error.code === 'auth/weak-password') {
+      alert('❌ Password should be at least 6 characters.');
+    } else {
+      alert('❌ Registration failed: ' + error.message);
+    }
+  } finally {
+    // Hide loading
+    document.getElementById('regBtnText').style.display = 'inline';
+    document.getElementById('regBtnLoader').style.display = 'none';
   }
 }
 
 
-// Login doctor
+// ✅ DOCTOR LOGIN WITH FIREBASE AUTH
 async function loginDoctor(event) {
   event.preventDefault();
   
-  const loginBtn = document.getElementById('loginBtnText');
-  const loginLoader = document.getElementById('loginBtnLoader');
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
   
   // Show loading
-  loginBtn.style.display = 'none';
-  loginLoader.style.display = 'inline';
-  
-  const loginData = {
-    email: document.getElementById('loginEmail').value,
-    password: document.getElementById('loginPassword').value
-  };
+  document.getElementById('loginBtnText').style.display = 'none';
+  document.getElementById('loginBtnLoader').style.display = 'inline';
   
   try {
-    // ✅ NEW: Firebase authentication
-    if (!window.firebaseDB) {
-      throw new Error('Firebase not initialized');
-    }
+    // ✅ Sign in with Firebase Auth
+    const { signInWithEmailAndPassword } = window.authFunctions;
+    const userCredential = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+    const user = userCredential.user;
     
-    const { collection, getDocs, query, where } = window.firestoreFunctions;
-    const doctorsRef = collection(window.firebaseDB, 'doctors');
+    // ✅ Get doctor data from Firestore
+    const doctorData = await getDoctorData(user.uid);
     
-    // Query Firestore for matching doctor
-    const q = query(doctorsRef, where('email', '==', loginData.email), where('password', '==', btoa(loginData.password)));
-    const querySnapshot = await getDocs(q);
-    
-    // Hide loading
-    loginBtn.style.display = 'inline';
-    loginLoader.style.display = 'none';
-    
-    if (querySnapshot.empty) {
-      alert('❌ Login failed:\n\nInvalid email or password');
+    if (!doctorData) {
+      alert('❌ No doctor account found. Please register first.');
+      await window.authFunctions.signOut(window.firebaseAuth);
       return;
     }
     
-    // Get doctor data
-    const doctorDoc = querySnapshot.docs[0];
-    const doctorData = { id: doctorDoc.id, ...doctorDoc.data() };
+    console.log('✅ Doctor logged in:', doctorData.id);
+    alert('✅ Welcome back, Dr. ' + doctorData.name + '!');
     
-    // Save session (keeping your existing logic)
-    currentDoctor = {
-      id: doctorData.id,
-      name: doctorData.name,
-      email: doctorData.email,
-      specialty: doctorData.specialty,
-      phone: doctorData.phone,
-      status: doctorData.status
-    };
+    // Save session
+    localStorage.setItem('activeDoctorSession', JSON.stringify(doctorData));
+    localStorage.setItem('userMode', 'doctor');
     
-    sessionStorage.setItem('doctorSession', JSON.stringify(currentDoctor));
-    switchToDoctorMode(currentDoctor);
-    console.log('✅ Doctor logged in:', doctorData.name);
-    
-    // Success
-    alert('✅ Login successful!\n\nWelcome, Dr. ' + doctorData.name);
+    // Close modal and initialize
     closeDoctorLogin();
-    
-    // Load real doctors list (keeping your existing function)
-    loadRealDoctors();
+    initializeDoctorMode();
     
   } catch (error) {
-    console.error('Login error:', error);
-    loginBtn.style.display = 'inline';
-    loginLoader.style.display = 'none';
-    alert('❌ Server error: ' + error.message);
+    console.error('❌ Login error:', error);
+    
+    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+      alert('❌ Invalid email or password.');
+    } else if (error.code === 'auth/invalid-credential') {
+      alert('❌ Invalid credentials. Please check your email and password.');
+    } else {
+      alert('❌ Login failed: ' + error.message);
+    }
+  } finally {
+    // Hide loading
+    document.getElementById('loginBtnText').style.display = 'inline';
+    document.getElementById('loginBtnLoader').style.display = 'none';
   }
 }
 
