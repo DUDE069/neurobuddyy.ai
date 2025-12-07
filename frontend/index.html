@@ -6076,6 +6076,95 @@ function updateDoctorBanner(patientCount) {
 
 // ========== END PHASE 3 ==========
 
+// Load Patient List (Doctor Mode)
+async function loadPatientList() {
+  console.log('📋 Loading patient list...');
+
+  if (window.isLoadingPatients) {
+    console.log('⏳ Already loading patients, skipping...');
+    return;
+  }
+
+  window.isLoadingPatients = true;
+
+  const doctorList = document.getElementById('doctorList');
+  if (!doctorList) {
+    console.error('❌ doctorList element not found');
+    window.isLoadingPatients = false;
+    return;
+  }
+
+  doctorList.innerHTML = '<p class="loading-patients">⏳ Loading patients...</p>';
+
+  try {
+    if (!window.firebaseDB) {
+      doctorList.innerHTML = '<p class="loading-patients">⚠️ Firebase not initialized</p>';
+      window.isLoadingPatients = false;
+      return;
+    }
+
+    // Restore doctor session if needed
+    if (!window.currentDoctor || !window.currentDoctor.id) {
+      const saved = sessionStorage.getItem('doctorSession');
+      if (saved) {
+        try {
+          const docData = JSON.parse(saved);
+          if (docData && docData.id) {
+            window.currentDoctor = docData;
+            console.log('✅ Restored doctor for patient list:', docData);
+          }
+        } catch (e) {
+          console.error('❌ Failed to parse doctorSession:', e);
+        }
+      }
+    }
+
+    if (!window.currentDoctor || !window.currentDoctor.id) {
+      doctorList.innerHTML =
+        '<p style="text-align: center; color: #dc2626;">⚠️ Doctor session not found. Please open Doctor Portal and login again.</p>';
+      window.isLoadingPatients = false;
+      return;
+    }
+
+    const { collection, getDocs, query, where } = window.firestoreFunctions;
+    const requestsRef = collection(window.firebaseDB, 'patientRequests');
+    const q = query(
+      requestsRef,
+      where('doctorId', '==', window.currentDoctor.id),
+      where('status', '==', 'pending')
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      doctorList.innerHTML =
+        '<p style="text-align: center; color: #666; padding: 20px;">📭 No patients waiting</p>';
+      window.isLoadingPatients = false;
+      return;
+    }
+
+    const patients = [];
+    querySnapshot.forEach((doc) => {
+      patients.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log(`✅ Loaded ${patients.length} patient(s)`);
+    displayPatients(patients);
+  } catch (error) {
+    console.error('❌ Error loading patients:', error);
+    doctorList.innerHTML =
+      '<p style="text-align: center; color: #dc2626;">❌ Error loading patients</p>';
+  } finally {
+    window.isLoadingPatients = false;
+  }
+}
+
+async function loadPendingPatientRequests() {
+  await loadPatientList();
+}
+
+
+
 // ========== PHASE 4: PATIENT CONVERSATION INTERFACE ==========
 
 let activePatientConversation = null;
