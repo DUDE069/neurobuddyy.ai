@@ -394,8 +394,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    #doctorList {
-    }
+   
 
     .doctor-card:hover {
       transform: translateX(5px);
@@ -1156,6 +1155,8 @@
     </p>
   </div>
 </div>
+
+
 
 <!-- ✅ DOCTOR PASSWORD RESET MODAL (SIMPLIFIED) -->
 <div id="passwordResetModal" class="modal-overlay" style="display: none;">
@@ -2715,88 +2716,6 @@ async function sendDoctorMessage() {
   }
 }
 
-// ✅ START VOICE CALL - PLACEHOLDER
-function startVoiceCall() {
-  const patientName = window.activePatient?.patientName || 'the patient';
-  
-  if (confirm(`Start voice call with ${patientName}?`)) {
-    alert('📞 Voice Call Feature\n\nThis feature will be implemented in the next update using WebRTC technology.');
-    
-    // TODO: Implement WebRTC voice call
-    console.log('🎤 Voice call initiated with:', patientName);
-  }
-}
-
-
-// ✅ START VIDEO CALL - PLACEHOLDER
-function startVideoCall() {
-  const patientName = window.activePatient?.patientName || 'the patient';
-  
-  if (confirm(`Start video call with ${patientName}?`)) {
-    alert('📹 Video Call Feature\n\nThis feature will be implemented in the next update using WebRTC technology.');
-    
-    // TODO: Implement WebRTC video call
-    console.log('📹 Video call initiated with:', patientName);
-  }
-}
-
-
-async function endConsultation() {
-  const confirmed = confirm('Are you sure you want to end this consultation?');
-  
-  if (!confirmed) return;
-  
-  console.log('🛑 Ending consultation...');
-  
-  try {
-    // ✅ Notify Firebase that doctor ended consultation
-    if (window.activePatient && window.activePatient.id && window.firebaseDB) {
-      const { doc, updateDoc, serverTimestamp } = window.firestoreFunctions;
-      
-      await updateDoc(doc(window.firebaseDB, 'patientRequests', window.activePatient.id), {
-        status: 'ended',
-        endedAt: serverTimestamp(),
-        endedBy: 'doctor'
-      });
-      
-      console.log('✅ Consultation ended in Firebase');
-    }
-  } catch (error) {
-    console.error('❌ Error updating Firebase:', error);
-  }
-  
-  // Stop message listener
-  if (window.messageListener) {
-    window.messageListener();
-    window.messageListener = null;
-  }
-  
-  // Clear active patient
-  window.activePatient = null;
-  
-  // Remove consultation controls
-  const controls = document.getElementById('doctorConsultationControls');
-  if (controls) controls.remove();
-  
-  // Show search bar again
-  const searchBar = document.querySelector('.search-bar');
-  if (searchBar) searchBar.style.display = 'flex';
-  
-  // Clear chat window
-  const chatWindow = document.getElementById('chatWindow');
-  if (chatWindow) {
-    chatWindow.innerHTML = `
-      <div class="bot-msg">
-        ✅ <strong>Consultation ended.</strong><br>
-        You can now accept new patients from the Patient List.
-      </div>
-    `;
-  }
-  
-  console.log('✅ Consultation ended successfully');
-  alert('✅ Consultation ended successfully.');
-}
-
 
 // ========== PATIENT LISTENS FOR DOCTOR ACCEPTANCE - FIXED ==========
 
@@ -3362,15 +3281,6 @@ function sendConsultationMessage() {
   console.log('📤 Message sent:', message);
 }
 
-function startVoiceCall() {
-  alert('📞 Voice Call Feature\n\nThis feature will be implemented in the next update.');
-  // TODO: Implement WebRTC voice call
-}
-
-function startVideoCall() {
-  alert('📹 Video Call Feature\n\nThis feature will be implemented in the next update.');
-  // TODO: Implement WebRTC video call
-}
 
 // ========== ENHANCED SYMPTOM DATABASE ==========
 
@@ -3569,39 +3479,6 @@ function showImageInfo(title, description) {
 
 function showUploadMessage() {
   alert('📤 Upload Feature\n\nImage upload functionality will be available in the next update. For now, please describe your symptoms in the chat.');
-}
-
-// ============================================
-// 2. DOCTOR PORTAL FUNCTION
-// ============================================
-function openDoctorDashboard() {
-  const doctorData = localStorage.getItem('currentDoctor');
-  
-  if (!doctorData) {
-    // Not logged in - show login modal
-    showDoctorLogin();
-    return;
-  }
-  
-  // Logged in - show dashboard
-  try {
-    const doctor = JSON.parse(doctorData);
-    
-    // Populate dashboard
-    document.getElementById('dashboardName').textContent = doctor.name;
-    document.getElementById('dashboardSpecialty').textContent = doctor.specialty;
-    document.getElementById('dashboardEmail').textContent = doctor.email;
-    document.getElementById('doctorStatusSelect').value = doctor.status || 'available';
-    
-    // Show dashboard modal
-    document.getElementById('doctorDashboard').style.display = 'flex';
-    
-  } catch (error) {
-    console.error('Error opening dashboard:', error);
-    alert('❌ Error loading dashboard. Please login again.');
-    localStorage.removeItem('currentDoctor');
-    showDoctorLogin();
-  }
 }
 
 // ============================================
@@ -3963,68 +3840,6 @@ function displayDoctors(doctors) {
   
   console.log(`✅ Displayed ${doctors.length} doctor card(s)`);
 }
-
-
-// Load Real Doctors (Patient Mode)
-async function loadRealDoctors() {
-  console.log('🏥 Loading real doctors from Firebase...');
-  
-  // Prevent multiple loads
-  if (window.isLoadingDoctors) {
-    console.log('⏳ Already loading doctors, skipping...');
-    return;
-  }
-  
-  window.isLoadingDoctors = true;
-  
-  const doctorList = document.getElementById('doctorList');
-  
-  if (!doctorList) {
-    console.error('❌ doctorList element not found');
-    window.isLoadingDoctors = false;
-    return;
-  }
-  
-  doctorList.innerHTML = '<p class="loading-doctors">⏳ Loading doctors...</p>';
-  
-  try {
-    if (!window.firebaseDB) {
-      doctorList.innerHTML = '<p class="loading-doctors">⚠️ Firebase not initialized</p>';
-      window.isLoadingDoctors = false;
-      return;
-    }
-    
-    const { collection, getDocs } = window.firestoreFunctions;
-    const doctorsRef = collection(window.firebaseDB, 'doctors');
-    const querySnapshot = await getDocs(doctorsRef);
-    
-    if (querySnapshot.empty) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">📭 No doctors registered yet.</p>';
-      window.isLoadingDoctors = false;
-      return;
-    }
-    
-    // ✅ CORRECT WAY to build array
-    const doctors = [];
-    querySnapshot.forEach((doc) => {
-      doctors.push({ id: doc.id, ...doc.data() });
-    });
-    
-    console.log(`✅ Loaded ${doctors.length} doctor(s) from Firebase`);
-    
-    // ✅ Call displayDoctors
-    displayDoctors(doctors);
-    
-  } catch (error) {
-    console.error('❌ Error loading doctors:', error);
-    if (doctorList) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❌ Error loading doctors</p>';
-    }
-  } finally {
-    window.isLoadingDoctors = false;
-  }
-}
-
 
 // ========== DOCTOR PASSWORD RESET ==========
 
@@ -5679,7 +5494,7 @@ async function resetPassword(email, resetCode, newPassword) {
       
       const botMsg = document.createElement("div");
       botMsg.className = "bot-msg";
-      botMsg.textContent = "âš ï¸ Server down!";
+      botMsg.textContent = "☢️ Server down!";
       chatWindow.appendChild(botMsg);
       chatWindow.scrollTop = chatWindow.scrollHeight;
     }
@@ -5756,25 +5571,6 @@ async function loadRealDoctors() {
     doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❌ Error loading doctors</p>';
   }
 }
-
-
-// Toggle doctor list
-function toggleDoctorList() {
-  const container = document.getElementById('doctorListContainer');
-  const btn = document.getElementById('connectDoctorBtn');
-  
-  if (!doctorListVisible) {
-    container.classList.add('expanded');
-    btn.textContent = '🚫 Close Doctor List';
-    loadRealDoctors(); // âœ… Call the REAL function
-    doctorListVisible = true;
-  } else {
-    container.classList.remove('expanded');
-    btn.textContent = '👨‍⚕️ Connect to Doctors';
-    doctorListVisible = false;
-  }
-}
-
 
 // ========== PATIENT REQUEST SYSTEM ==========
 
@@ -5975,73 +5771,66 @@ let conversationInterval = null;
 async function initializeDoctorMode() {
   console.log('🩺 DOCTOR MODE INITIALIZED');
   
-  // ✅ HIDE EMERGENCY BUTTON
-  const emergencyBtn = document.querySelector('.emergency');
-  if (emergencyBtn) {
-    emergencyBtn.style.display = 'none';
-  }
+  // ✅ FIX: Get actual doctor data
+  let doctorName = 'Doctor'; // Default fallback
   
-  // ✅ HIDE HOSPITAL SECTION
-  const hospitalSection = document.querySelector('.hospital-section');
-  if (hospitalSection) {
-    hospitalSection.style.display = 'none';
-  }
-  
-  // ✅ CLEAR DOCTOR LIST CONTAINER
-  const doctorListContainer = document.getElementById('doctorListContainer');
-  if (doctorListContainer) {
-    doctorListContainer.classList.remove('expanded');
-    doctorListContainer.innerHTML = '<div id="doctorList"></div>'; // ✅ Create doctorList element
-  }
-  
-  // ✅ UPDATE BUTTON TO "PATIENT LIST"
-  const btn = document.getElementById('connectDoctorBtn');
-  const btnText = document.getElementById('patientBtnText');
-  const badge = document.getElementById('patientCountBadge');
-  
-  if (btnText) {
-    btnText.textContent = '📋 Patient List';
-  } else if (btn) {
-    btn.textContent = '📋 Patient List';
-  }
-  
-  if (btn) {
-    btn.onclick = togglePatientList;
-  }
-  
-  // ✅ SHOW DOCTOR CHAT GREETING
-  initializeDoctorChatArea();
-  
-  // ✅ CLEAR ANY EXISTING INTERVALS
-  if (window.doctorRefreshInterval) {
-    clearInterval(window.doctorRefreshInterval);
-    window.doctorRefreshInterval = null;
-  }
-  
-  // ✅ AUTO-REFRESH WITH SAFETY CHECKS
-  window.doctorRefreshInterval = setInterval(() => {
-    // Only refresh if:
-    // 1. Still in doctor mode
-    // 2. Patient list is visible
-    // 3. Not currently loading
-    if (localStorage.getItem('userMode') === 'doctor' && 
-        patientListVisible && 
-        !window.isLoadingPatients) {
-      
-      // Check if container exists before loading
-      const doctorList = document.getElementById('doctorList');
-      if (doctorList) {
-        console.log('🔄 Auto-refreshing patient list...');
-        loadPatientList();
-      } else {
-        console.warn('⚠️ doctorList not found, skipping auto-refresh');
+  // Try to get from currentDoctor global
+  if (window.currentDoctor && window.currentDoctor.name) {
+    doctorName = window.currentDoctor.name;
+  } else {
+    // Try to get from Firebase Auth
+    const user = window.firebaseAuth?.currentUser;
+    if (user) {
+      const doctorData = await getDoctorDataByUserId(user.uid);
+      if (doctorData && doctorData.name) {
+        doctorName = doctorData.name;
+        window.currentDoctor = doctorData; // Store globally
+      }
+    } else {
+      // Try sessionStorage
+      const sessionData = sessionStorage.getItem('doctorSession');
+      if (sessionData) {
+        try {
+          const doctor = JSON.parse(sessionData);
+          if (doctor.name) {
+            doctorName = doctor.name;
+            window.currentDoctor = doctor;
+          }
+        } catch (e) {
+          console.error('❌ Error parsing session:', e);
+        }
       }
     }
-  }, 5000); // 5 seconds for faster updates
+  }
+  
+  console.log('✅ Doctor name resolved:', doctorName);
+  
+  // Hide normal patient interface
+  document.querySelector('.search-bar').style.display = 'none';
+  
+  // Show welcome message with ACTUAL doctor name
+  const chatWindow = document.getElementById('chatWindow');
+  if (chatWindow) {
+    chatWindow.innerHTML = `
+      <div class="bot-msg" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white;">
+        <strong>👨‍⚕️ Welcome, Dr. ${doctorName}!</strong><br>
+        Ready to help patients today.<br>
+        <span style="font-size: 1.1rem; font-weight: bold;">📋 Waiting for patients...</span>
+      </div>
+    `;
+  }
+  
+  // Initialize PeerJS for video/voice calls
+  const user = window.firebaseAuth?.currentUser;
+  if (user && typeof initializePeerJS === 'function') {
+    initializePeerJS(user.uid);
+  }
+  
+  // Load pending patient requests
+  loadPendingPatientRequests();
   
   console.log('✅ Doctor mode fully activated');
 }
-
 
 // Initialize Patient/Guest Mode
 function initializePatientMode() {
@@ -6254,68 +6043,34 @@ function startConversationPolling(patientId) {
   }, 3000);
 }
 
-function startVideoCall(patientId) {
-  alert('📹 Video Call Feature\n\nVideo call functionality will be implemented in the next update.\n\nFor now, please use text chat to communicate with the patient.');
-}
+// ============================================
+// 🔧 FIX 5: UPDATE BANNER WITH PATIENT COUNT
+// ============================================
 
-function startVoiceCall(patientId) {
-  alert('📞 Voice Call Feature\n\nVoice call functionality will be implemented in the next update.\n\nFor now, please use text chat to communicate with the patient.');
-}
-// Cancel patient consultation
-async function cancelPatient(patientId) {
-  if (!confirm('❌ Cancel this patient consultation?\n\nThe patient will be notified.')) {
-    return;
+// Update the updateDoctorBanner() function:
+function updateDoctorBanner(patientCount) {
+  const chatWindow = document.getElementById('chatWindow');
+  if (!chatWindow) return;
+  
+  // Only update if doctor is NOT in active consultation
+  if (window.activePatient) return;
+  
+  // ✅ FIX: Use actual doctor name
+  let doctorName = 'Doctor';
+  if (window.currentDoctor && window.currentDoctor.name) {
+    doctorName = window.currentDoctor.name;
   }
   
-  try {
-    if (!window.firebaseDB) {
-      alert('❌ Firebase not initialized');
-      return;
-    }
-    
-    const { doc, deleteDoc } = window.firestoreFunctions;
-    const patientRef = doc(window.firebaseDB, 'patientRequests', patientId);
-    await deleteDoc(patientRef);
-    
-    console.log('✅ Patient consultation cancelled');
-    alert('✅ Patient consultation cancelled');
-    
-    // Reload patient list
-    loadPatientList();
-    
-  } catch (error) {
-    console.error('❌ Error cancelling patient:', error);
-    alert('❌ Failed to cancel: ' + error.message);
+  // Update the welcome banner
+  const firstMessage = chatWindow.querySelector('.bot-msg');
+  if (firstMessage) {
+    firstMessage.innerHTML = `
+      <strong>👨‍⚕️ Welcome, Dr. ${doctorName}!</strong><br>
+      Ready to help patients today.<br>
+      <span style="font-size: 1.1rem; font-weight: bold;">📋 ${patientCount} patient(s) waiting</span>
+    `;
   }
 }
-
-function updatePatientCountBadge(count) {
-  const badge = document.getElementById('patientCountBadge');
-  const btnText = document.getElementById('patientBtnText');
-  
-  // ✅ CHECK IF ELEMENTS EXIST
-  if (!badge || !btnText) {
-    console.warn('⚠️ Badge elements not found');
-    return;
-  }
-  
-  // ✅ ALWAYS SHOW BADGE IF COUNT > 0 (persistent notification)
-  if (count > 0) {
-    badge.textContent = count;
-    badge.style.display = 'flex';
-    
-    // ✅ UPDATE TEXT ONLY IF LIST IS CLOSED
-    if (!doctorListVisible) {
-      btnText.textContent = `📋 ${count} Patient${count > 1 ? 's' : ''} Waiting`;
-    }
-  } else {
-    badge.style.display = 'none';
-    if (!doctorListVisible) {
-      btnText.textContent = '📋 Patient List';
-    }
-  }
-}
-
 
 
 
@@ -6556,6 +6311,7 @@ function patientStartVoiceCall() {
 
 
  // ========== PAGE LOAD INITIALIZATION ==========
+// ========== PAGE LOAD INITIALIZATION ==========
 window.addEventListener('load', async () => {
   console.log('🚀 Page loaded');
   
@@ -6568,10 +6324,10 @@ window.addEventListener('load', async () => {
       console.log('✅ User authenticated:', user.uid);
 
       // ✅ INITIALIZE PEERJS
-    initializePeerJS(user.uid);
-    
-    // ✅ LISTEN FOR CALL INVITATIONS
-    listenForCallInvitations();
+      initializePeerJS(user.uid);
+      
+      // ✅ LISTEN FOR CALL INVITATIONS
+      listenForCallInvitations();
       
       // Check if user is doctor or patient
       const userMode = await checkUserRole(user.uid);
@@ -6608,11 +6364,9 @@ window.addEventListener('load', async () => {
         document.getElementById('roleModal').style.display = 'flex';
       }
     }
-  });
-  
-  // Load hospitals
-  loadHospitalsFromFirebase();
-});
+  }); // 👈 Close onAuthStateChanged
+}); // 👈 Close window.addEventListener('load')
+
 
 // ✅ CHECK USER ROLE (doctor or patient)
 async function checkUserRole(userId) {
@@ -6683,6 +6437,7 @@ async function getDoctorData(userId) {
 
 
 <script>
+  
 // Toggle rightbar on mobile
 function toggleSuggestions() {
   const rightbar = document.querySelector('.rightbar');
@@ -7023,185 +6778,6 @@ function togglePatientList() {
   }
 }
 
-
-// Load Patient List (Doctor Mode)
-async function loadPatientList() {
-  console.log('📋 Loading patient list...');
-  
-  // ✅ PREVENT MULTIPLE SIMULTANEOUS LOADS
-  if (window.isLoadingPatients) {
-    console.log('⏳ Already loading patients, skipping...');
-    return;
-  }
-  
-  window.isLoadingPatients = true;
-  
-  // ✅ FIND THE CONTAINER
-  const doctorList = document.getElementById('doctorList');
-  
-  if (!doctorList) {
-    console.error('❌ doctorList element not found in loadPatientList');
-    window.isLoadingPatients = false;
-    return; // ✅ EXIT EARLY - DON'T CONTINUE
-  }
-  
-  doctorList.innerHTML = '<p class="loading-doctors">⏳ Loading patients...</p>';
-  
-  try {
-    if (!window.firebaseDB) {
-      doctorList.innerHTML = '<p class="loading-doctors">⚠️ Firebase not initialized</p>';
-      window.isLoadingPatients = false;
-      return;
-    }
-    
-    if (!currentDoctor || !currentDoctor.id) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">⚠️ Doctor session not found</p>';
-      window.isLoadingPatients = false;
-      return;
-    }
-    
-    const { collection, getDocs, query, where } = window.firestoreFunctions;
-    const requestsRef = collection(window.firebaseDB, 'patientRequests');
-    const q = query(
-      requestsRef,
-      where('doctorId', '==', currentDoctor.id),
-      where('status', '==', 'pending')
-    );
-    
-    const querySnapshot = await getDocs(q);
-    
-    if (querySnapshot.empty) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">📭 No patients waiting</p>';
-      window.isLoadingPatients = false;
-      return;
-    }
-    
-    const patients = [];
-    querySnapshot.forEach((doc) => {
-      patients.push({ id: doc.id, ...doc.data() });
-    });
-    
-    console.log(`✅ Loaded ${patients.length} patient(s)`);
-    displayPatients(patients);
-    
-  } catch (error) {
-    console.error('❌ Error loading patients:', error);
-    if (doctorList) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❌ Error loading patients</p>';
-    }
-  } finally {
-    window.isLoadingPatients = false;
-  }
-}
-
-
-// Toggle Doctor List (for patients)
-function toggleDoctorList() {
-  const container = document.getElementById('doctorListContainer');
-  const btn = document.getElementById('connectDoctorBtn');
-  const btnText = document.getElementById('patientBtnText');
-  
-  if (!container || !btn) {
-    console.error('❌ Doctor list container or button not found');
-    return;
-  }
-  
-  if (!doctorListVisible) {
-    // Open doctor list
-    container.classList.add('expanded');
-    if (btnText) {
-      btnText.textContent = '🚫 Close Doctor List';
-    } else {
-      btn.textContent = '🚫 Close Doctor List';
-    }
-    loadRealDoctors(); // Load doctors when opening
-    doctorListVisible = true;
-  } else {
-    // Close doctor list
-    container.classList.remove('expanded');
-    if (btnText) {
-      btnText.textContent = '👨‍⚕️ Connect to Doctor';
-    } else {
-      btn.textContent = '👨‍⚕️ Connect to Doctor';
-    }
-    doctorListVisible = false;
-  }
-}
-
-
-
-
-// Load Patient List (Doctor Mode)
-async function loadPatientList() {
-  console.log('📋 Loading patient list...');
-  
-  // Prevent multiple loads
-  if (window.isLoadingPatients) {
-    console.log('⏳ Already loading patients, skipping...');
-    return;
-  }
-  
-  window.isLoadingPatients = true;
-  
-  const doctorList = document.getElementById('doctorList');
-  
-  if (!doctorList) {
-    console.error('❌ doctorList element not found');
-    window.isLoadingPatients = false;
-    return;
-  }
-  
-  doctorList.innerHTML = '<p class="loading-doctors">⏳ Loading patients...</p>';
-  
-  try {
-    if (!window.firebaseDB) {
-      doctorList.innerHTML = '<p class="loading-doctors">⚠️ Firebase not initialized</p>';
-      window.isLoadingPatients = false;
-      return;
-    }
-    
-    if (!currentDoctor || !currentDoctor.id) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">⚠️ Doctor session not found</p>';
-      window.isLoadingPatients = false;
-      return;
-    }
-    
-    const { collection, getDocs, query, where } = window.firestoreFunctions;
-    const requestsRef = collection(window.firebaseDB, 'patientRequests');
-    const q = query(
-      requestsRef,
-      where('doctorId', '==', currentDoctor.id),
-      where('status', '==', 'pending')
-    );
-    
-    const querySnapshot = await getDocs(q);
-    
-    if (querySnapshot.empty) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">📭 No patients waiting</p>';
-      window.isLoadingPatients = false;
-      return;
-    }
-    
-    const patients = [];
-    querySnapshot.forEach((doc) => {
-      patients.push({ id: doc.id, ...doc.data() });
-    });
-    
-    console.log(`✅ Loaded ${patients.length} patient(s)`);
-    displayPatients(patients);
-    
-  } catch (error) {
-    console.error('❌ Error loading patients:', error);
-    if (doctorList) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❌ Error loading patients</p>';
-    }
-  } finally {
-    window.isLoadingPatients = false;
-  }
-}
-
-
-
 function selectPatient(patientId, patientData) {
   // Set active patient
   activePatientId = patientId;
@@ -7232,64 +6808,90 @@ function selectPatient(patientId, patientData) {
 
 
 
-// Open doctor dashboard
-function openDoctorDashboard() {
-  if (!currentDoctor) {
-    showDoctorLogin();
-    return;
-  }
-  
-  // Populate dashboard
-  document.getElementById('dashboardName').textContent = currentDoctor.name;
-  document.getElementById('dashboardSpecialty').textContent = currentDoctor.specialty;
-  document.getElementById('dashboardEmail').textContent = currentDoctor.email;
-  document.getElementById('doctorStatusSelect').value = currentDoctor.status;
-  
-  document.getElementById('doctorDashboard').style.display = 'flex';
-}
+// Open doctor dashboard (Firebase + session restore)
+async function openDoctorDashboard() {
+  console.log('🏥 Opening Doctor Portal...');
 
-// Close doctor dashboard
-function closeDoctorDashboard() {
-  document.getElementById('doctorDashboard').style.display = 'none';
-}
+  // ✅ FIX: Check Firebase Auth first, then fallback to sessionStorage
+  const user = window.firebaseAuth?.currentUser;
 
-// Update doctor status in Firebase
-async function updateDoctorStatus() {
-  if (!currentDoctor) {
-    alert('❌ No active session');
-    return;
+  if (user) {
+    // User is authenticated via Firebase
+    try {
+      // Get doctor data from Firestore
+      const doctorData = await getDoctorDataByUserId(user.uid);
+
+      if (doctorData) {
+        // Doctor found - show dashboard
+        console.log('✅ Doctor authenticated:', doctorData);
+        showDoctorDashboard(doctorData);
+        return;
+      }
+    } catch (error) {
+      console.error('❌ Error fetching doctor data:', error);
+    }
   }
-  
-  const newStatus = document.getElementById('doctorStatusSelect').value;
-  
+
+  // Fallback: Check sessionStorage
+  const sessionData = sessionStorage.getItem('doctorSession');
+  if (sessionData) {
+    try {
+      const doctor = JSON.parse(sessionData);
+      console.log('✅ Doctor session found:', doctor);
+      showDoctorDashboard(doctor);
+      return;
+    } catch (error) {
+      console.error('❌ Error parsing session:', error);
+    }
+  }
+
+  // No session found - show login
+  console.log('⚠️ No doctor session - showing login');
+  showDoctorLogin();
+}  // 👈 THIS closing brace was missing
+
+// ✅ NEW HELPER FUNCTION: Get doctor data by userId
+async function getDoctorDataByUserId(userId) {
   try {
-    if (!window.firebaseDB) {
-      throw new Error('Firebase not initialized');
+    const { collection, query, where, getDocs } = window.firestoreFunctions;
+    
+    const q = query(
+      collection(window.firebaseDB, 'doctors'),
+      where('userId', '==', userId)
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      return {
+        id: doc.id,
+        ...doc.data()
+      };
     }
     
-    const { doc, updateDoc } = window.firestoreFunctions;
-    const doctorRef = doc(window.firebaseDB, 'doctors', currentDoctor.id);
-    
-    await updateDoc(doctorRef, {
-      status: newStatus
-    });
-    
-    // Update local session
-    currentDoctor.status = newStatus;
-    sessionStorage.setItem('doctorSession', JSON.stringify(currentDoctor));
-    
-    console.log('✅ Status updated to:', newStatus);
-    alert('✅ Status updated to: ' + newStatus.toUpperCase());
-    
-    // Reload doctors list
-    if (doctorListVisible) {
-      loadRealDoctors();
-    }
-    
+    return null;
   } catch (error) {
-    console.error('❌ Status update error:', error);
-    alert('❌ Failed to update status: ' + error.message);
+    console.error('❌ Error getting doctor data:', error);
+    return null;
   }
+}
+
+// ✅ NEW FUNCTION: Show Doctor Dashboard
+function showDoctorDashboard(doctor) {
+  // Store in global variable
+  window.currentDoctor = doctor;
+  
+  // Update dashboard UI
+  document.getElementById('dashboardName').textContent = doctor.name || 'Doctor';
+  document.getElementById('dashboardSpecialty').textContent = doctor.specialty || 'General';
+  document.getElementById('dashboardEmail').textContent = doctor.email || '';
+  document.getElementById('doctorStatusSelect').value = doctor.status || 'available';
+  
+  // Show dashboard modal
+  document.getElementById('doctorDashboard').style.display = 'flex';
+  
+  console.log('✅ Dashboard displayed for:', doctor.name);
 }
 
 
@@ -7371,7 +6973,8 @@ function showImageInfo(title, description) {
 
 
 // Update toggleMenu to also close gallery
-function toggleMenu() {
+function toggleMenu()
+{
   const sidebar = document.getElementById("sidebar");
   const historyPanel = document.getElementById("chatHistoryPanel");
   const galleryPanel = document.getElementById("galleryPanel");
