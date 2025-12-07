@@ -1346,40 +1346,6 @@ let localStream = null;
 let remoteStream = null;
 let callInProgress = false;
 
-// Initialize PeerJS
-function initializePeerJS(userId) {
-  try {
-    // Create peer with user's UID as ID
-    peer = new Peer(userId, {
-      debug: 2, // Show debug logs
-      config: {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' }
-        ]
-      }
-    });
-    
-    peer.on('open', (id) => {
-      console.log('✅ PeerJS connected with ID:', id);
-    });
-    
-    peer.on('error', (error) => {
-      console.error('❌ PeerJS error:', error);
-    });
-    
-    // Listen for incoming calls
-    peer.on('call', (incomingCall) => {
-      console.log('📞 Incoming call from:', incomingCall.peer);
-      handleIncomingCall(incomingCall);
-    });
-    
-    console.log('✅ PeerJS initialized');
-    
-  } catch (error) {
-    console.error('❌ Failed to initialize PeerJS:', error);
-  }
-}
 
 
 // ========== WEBRTC CALL FUNCTIONS ==========
@@ -5592,6 +5558,34 @@ function initializePatientMode() {
   console.log('✅ Patient mode fully activated');
 }
 
+
+// Initialize PeerJS for video/voice calls
+async function initializePeerJS(userId) {
+  try {
+    if (window.peer && window.peer.id) {
+      console.log('✅ PeerJS already initialized');
+      return;
+    }
+
+    window.peer = new Peer(userId, {
+      host: 'peerjs-server.herokuapp.com',
+      port: 443,
+      path: '/myapp'
+    });
+
+    window.peer.on('open', (id) => {
+      console.log('✅ PeerJS connected with ID:', id);
+    });
+
+    window.peer.on('error', (error) => {
+      console.error('❌ PeerJS error:', error);
+    });
+
+    console.log('✅ PeerJS initialized');
+  } catch (error) {
+    console.error('❌ Failed to initialize PeerJS:', error);
+  }
+}
 
 
 function selectPatient(patientId, patientData) {
