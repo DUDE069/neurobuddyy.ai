@@ -2274,24 +2274,7 @@ function displayPatients(patients) {
   updateDoctorBanner(patients.length);
 }
 
-// ✅ ADD THIS NEW FUNCTION
-function updateDoctorBanner(patientCount) {
-  const chatWindow = document.getElementById('chatWindow');
-  if (!chatWindow) return;
-  
-  // Only update if doctor is NOT in active consultation
-  if (window.activePatient) return;
-  
-  // Find and update the welcome banner
-  const firstMessage = chatWindow.querySelector('.bot-msg');
-  if (firstMessage) {
-    firstMessage.innerHTML = `
-      <strong>👨‍⚕️ Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
-      Ready to help patients today.<br>
-      <span style="font-size: 1.1rem; font-weight: bold;">📋 ${patientCount} patient(s) waiting</span>
-    `;
-  }
-}
+
 
 
 // ========== DOCTOR ACCEPTS PATIENT REQUEST ==========
@@ -2581,19 +2564,6 @@ function startListeningToPatientMessages(requestId) {
   
   // Store unsubscribe function for cleanup
   window.messageListener = unsubscribe;
-}
-
-// Helper function to display messages
-function displayMessageInChat(message, sender) {
-  const chatWindow = document.getElementById('chatWindow');
-  if (!chatWindow) return;
-  
-  const className = sender === 'patient' ? 'bot-msg' : 'user-msg';
-  
-  chatWindow.innerHTML += `<div class="${className}">${message}</div>`;
-  chatWindow.scrollTop = chatWindow.scrollHeight;
-  
-  console.log('💬 New message displayed from:', sender);
 }
 
 
@@ -3031,36 +3001,6 @@ async function sendPatientMessage() {
   } catch (error) {
     console.error('❌ Error sending message:', error);
     alert('❌ Failed to send message: ' + error.message);
-  }
-}
-
-
-
-async function declineConsultation(requestId) {
-  console.log('❌ Patient declined consultation');
-  
-  try {
-    // ✅ Update Firebase - mark as declined
-    if (window.firebaseDB) {
-      const { doc, updateDoc } = window.firestoreFunctions;
-      await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
-        status: 'declined',
-        notified: true,
-        declinedAt: new Date().toISOString(),
-        declineReason: 'Patient chose to connect later'
-      });
-      
-      console.log('✅ Request marked as declined in Firebase');
-    }
-    
-    // Close notification
-    const modal = document.getElementById('acceptanceNotification');
-    if (modal) modal.remove();
-    
-    alert('✅ You can connect with the doctor later from your consultation history.');
-    
-  } catch (error) {
-    console.error('❌ Error declining consultation:', error);
   }
 }
 
@@ -3600,59 +3540,7 @@ function displayDoctors(doctors) {
   console.log(`✅ Displayed ${doctors.length} doctor card(s)`);
 }
 
-// ============================================
-// 6. LOAD REAL DOCTORS FUNCTION
-// ============================================
-// ========== LOAD REAL DOCTORS (PATIENT MODE) ==========
 
-// Display Doctors (Patient Mode) - MUST BE FIRST
-function displayDoctors(doctors) {
-  console.log('🖼️ Displaying doctors:', doctors);
-  
-  const doctorList = document.getElementById('doctorList');
-  
-  if (!doctorList) {
-    console.error('❌ doctorList element not found');
-    return;
-  }
-  
-  if (!doctors || doctors.length === 0) {
-    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">📭 No doctors available</p>';
-    return;
-  }
-  
-  // Clear existing content
-  doctorList.innerHTML = '';
-  
-  // Create doctor cards
-  doctors.forEach(doctor => {
-    const statusClass = doctor.status === 'available' ? 'status-available' :
-                       doctor.status === 'engaged' ? 'status-engaged' : 'status-offline';
-    const statusText = doctor.status === 'available' ? '✅ Available' :
-                      doctor.status === 'engaged' ? '🟡 Busy' : '⚫ Offline';
-    
-    const card = document.createElement('div');
-    card.className = 'doctor-card';
-    card.innerHTML = `
-      <div class="doctor-info">
-        <div class="doctor-name">🩺 ${doctor.name || 'Dr. Unknown'}</div>
-        <div class="doctor-specialty">${doctor.specialty || 'General Medicine'}</div>
-        <div style="font-size: 0.75rem; color: #666; margin-top: 4px">${statusText}</div>
-      </div>
-      <div class="${statusClass} status-indicator"></div>
-    `;
-    
-    // Add click handler
-    card.addEventListener('click', () => {
-      console.log('🔵 Doctor selected:', doctor);
-      showDoctorConnectionModal(doctor);
-    });
-    
-    doctorList.appendChild(card);
-  });
-  
-  console.log(`✅ Displayed ${doctors.length} doctor card(s)`);
-}
 
 // ========== DOCTOR PASSWORD RESET ==========
 
@@ -5147,19 +5035,6 @@ async function resetPassword(email, resetCode, newPassword) {
   const suggestionsBox = document.getElementById('suggestionsBox');
   const suggestionsList = document.getElementById('suggestionsList');
   const chatWindow = document.getElementById('chatWindow');
-
- function toggleMenu() {
-  const sidebar = document.getElementById("sidebar");
-  const historyPanel = document.getElementById("chatHistoryPanel");
-  
-  // Toggle sidebar
-  sidebar.classList.toggle("open");
-  
-  // ✅ NEW: Auto-close history when sidebar closes
-  if (!sidebar.classList.contains("open")) {
-    historyPanel.classList.remove("open");
-  }
-}
 
 
   userInputField.addEventListener('input', function() {
