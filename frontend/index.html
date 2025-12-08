@@ -5973,14 +5973,26 @@ let conversationInterval = null;
 
 // Initialize Doctor Mode
 async function initializeDoctorMode() {
-  console.log('ðŸ©º DOCTOR MODE INITIALIZED');
+  console.log('🩺 DOCTOR MODE INITIALIZED');
   
-  // âœ… HIDE EMERGENCY BUTTON
+  // ✅ CRITICAL FIX: Load currentDoctor from storage
+  const doctorSession = sessionStorage.getItem('doctorSession') || localStorage.getItem('activeDoctorSession');
+  if (doctorSession) {
+    currentDoctor = JSON.parse(doctorSession);
+    console.log('✅ currentDoctor loaded from storage:', currentDoctor.name);
+  } else {
+    console.error('❌ No doctor session in storage!');
+  }
+  
+  // ✅ HIDE EMERGENCY BUTTON
   const emergencyBtn = document.querySelector('.emergency');
   if (emergencyBtn) {
     emergencyBtn.style.display = 'none';
   }
   
+  // ... rest of your existing code
+
+
   // âœ… HIDE HOSPITAL SECTION
   const hospitalSection = document.querySelector('.hospital-section');
   if (hospitalSection) {
