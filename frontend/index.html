@@ -3974,7 +3974,7 @@ function displayDoctors(doctors) {
   }
   
   if (!doctors || doctors.length === 0) {
-    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">ðŸ“­ No doctors available</p>';
+    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">❗­ No doctors available</p>';
     return;
   }
   
@@ -3986,13 +3986,13 @@ function displayDoctors(doctors) {
     const statusClass = doctor.status === 'available' ? 'status-available' :
                        doctor.status === 'engaged' ? 'status-engaged' : 'status-offline';
     const statusText = doctor.status === 'available' ? '✅ Available' :
-                      doctor.status === 'engaged' ? 'ðŸŸ¡ Busy' : 'âš« Offline';
+                      doctor.status === 'engaged' ? '🔴 Busy' : '🔘 Offline';
     
     const card = document.createElement('div');
     card.className = 'doctor-card';
     card.innerHTML = `
       <div class="doctor-info">
-        <div class="doctor-name">ðŸ©º ${doctor.name || 'Dr. Unknown'}</div>
+        <div class="doctor-name">👨‍⚕️ ${doctor.name || 'Dr. Unknown'}</div>
         <div class="doctor-specialty">${doctor.specialty || 'General Medicine'}</div>
         <div style="font-size: 0.75rem; color: #666; margin-top: 4px">${statusText}</div>
       </div>
@@ -4001,7 +4001,7 @@ function displayDoctors(doctors) {
     
     // Add click handler
     card.addEventListener('click', () => {
-      console.log('ðŸ”µ Doctor selected:', doctor);
+      console.log('🟢 Doctor selected:', doctor);
       showDoctorConnectionModal(doctor);
     });
     
@@ -4028,7 +4028,7 @@ function displayDoctors(doctors) {
   }
   
   if (!doctors || doctors.length === 0) {
-    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">ðŸ“­ No doctors available</p>';
+    doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">❗­ No doctors available</p>';
     return;
   }
   
@@ -4040,13 +4040,13 @@ function displayDoctors(doctors) {
     const statusClass = doctor.status === 'available' ? 'status-available' :
                        doctor.status === 'engaged' ? 'status-engaged' : 'status-offline';
     const statusText = doctor.status === 'available' ? '✅ Available' :
-                      doctor.status === 'engaged' ? 'ðŸŸ¡ Busy' : 'âš« Offline';
+                      doctor.status === 'engaged' ? '🔴 Busy' : '🔘 Offline';
     
     const card = document.createElement('div');
     card.className = 'doctor-card';
     card.innerHTML = `
       <div class="doctor-info">
-        <div class="doctor-name">ðŸ©º ${doctor.name || 'Dr. Unknown'}</div>
+        <div class="doctor-name">👨‍⚕️ ${doctor.name || 'Dr. Unknown'}</div>
         <div class="doctor-specialty">${doctor.specialty || 'General Medicine'}</div>
         <div style="font-size: 0.75rem; color: #666; margin-top: 4px">${statusText}</div>
       </div>
@@ -4055,7 +4055,7 @@ function displayDoctors(doctors) {
     
     // Add click handler
     card.addEventListener('click', () => {
-      console.log('ðŸ”µ Doctor selected:', doctor);
+      console.log('🟢 Doctor selected:', doctor);
       showDoctorConnectionModal(doctor);
     });
     
@@ -4147,7 +4147,7 @@ async function requestResetCode() {
   const email = document.getElementById('resetEmail').value.trim();
   
   if (!email) {
-    alert('âŒ Please enter your email address.');
+    alert('❗ Please enter your email address.');
     return;
   }
   
@@ -6537,10 +6537,10 @@ function activatePatientConversation(requestId, requestData) {
         </div>
         <div style="display: flex; gap: 10px;">
           <button onclick="patientStartVideoCall()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
-            ðŸ“¹ Video
+            📹 Video
           </button>
           <button onclick="patientStartVoiceCall()" style="background: #3b82f6; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
-            ðŸ“ž Voice
+           📞 Voice
           </button>
         </div>
       </div>
@@ -7127,13 +7127,13 @@ function togglePatientList() {
     if (!patientListVisible) {
       // OPEN patient list
       container.classList.add('expanded');
-      if (btnText) btnText.textContent = 'ðŸš« Close Patient List';
+      if (btnText) btnText.textContent = '❌ Close Patient List';
       loadPatientList(); // Load patients
       patientListVisible = true;
     } else {
       // CLOSE patient list
       container.classList.remove('expanded');
-      if (btnText) btnText.textContent = 'ðŸ“‹ Patient List';
+      if (btnText) btnText.textContent = '👤 Patient List';
       patientListVisible = false;
     }
   } else {
@@ -7141,13 +7141,13 @@ function togglePatientList() {
     if (!doctorListVisible) {
       // OPEN doctor list
       container.classList.add('expanded');
-      if (btnText) btnText.textContent = 'ðŸš« Close Doctor List';
+      if (btnText) btnText.textContent = '❌ Close Doctor List';
       loadRealDoctors(); // Load doctors
       doctorListVisible = true;
     } else {
       // CLOSE doctor list
       container.classList.remove('expanded');
-      if (btnText) btnText.textContent = 'ðŸ©º Connect to Doctor';
+      if (btnText) btnText.textContent = '👨‍⚕️ Connect to Doctor';
       doctorListVisible = false;
     }
   }
@@ -7175,17 +7175,17 @@ async function loadPatientList() {
     return; // ✅ EXIT EARLY - DON'T CONTINUE
   }
   
-  doctorList.innerHTML = '<p class="loading-doctors">â³ Loading patients...</p>';
+  doctorList.innerHTML = '<p class="loading-doctors">⏳ Loading patients...</p>';
   
   try {
     if (!window.firebaseDB) {
-      doctorList.innerHTML = '<p class="loading-doctors">âš ï¸ Firebase not initialized</p>';
+      doctorList.innerHTML = '<p class="loading-doctors">❗ Firebase not initialized</p>';
       window.isLoadingPatients = false;
       return;
     }
     
     if (!currentDoctor || !currentDoctor.id) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">âš ï¸ Doctor session not found</p>';
+      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❗ Doctor session not found</p>';
       window.isLoadingPatients = false;
       return;
     }
@@ -7217,7 +7217,7 @@ async function loadPatientList() {
   } catch (error) {
     console.error('âŒ Error loading patients:', error);
     if (doctorList) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">âŒ Error loading patients</p>';
+      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❌ Error loading patients</p>';
     }
   } finally {
     window.isLoadingPatients = false;
@@ -7240,9 +7240,9 @@ function toggleDoctorList() {
     // Open doctor list
     container.classList.add('expanded');
     if (btnText) {
-      btnText.textContent = 'ðŸš« Close Doctor List';
+      btnText.textContent = '❌ Close Doctor List';
     } else {
-      btn.textContent = 'ðŸš« Close Doctor List';
+      btn.textContent = '❌ Close Doctor List';
     }
     loadRealDoctors(); // Load doctors when opening
     doctorListVisible = true;
@@ -7250,9 +7250,9 @@ function toggleDoctorList() {
     // Close doctor list
     container.classList.remove('expanded');
     if (btnText) {
-      btnText.textContent = 'ðŸ‘¨â€âš•ï¸ Connect to Doctor';
+      btnText.textContent = '👨‍⚕️ Connect to Doctor';
     } else {
-      btn.textContent = 'ðŸ‘¨â€âš•ï¸ Connect to Doctor';
+      btn.textContent = '👨‍⚕️ Connect to Doctor';
     }
     doctorListVisible = false;
   }
@@ -7281,7 +7281,7 @@ async function loadPatientList() {
     return;
   }
   
-  doctorList.innerHTML = '<p class="loading-doctors">â³ Loading patients...</p>';
+  doctorList.innerHTML = '<p class="loading-doctors">⏳ Loading patients...</p>';
   
   try {
     if (!window.firebaseDB) {
