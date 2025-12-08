@@ -1373,18 +1373,18 @@ function initializePeerJS(userId) {
 // Start voice call (Doctor initiates)
 async function startVoiceCall() {
   if (!window.activePatient || !window.activePatient.id) {
-    alert('âŒ No active patient. Please select a patient first.');
+    alert('❗ No active patient. Please select a patient first.');
     return;
   }
   
   const patientName = window.activePatient.patientName || 'Patient';
   
-  if (!confirm(`ðŸ“ž Start voice call with ${patientName}?`)) {
+  if (!confirm(`❗ Start voice call with ${patientName}?`)) {
     return;
   }
   
   try {
-    console.log('ðŸ“ž Starting voice call...');
+    console.log('🟢 Starting voice call...');
     
     // Get patient's userId from request
     const patientData = await getPatientFromRequest(window.activePatient.id);
@@ -1407,9 +1407,9 @@ async function startVoiceCall() {
     console.error('âŒ Error starting voice call:', error);
     
     if (error.name === 'NotAllowedError') {
-      alert('âŒ Microphone access denied. Please allow microphone access in your browser settings.');
+      alert('❗ Microphone access denied. Please allow microphone access in your browser settings.');
     } else {
-      alert('âŒ Failed to start call: ' + error.message);
+      alert('❌ Failed to start call: ' + error.message);
     }
   }
 }
@@ -1417,24 +1417,24 @@ async function startVoiceCall() {
 // Start video call (Doctor initiates)
 async function startVideoCall() {
   if (!window.activePatient || !window.activePatient.id) {
-    alert('âŒ No active patient. Please select a patient first.');
+    alert('❗ No active patient. Please select a patient first.');
     return;
   }
   
   const patientName = window.activePatient.patientName || 'Patient';
   
-  if (!confirm(`ðŸ“¹ Start video call with ${patientName}?`)) {
+  if (!confirm(`❗ Start video call with ${patientName}?`)) {
     return;
   }
   
   try {
-    console.log('ðŸ“¹ Starting video call...');
+    console.log('🟢 Starting video call...');
     
     // Get patient's userId
     const patientData = await getPatientFromRequest(window.activePatient.id);
     
     if (!patientData || !patientData.userId) {
-      alert('âŒ Cannot start call: Patient not logged in or user ID not found.');
+      alert('❌ Cannot start call: Patient not logged in or user ID not found.');
       return;
     }
     
@@ -2477,39 +2477,37 @@ function resetDoctorToNormalChat() {
 // ✅ ADD THIS NEW FUNCTION - START DOCTOR CHAT WITH PATIENT
 // ✅ START DOCTOR CHAT WITH PATIENT - FIXED
 function startDoctorChat(patient) {
-  console.log('ðŸ©º Starting doctor chat with patient:', patient);
+  console.log('🩺 Starting doctor chat with patient:', patient);
   
-  // ✅ ADD THIS VALIDATION - CRITICAL FIX
   if (!patient || !patient.id) {
-    console.error('âŒ CRITICAL: Patient object missing ID!', patient);
-    alert('Error: Cannot start chat - patient data incomplete. Please refresh and try again.');
-    return; // Stop execution
+    console.error('❌ Patient object missing ID!', patient);
+    alert('Error: Cannot start chat - patient data incomplete.');
+    return;
   }
   
-  console.log('✅ Patient ID confirmed:', patient.id);
-  
-  // ✅ Store active patient info WITH REQUEST ID
+  // Store active patient info
   window.activePatient = {
-    id: patient.id,  // ✅ THIS IS THE REQUEST ID
+    id: patient.id,
     patientName: patient.patientName,
     age: patient.age,
     message: patient.message,
     doctorId: patient.doctorId
   };
-
-  // ✅ ADD THIS DEBUG LOG
+  
   console.log('✅ window.activePatient set:', window.activePatient);
   
-  
-  // Update chat window
+  // Update chat window with WAITING message
   const chatWindow = document.getElementById('chatWindow');
-  
   if (chatWindow) {
     chatWindow.innerHTML = `
       <div class="bot-msg" style="background: #10b981;">
-        <strong>✅ Consultation Started!</strong><br>
-        You are now connected with <strong>${patient.patientName || 'Patient'}</strong> (Age: ${patient.age || 'N/A'}).<br>
-        <em>Message: ${patient.message || 'No message'}</em>
+        <strong>✅ Request Accepted!</strong><br>
+        You have accepted <strong>${patient.patientName}</strong>'s consultation request.
+      </div>
+      <div class="bot-msg" style="background: #fbbf24; color: #92400e;">
+        <strong>⏳ Waiting for Patient...</strong><br>
+        Waiting for ${patient.patientName} to join the conversation.<br>
+        They will receive a notification to connect.
       </div>
     `;
     chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -2517,19 +2515,84 @@ function startDoctorChat(patient) {
   
   // Hide search bar
   const searchBar = document.querySelector('.search-bar');
-  if (searchBar) {
-    searchBar.style.display = 'none';
-  }
+  if (searchBar) searchBar.style.display = 'none';
   
-  // Create consultation controls for doctor
+  // ✅ START LISTENING FOR PATIENT TO ACCEPT
+  listenForPatientAcceptance(patient);
+  
+  // ✅ FUNCTION ENDS HERE - No more code!
+}
+
+// Doctor listens for patient to accept/decline
+function listenForPatientAcceptance(patient) {
+  console.log('👂 Doctor waiting for patient response...');
+  
+  if (!window.firebaseDB) return;
+  
+  const { doc, onSnapshot } = window.firestoreFunctions;
+  
+  const unsubscribe = onSnapshot(
+    doc(window.firebaseDB, 'patientRequests', patient.id),
+    (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        
+        console.log('📡 Patient response status:', data.consultationStarted, data.notified);
+        
+        // ✅ Patient accepted - start full consultation
+        if (data.consultationStarted === true && data.notified === true) {
+          console.log('✅ Patient accepted! Starting consultation...');
+          
+          // Stop listening
+          unsubscribe();
+          
+          // Update UI - show "Patient Connected"
+          const chatWindow = document.getElementById('chatWindow');
+          if (chatWindow) {
+            chatWindow.innerHTML = `
+              <div class="bot-msg" style="background: #10b981;">
+                <strong>✅ Consultation Started!</strong><br>
+                <strong>${patient.patientName}</strong> has joined the conversation.
+              </div>
+            `;
+          }
+          
+          // Show consultation controls
+          showDoctorConsultationControls(patient);
+          
+          // Start listening for messages
+          startListeningToPatientMessages(patient.id);
+        }
+        
+        // ✅ Patient declined
+        if (data.status === 'declined') {
+          console.log('❌ Patient declined consultation');
+          
+          unsubscribe();
+          
+          alert(`${patient.patientName} declined the consultation.`);
+          
+          // Reset to normal chat
+          resetDoctorToNormalChat();
+        }
+      }
+    }
+  );
+  
+  // Store for cleanup
+  window.patientAcceptanceListener = unsubscribe;
+}
+
+// Show consultation controls for doctor
+function showDoctorConsultationControls(patient) {
   const chatSection = document.querySelector('.chat-section');
   if (!chatSection) return;
   
-  // Remove existing consultation bar if any
+  // Remove existing controls
   const existing = document.getElementById('doctorConsultationControls');
   if (existing) existing.remove();
   
-  // ✅ CREATE CONSULTATION BAR WITH VOICE/VIDEO CALL BUTTONS
+  // Create consultation bar
   const consultationHTML = `
     <div id="doctorConsultationControls" style="
       flex: 0 0 70px;
@@ -2554,44 +2617,55 @@ function startDoctorChat(patient) {
           outline: none;
         "
       />
-      <button 
-        onclick="sendDoctorMessage()" 
-        class="btn send"
-        style="padding: 10px 15px;"
-      >
+      <button onclick="sendDoctorMessage()" class="btn send" style="padding: 10px 15px;">
         Send
       </button>
-      <button 
-        onclick="startVoiceCall()" 
-        class="btn mic"
-        style="padding: 10px 15px;"
-      >
-        ðŸ“ž Voice Call
+      <button onclick="startVoiceCall()" class="btn mic" style="padding: 10px 15px;">
+        📞 Voice Call
       </button>
-      <button 
-        onclick="startVideoCall()" 
-        class="btn upload"
-        style="padding: 10px 15px; background: #10b981;"
-      >
-        ðŸ“¹ Video Call
+      <button onclick="startVideoCall()" class="btn upload" style="padding: 10px 15px; background: #10b981;">
+        📹 Video Call
       </button>
-      <button 
-        onclick="endConsultation()" 
-        class="btn"
-        style="padding: 10px 15px; background: #dc2626;"
-      >
+      <button onclick="endConsultation()" class="btn" style="padding: 10px 15px; background: #dc2626;">
         End
       </button>
     </div>
   `;
   
   chatSection.insertAdjacentHTML('beforeend', consultationHTML);
-  
-  console.log('✅ Doctor consultation mode activated with Voice/Video call buttons');
-
-  // ✅ ADD THIS - Start listening for patient messages
-  startListeningToPatientMessages(patient.id);
+  console.log('✅ Doctor consultation controls shown');
 }
+
+
+// Patient declines consultation
+async function declineConsultation(requestId) {
+  console.log('❌ Patient declining consultation');
+  
+  try {
+    if (window.firebaseDB) {
+      const { doc, updateDoc } = window.firestoreFunctions;
+      
+      await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
+        status: 'declined',
+        declinedAt: new Date().toISOString()
+      });
+    }
+    
+    // Close notification
+    const modal = document.getElementById('acceptanceNotification');
+    if (modal) modal.remove();
+    
+    alert('You declined the consultation. You can connect with another doctor.');
+    
+  } catch (error) {
+    console.error('❌ Error declining:', error);
+  }
+}
+
+
+
+
+
 
 // ✅ LISTEN FOR PATIENT MESSAGES IN REAL-TIME
 function startListeningToPatientMessages(requestId) {
@@ -3037,6 +3111,41 @@ function convertPatientToConsultationMode(doctorName, requestId, patientData) {
   listenForConsultationEnd(requestId);
 }
 
+// Listen for consultation end (if doctor ends it)
+function listenForConsultationEnd(requestId) {
+  console.log('👂 Listening for consultation end...');
+  
+  if (!window.firebaseDB) return;
+  
+  const { doc, onSnapshot } = window.firestoreFunctions;
+  
+  const unsubscribe = onSnapshot(
+    doc(window.firebaseDB, 'patientRequests', requestId),
+    (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        
+        if (data.status === 'ended') {
+          console.log('🛑 Consultation ended by doctor');
+          
+          // Stop listening
+          unsubscribe();
+          
+          // Show message
+          alert('Consultation ended by doctor.');
+          
+          // Reload page to reset
+          location.reload();
+        }
+      }
+    }
+  );
+  
+  // Store for cleanup
+  window.consultationEndListener = unsubscribe;
+}
+
+
 
 // ✅ LISTEN FOR DOCTOR MESSAGES IN REAL-TIME
 function startListeningToDoctorMessages(requestId) {
@@ -3355,12 +3464,12 @@ function sendConsultationMessage() {
 }
 
 function startVoiceCall() {
-  alert('ðŸ“ž Voice Call Feature\n\nThis feature will be implemented in the next update.');
+  alert('📞 Voice Call Feature\n\nThis feature will be implemented in the next update.');
   // TODO: Implement WebRTC voice call
 }
 
 function startVideoCall() {
-  alert('ðŸ“¹ Video Call Feature\n\nThis feature will be implemented in the next update.');
+  alert('📹 Video Call Feature\n\nThis feature will be implemented in the next update.');
   // TODO: Implement WebRTC video call
 }
 
