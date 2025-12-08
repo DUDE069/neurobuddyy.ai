@@ -2348,31 +2348,31 @@ function updateDoctorBanner(patientCount) {
 }
 
 
-// ========== DOCTOR ACCEPTS PATIENT REQUEST ==========
-
+// ========== PATIENT LISTENS FOR DOCTOR ACCEPTANCE - FIXED ==========
 async function acceptPatientRequest(patient) {
   if (!confirm(`Accept consultation request from ${patient.patientName}?`)) return;
   
   try {
     const { doc, updateDoc, getDoc } = window.firestoreFunctions;
     
-    // Update request status
+    // ✅ FIX: Change 'active' to 'accepted'
     await updateDoc(doc(window.firebaseDB, 'patientRequests', patient.id), {
-      status: 'active',
-      acceptedAt: new Date().toISOString()
+      status: 'accepted',  // ← Changed from 'active' to 'accepted'
+      acceptedAt: new Date().toISOString(),
+      notified: false  // ← Add this so patient listener triggers
     });
     
-    // STORE ACTIVE PATIENT DATA GLOBALLY (for calls)
+    // Store active patient data
     const requestDoc = await getDoc(doc(window.firebaseDB, 'patientRequests', patient.id));
     if (requestDoc.exists()) {
       window.activePatient = { id: patient.id, ...requestDoc.data() };
       console.log('✅ Active patient stored:', window.activePatient);
     }
     
-    alert('✅ Request Accepted! You are now consulting with ' + patient.patientName + '.');
+    alert(`✅ Request Accepted! You are now consulting with ${patient.patientName}.`);
     
-    // ✅ FIX: Call the correct function
-    startDoctorChat(patient);  // This function exists!
+    // Start doctor chat
+    startDoctorChat(patient);
     
   } catch (error) {
     console.error('❌ Error accepting request:', error);
@@ -2793,7 +2793,7 @@ async function endConsultation() {
 // ========== PATIENT LISTENS FOR DOCTOR ACCEPTANCE - FIXED ==========
 
 function startListeningForDoctorAcceptance(requestId, doctorName) {
-  console.log('ðŸ‘‚ Listening for doctor acceptance...');
+  console.log('👂 Listening for doctor acceptance...');
   
   if (!window.firebaseDB) return;
   
@@ -3761,20 +3761,20 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   // ✅ ASK FOR NAME
   const patientName = prompt('Please enter your name:', 'Anonymous Patient');
   if (!patientName || patientName.trim() === '') {
-    alert('âŒ Name is required to connect with doctor');
+    alert('🔴 Name is required to connect with doctor');
     return;
   }
   
   // ✅ ASK FOR AGE
   const patientAge = prompt('Please enter your age:', '');
   if (!patientAge || isNaN(patientAge) || patientAge < 1) {
-    alert('âŒ Valid age is required');
+    alert('🔴 Valid age is required');
     return;
   }
   
   try {
     if (!window.firebaseDB) {
-      alert('âš ï¸ Firebase not initialized. Please refresh the page.');
+      alert('❌ Firebase not initialized. Please refresh the page.');
       return;
     }
     
@@ -3807,8 +3807,8 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
     startListeningForDoctorAcceptance(docRef.id, doctorName);
     
   } catch (error) {
-    console.error('âŒ Error sending request:', error);
-    alert('âŒ Failed to send request. Please try again.');
+    console.error(' 🔴 Error sending request:', error);
+    alert('❌ Failed to send request. Please try again.');
   }
 }
 
@@ -6004,9 +6004,9 @@ async function initializeDoctorMode() {
   const badge = document.getElementById('patientCountBadge');
   
   if (btnText) {
-    btnText.textContent = 'ðŸ“‹ Patient List';
+    btnText.textContent = '👤 Patient List';
   } else if (btn) {
-    btn.textContent = 'ðŸ“‹ Patient List';
+    btn.textContent = '👤 Patient List';
   }
   
   if (btn) {
@@ -6075,9 +6075,9 @@ function initializePatientMode() {
   const btnText = document.getElementById('patientBtnText');
   
   if (btnText) {
-    btnText.textContent = 'ðŸ©º Connect to Doctor';
+    btnText.textContent = '👨‍⚕️ Connect to Doctor';
   } else if (btn) {
-    btn.textContent = 'ðŸ©º Connect to Doctor';
+    btn.textContent = '👨‍⚕️ Connect to Doctor';
   }
   
   if (btn) {
@@ -6259,21 +6259,21 @@ function startConversationPolling(patientId) {
 }
 
 function startVideoCall(patientId) {
-  alert('ðŸ“¹ Video Call Feature\n\nVideo call functionality will be implemented in the next update.\n\nFor now, please use text chat to communicate with the patient.');
+  alert('📹Video Call Feature\n\nVideo call functionality will be implemented in the next update.\n\nFor now, please use text chat to communicate with the patient.');
 }
 
 function startVoiceCall(patientId) {
-  alert('ðŸ“ž Voice Call Feature\n\nVoice call functionality will be implemented in the next update.\n\nFor now, please use text chat to communicate with the patient.');
+  alert('📞 Voice Call Feature\n\nVoice call functionality will be implemented in the next update.\n\nFor now, please use text chat to communicate with the patient.');
 }
 // Cancel patient consultation
 async function cancelPatient(patientId) {
-  if (!confirm('âŒ Cancel this patient consultation?\n\nThe patient will be notified.')) {
+  if (!confirm('❌ Cancel this patient consultation?\n\nThe patient will be notified.')) {
     return;
   }
   
   try {
     if (!window.firebaseDB) {
-      alert('âŒ Firebase not initialized');
+      alert('❌ Firebase not initialized');
       return;
     }
     
