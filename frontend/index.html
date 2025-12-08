@@ -13,7 +13,7 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
     import { getFirestore, collection, addDoc, getDocs,getDoc, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // âœ… ADD THIS LINE - Firebase Authentication
+    // ✅ ADD THIS LINE - Firebase Authentication
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     // Your Firebase configuration
     const firebaseConfig = {
@@ -38,7 +38,7 @@
     createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential
     };
 
-    console.log("âœ… Firebase initialized successfully!");
+    console.log("✅ Firebase initialized successfully!");
     console.log("ðŸ“Š Firestore Auth ready:", auth);
     
   </script>
@@ -953,7 +953,7 @@
   </div>
 </div>
 
-<!-- âœ… PATIENT LOGIN/REGISTER MODAL -->
+<!-- ✅ PATIENT LOGIN/REGISTER MODAL -->
 <div id="patientAuthModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
     <button class="modal-close" onclick="closePatientAuth()">Ã—</button>
@@ -1058,8 +1058,8 @@
 <!-- Doctor Registration Modal -->
 <div id="doctorRegModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
-    <button class="modal-close" onclick="closeDoctorRegister()">âœ•</button>
-    <h2>ðŸªª Doctor Registration</h2>
+    <button class="modal-close" onclick="closeDoctorRegister()">❌•</button>
+    <h2>🪪 Doctor Registration</h2>
     <p style="color: #666; margin-bottom: 20px;">Join our network of healthcare professionals</p>
     
     <form id="doctorRegForm" onsubmit="registerDoctor(event)">
@@ -1103,7 +1103,7 @@
       <div class="form-buttons">
         <button type="submit" class="btn-submit">
           <span id="regBtnText">Register</span>
-          <span id="regBtnLoader" style="display: none;">Ã¢ÂÂ³ Processing...</span>
+          <span id="regBtnLoader" style="display: none;">⏳ Processing...</span>
         </button>
         <button type="button" class="btn-cancel" onclick="closeDoctorRegister()">Cancel</button>
       </div>
@@ -1118,8 +1118,8 @@
 <!-- Doctor Login Modal -->
 <div id="doctorLoginModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
-    <button class="modal-close" onclick="closeDoctorLogin()">âœ–</button>
-    <h2>ðŸ‘¨â€âš•ï¸ Doctor Login</h2>
+    <button class="modal-close" onclick="closeDoctorLogin()">❌–</button>
+    <h2>🪪 Doctor Login</h2>
     <p style="color: #666; margin-bottom: 20px;">Access your professional dashboard</p>
     
     <form id="doctorLoginForm" onsubmit="loginDoctor(event)">
@@ -1157,7 +1157,7 @@
   </div>
 </div>
 
-<!-- âœ… DOCTOR PASSWORD RESET MODAL (SIMPLIFIED) -->
+<!-- ✅ DOCTOR PASSWORD RESET MODAL (SIMPLIFIED) -->
 <div id="passwordResetModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
     <button class="modal-close" onclick="closePasswordReset()">Ã—</button>
@@ -1189,7 +1189,7 @@
   </div>
 </div>
 
-<!-- âœ… ENHANCED SYMPTOM DETAILS MODAL -->
+<!-- ✅ ENHANCED SYMPTOM DETAILS MODAL -->
 <div id="symptomModal" class="modal-overlay" style="display: none;">
   <div class="modal-content" style="max-width: 600px;">
     <button class="modal-close" onclick="closeSymptomModal()">Ã—</button>
@@ -1231,7 +1231,7 @@
   </div>
 </div>
 
-<!-- âœ… CALL INVITATION MODAL (For patient receiving call) -->
+<!-- ✅ CALL INVITATION MODAL (For patient receiving call) -->
 <div id="callInvitationModal" class="modal-overlay" style="display: none;">
   <div class="modal-content" style="max-width: 450px; text-align: center;">
     <h2 style="color: #2563eb; margin: 0 0 15px 0;">ðŸ“ž Incoming Call</h2>
@@ -1253,13 +1253,13 @@
       </button>
       <button onclick="acceptCall()" 
         style="flex: 1; padding: 15px; background: #10b981; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">
-        âœ… Accept
+        ✅ Accept
       </button>
     </div>
   </div>
 </div>
 
-<!-- âœ… ACTIVE CALL MODAL -->
+<!-- ✅ ACTIVE CALL MODAL -->
 <div id="activeCallModal" class="modal-overlay" style="display: none;">
   <div class="modal-content" style="max-width: 800px; background: #1f2937;">
     
@@ -1347,7 +1347,7 @@ function initializePeerJS(userId) {
     });
     
     peer.on('open', (id) => {
-      console.log('âœ… PeerJS connected with ID:', id);
+      console.log('✅ PeerJS connected with ID:', id);
     });
     
     peer.on('error', (error) => {
@@ -1360,7 +1360,7 @@ function initializePeerJS(userId) {
       handleIncomingCall(incomingCall);
     });
     
-    console.log('âœ… PeerJS initialized');
+    console.log('✅ PeerJS initialized');
     
   } catch (error) {
     console.error('âŒ Failed to initialize PeerJS:', error);
@@ -1499,7 +1499,7 @@ async function sendCallInvitation(recipientUserId, callType, callerName) {
     
     await addDoc(collection(window.firebaseDB, 'callInvitations'), invitationData);
     
-    console.log('âœ… Call invitation sent to:', recipientUserId);
+    console.log('✅ Call invitation sent to:', recipientUserId);
     
   } catch (error) {
     console.error('âŒ Error sending call invitation:', error);
@@ -1582,7 +1582,7 @@ async function acceptCall() {
   }
   
   try {
-    console.log('âœ… Accepting call...');
+    console.log('✅ Accepting call...');
     
     const invitation = window.currentCallInvitation;
     
@@ -1660,7 +1660,7 @@ function handleIncomingCall(incomingCall) {
 function handleRemoteStream(stream, callType) {
   remoteStream = stream;
   
-  console.log('âœ… Received remote stream');
+  console.log('✅ Received remote stream');
   
   if (callType === 'video') {
     document.getElementById('remoteVideo').srcObject = stream;
@@ -1788,7 +1788,7 @@ async function endCall() {
     
     callInProgress = false;
     
-    console.log('âœ… Call ended');
+    console.log('✅ Call ended');
     
   } catch (error) {
     console.error('âŒ Error ending call:', error);
@@ -1824,7 +1824,7 @@ function closeDoctorDashboard() {
   document.getElementById('doctorDashboard').style.display = 'none';
 }
 
-// âœ… DOCTOR LOGOUT
+// ✅ DOCTOR LOGOUT
 async function logoutDoctor() {
   if (!confirm('Logout? Are you sure you want to logout?')) return;
   
@@ -1838,7 +1838,7 @@ async function logoutDoctor() {
     const { signOut } = window.authFunctions;
     await signOut(window.firebaseAuth);
     
-    console.log('âœ… Doctor logged out');
+    console.log('✅ Doctor logged out');
     
     // Reload page
     location.reload();
@@ -1882,7 +1882,7 @@ function showPatientPasswordReset() {
   document.getElementById('patientPasswordResetForm').style.display = 'block';
 }
 
-// âœ… PATIENT REGISTRATION
+// ✅ PATIENT REGISTRATION
 async function registerPatient(event) {
   event.preventDefault();
   
@@ -1912,8 +1912,8 @@ async function registerPatient(event) {
       role: 'patient'
     });
     
-    console.log('âœ… Patient registered:', user.uid);
-    alert('âœ… Registration successful! You are now logged in.');
+    console.log('✅ Patient registered:', user.uid);
+    alert('✅ Registration successful! You are now logged in.');
     
     // Close modal and initialize patient mode
     closePatientAuth();
@@ -1936,7 +1936,7 @@ async function registerPatient(event) {
   }
 }
 
-// âœ… PATIENT LOGIN
+// ✅ PATIENT LOGIN
 async function loginPatient(event) {
   event.preventDefault();
   
@@ -1952,8 +1952,8 @@ async function loginPatient(event) {
     const userCredential = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
     const user = userCredential.user;
     
-    console.log('âœ… Patient logged in:', user.uid);
-    alert('âœ… Welcome back!');
+    console.log('✅ Patient logged in:', user.uid);
+    alert('✅ Welcome back!');
     
     // Close modal and initialize patient mode
     closePatientAuth();
@@ -1976,7 +1976,7 @@ async function loginPatient(event) {
   }
 }
 
-// âœ… SEND PASSWORD RESET EMAIL
+// ✅ SEND PASSWORD RESET EMAIL
 async function sendPatientPasswordReset() {
   const email = document.getElementById('patientResetEmail').value.trim();
   
@@ -1989,7 +1989,7 @@ async function sendPatientPasswordReset() {
     const { sendPasswordResetEmail } = window.authFunctions;
     await sendPasswordResetEmail(window.firebaseAuth, email);
     
-    alert('âœ… Password reset email sent! Check your inbox.');
+    alert('✅ Password reset email sent! Check your inbox.');
     showPatientLogin();
     
   } catch (error) {
@@ -2003,7 +2003,7 @@ async function sendPatientPasswordReset() {
   }
 }
 
-// âœ… PATIENT LOGOUT
+// ✅ PATIENT LOGOUT
 async function logoutPatient() {
   if (!confirm('Are you sure you want to logout?')) return;
   
@@ -2011,8 +2011,8 @@ async function logoutPatient() {
     const { signOut } = window.authFunctions;
     await signOut(window.firebaseAuth);
     
-    console.log('âœ… Patient logged out');
-    alert('âœ… Logged out successfully.');
+    console.log('✅ Patient logged out');
+    alert('✅ Logged out successfully.');
     
     // Reload page
     location.reload();
@@ -2034,7 +2034,7 @@ function showDoctorConnectionModal(doctor) {
   const modalHTML = `
     <div id="doctorConnectionModal" class="modal-overlay" style="display: flex;">
       <div class="modal-content" style="max-width: 450px;">
-        <button class="modal-close" onclick="closeDoctorConnectionModal()">âœ•</button>
+        <button class="modal-close" onclick="closeDoctorConnectionModal()">❌•</button>
         
         <div style="text-align: center; padding: 20px 0;">
           <div style="font-size: 4rem; margin-bottom: 15px;">ðŸ‘¨â€âš•ï¸</div>
@@ -2074,7 +2074,7 @@ function showDoctorConnectionModal(doctor) {
           </button>
           <button onclick="confirmDoctorConnection('${doctor.id}', '${doctor.name}', '${doctor.specialty}')" 
                   style="flex: 1; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-            âœ“ Connect Now
+            ❌“ Connect Now
           </button>
         </div>
       </div>
@@ -2175,7 +2175,7 @@ function getDoctorWarningMessage(status) {
 async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   closeDoctorConnectionModal();
   
-  // âœ… Check if user is logged in
+  // ✅ Check if user is logged in
   const user = window.firebaseAuth.currentUser;
   let patientName, patientAge;
   
@@ -2214,7 +2214,7 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
     
     const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
     
-    // âœ… Save request with userId (if logged in)
+    // ✅ Save request with userId (if logged in)
     const requestData = {
       patientName: patientName.trim(),
       age: parseInt(patientAge),
@@ -2227,7 +2227,7 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
       message: `Patient ${patientName} (Age: ${patientAge}) wants to consult with you.`
     };
     
-    // âœ… Add userId if user is logged in
+    // ✅ Add userId if user is logged in
     if (user) {
       requestData.userId = user.uid;
       requestData.userEmail = user.email;
@@ -2235,9 +2235,9 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
     
     const docRef = await addDoc(collection(window.firebaseDB, 'patientRequests'), requestData);
     
-    alert(`âœ… Request Sent!\n\nYour consultation request has been sent to Dr. ${doctorName}.\n\nKeep this page open to receive updates.`);
+    alert(`✅ Request Sent!\n\nYour consultation request has been sent to Dr. ${doctorName}.\n\nKeep this page open to receive updates.`);
     
-    console.log('âœ… Consultation request sent:', docRef.id);
+    console.log('✅ Consultation request sent:', docRef.id);
     
     // Listen for doctor acceptance
     startListeningForDoctorAcceptance(docRef.id, doctorName);
@@ -2248,7 +2248,7 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   }
 }
 
-// âœ… GET PATIENT DATA BY USER ID
+// ✅ GET PATIENT DATA BY USER ID
 async function getPatientData(userId) {
   try {
     const { collection, query, where, getDocs } = window.firestoreFunctions;
@@ -2320,13 +2320,13 @@ function displayPatients(patients) {
     doctorList.appendChild(card);
   });
   
-  console.log(`âœ… Displayed ${patients.length} patient card(s)`);
+  console.log(`✅ Displayed ${patients.length} patient card(s)`);
   
-  // âœ… UPDATE BANNER WITH NEW PATIENT COUNT
+  // ✅ UPDATE BANNER WITH NEW PATIENT COUNT
   updateDoctorBanner(patients.length);
 }
 
-// âœ… ADD THIS NEW FUNCTION
+// ✅ ADD THIS NEW FUNCTION
 function updateDoctorBanner(patientCount) {
   const chatWindow = document.getElementById('chatWindow');
   if (!chatWindow) return;
@@ -2364,7 +2364,7 @@ async function acceptPatientRequest(requestId, patientName, urgency) {
       acceptedAt: new Date().toISOString()
     });
     
-    // âœ… STORE ACTIVE PATIENT DATA GLOBALLY (for calls)
+    // ✅ STORE ACTIVE PATIENT DATA GLOBALLY (for calls)
     const { getDoc } = window.firestoreFunctions;
     const requestDoc = await getDoc(doc(window.firebaseDB, 'patientRequests', requestId));
     
@@ -2373,10 +2373,10 @@ async function acceptPatientRequest(requestId, patientName, urgency) {
         id: requestId,
         ...requestDoc.data()
       };
-      console.log('âœ… Active patient stored:', window.activePatient);
+      console.log('✅ Active patient stored:', window.activePatient);
     }
     
-    alert(`âœ… Request Accepted!\n\nYou are now consulting with ${patientName}.`);
+    alert(`✅ Request Accepted!\n\nYou are now consulting with ${patientName}.`);
     
     // Hide requests panel and show consultation interface
 // document.getElementById('doctorRequestsPanel').style.display = 'none';  // ❌ Element doesn't exist
@@ -2391,7 +2391,7 @@ async function acceptPatientRequest(requestId, patientName, urgency) {
   }
 }
 
-// âœ… ADD THIS NEW FUNCTION
+// ✅ ADD THIS NEW FUNCTION
 function convertToConsultationWaitingMode(patient) {
   console.log('ðŸ”„ Converting to consultation waiting mode...');
   
@@ -2404,7 +2404,7 @@ function convertToConsultationWaitingMode(patient) {
   if (chatWindow) {
     chatWindow.innerHTML = `
       <div class="bot-msg" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-        <strong>âœ… Consultation Request Accepted!</strong><br>
+        <strong>✅ Consultation Request Accepted!</strong><br>
         Patient: <strong>${patient.patientName}</strong> (Age: ${patient.age})
       </div>
       <div class="bot-msg" style="background: #fbbf24;">
@@ -2415,11 +2415,11 @@ function convertToConsultationWaitingMode(patient) {
     `;
   }
   
-  console.log('âœ… Converted to waiting mode');
+  console.log('✅ Converted to waiting mode');
 }
 
 
-// âœ… Show waiting banner (doctor side)
+// ✅ Show waiting banner (doctor side)
 function showWaitingForPatientBanner(patient) {
   const chatWindow = document.getElementById('chatWindow');
   if (!chatWindow) return;
@@ -2433,7 +2433,7 @@ function showWaitingForPatientBanner(patient) {
   `;
 }
 
-// âœ… Listen for patient response (accept or decline)
+// ✅ Listen for patient response (accept or decline)
 function listenForPatientResponse(patient) {
   console.log('ðŸ‘‚ Listening for patient response...');
   
@@ -2452,11 +2452,11 @@ function listenForPatientResponse(patient) {
         
         alert(`âŒ ${patient.patientName} declined the consultation.`);
         
-        // âœ… RESET TO NORMAL CHAT BOX
+        // ✅ RESET TO NORMAL CHAT BOX
         resetDoctorToNormalChat();
         
       } else if (data.consultationStarted === true) {
-        // âœ… Patient accepted - start full consultation
+        // ✅ Patient accepted - start full consultation
         unsubscribe();
         startDoctorChat(patient);
       }
@@ -2466,7 +2466,7 @@ function listenForPatientResponse(patient) {
   window.patientResponseListener = unsubscribe;
 }
 
-// âœ… ADD THIS FUNCTION
+// ✅ ADD THIS FUNCTION
 function resetDoctorToNormalChat() {
   console.log('ðŸ”„ Resetting doctor interface to normal chat...');
   
@@ -2481,34 +2481,34 @@ function resetDoctorToNormalChat() {
   initializeDoctorChatArea();
   loadPatientList();
   
-  console.log('âœ… Doctor interface reset');
+  console.log('✅ Doctor interface reset');
 }
 
-// âœ… ADD THIS NEW FUNCTION - START DOCTOR CHAT WITH PATIENT
-// âœ… START DOCTOR CHAT WITH PATIENT - FIXED
+// ✅ ADD THIS NEW FUNCTION - START DOCTOR CHAT WITH PATIENT
+// ✅ START DOCTOR CHAT WITH PATIENT - FIXED
 function startDoctorChat(patient) {
   console.log('ðŸ©º Starting doctor chat with patient:', patient);
   
-  // âœ… ADD THIS VALIDATION - CRITICAL FIX
+  // ✅ ADD THIS VALIDATION - CRITICAL FIX
   if (!patient || !patient.id) {
     console.error('âŒ CRITICAL: Patient object missing ID!', patient);
     alert('Error: Cannot start chat - patient data incomplete. Please refresh and try again.');
     return; // Stop execution
   }
   
-  console.log('âœ… Patient ID confirmed:', patient.id);
+  console.log('✅ Patient ID confirmed:', patient.id);
   
-  // âœ… Store active patient info WITH REQUEST ID
+  // ✅ Store active patient info WITH REQUEST ID
   window.activePatient = {
-    id: patient.id,  // âœ… THIS IS THE REQUEST ID
+    id: patient.id,  // ✅ THIS IS THE REQUEST ID
     patientName: patient.patientName,
     age: patient.age,
     message: patient.message,
     doctorId: patient.doctorId
   };
 
-  // âœ… ADD THIS DEBUG LOG
-  console.log('âœ… window.activePatient set:', window.activePatient);
+  // ✅ ADD THIS DEBUG LOG
+  console.log('✅ window.activePatient set:', window.activePatient);
   
   
   // Update chat window
@@ -2517,7 +2517,7 @@ function startDoctorChat(patient) {
   if (chatWindow) {
     chatWindow.innerHTML = `
       <div class="bot-msg" style="background: #10b981;">
-        <strong>âœ… Consultation Started!</strong><br>
+        <strong>✅ Consultation Started!</strong><br>
         You are now connected with <strong>${patient.patientName || 'Patient'}</strong> (Age: ${patient.age || 'N/A'}).<br>
         <em>Message: ${patient.message || 'No message'}</em>
       </div>
@@ -2539,7 +2539,7 @@ function startDoctorChat(patient) {
   const existing = document.getElementById('doctorConsultationControls');
   if (existing) existing.remove();
   
-  // âœ… CREATE CONSULTATION BAR WITH VOICE/VIDEO CALL BUTTONS
+  // ✅ CREATE CONSULTATION BAR WITH VOICE/VIDEO CALL BUTTONS
   const consultationHTML = `
     <div id="doctorConsultationControls" style="
       flex: 0 0 70px;
@@ -2597,13 +2597,13 @@ function startDoctorChat(patient) {
   
   chatSection.insertAdjacentHTML('beforeend', consultationHTML);
   
-  console.log('âœ… Doctor consultation mode activated with Voice/Video call buttons');
+  console.log('✅ Doctor consultation mode activated with Voice/Video call buttons');
 
-  // âœ… ADD THIS - Start listening for patient messages
+  // ✅ ADD THIS - Start listening for patient messages
   startListeningToPatientMessages(patient.id);
 }
 
-// âœ… LISTEN FOR PATIENT MESSAGES IN REAL-TIME
+// ✅ LISTEN FOR PATIENT MESSAGES IN REAL-TIME
 function startListeningToPatientMessages(requestId) {
   console.log('ðŸ‘‚ Doctor listening for patient messages...');
   
@@ -2650,7 +2650,7 @@ function displayMessageInChat(message, sender) {
 }
 
 
-// âœ… SEND MESSAGE FROM DOCTOR TO PATIENT - FULLY FIXED
+// ✅ SEND MESSAGE FROM DOCTOR TO PATIENT - FULLY FIXED
 async function sendDoctorMessage() {
    console.log('ðŸš¨ sendDoctorMessage CALLED!'); // â† ADD THIS LINE FIRST
   const input = document.getElementById('doctorConsultationInput');
@@ -2666,7 +2666,7 @@ async function sendDoctorMessage() {
     alert('Please enter a message');
     return;
   }
-  // âœ… ADD THIS DEBUG LOG
+  // ✅ ADD THIS DEBUG LOG
   console.log('ðŸ” activePatient check:', window.activePatient);
   console.log('ðŸ” activePatient.id:', window.activePatient?.id);
   
@@ -2682,9 +2682,9 @@ async function sendDoctorMessage() {
   
   input.value = '';
   
-  // âœ… SEND TO FIREBASE
+  // ✅ SEND TO FIREBASE
   try {
-    // âœ… VALIDATE ACTIVE PATIENT
+    // ✅ VALIDATE ACTIVE PATIENT
     if (!window.activePatient || !window.activePatient.id) {
       console.error('âŒ No active patient found');
       alert('Error: No active patient. Please refresh and try again.');
@@ -2699,9 +2699,9 @@ async function sendDoctorMessage() {
     
     const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
     
-    // âœ… SAVE MESSAGE TO FIREBASE WITH CORRECT FIELD
+    // ✅ SAVE MESSAGE TO FIREBASE WITH CORRECT FIELD
     await addDoc(collection(window.firebaseDB, 'conversations'), {
-      patientRequestId: window.activePatient.id,  // âœ… CORRECT - This is the request ID
+      patientRequestId: window.activePatient.id,  // ✅ CORRECT - This is the request ID
       doctorId: currentDoctor?.id || 'unknown',
       patientName: window.activePatient.patientName,
       sender: 'doctor',
@@ -2709,7 +2709,7 @@ async function sendDoctorMessage() {
       timestamp: serverTimestamp()
     });
     
-    console.log('âœ… Doctor message sent successfully:', message);
+    console.log('✅ Doctor message sent successfully:', message);
     
   } catch (error) {
     console.error('âŒ Error sending message:', error);
@@ -2717,7 +2717,7 @@ async function sendDoctorMessage() {
   }
 }
 
-// âœ… START VOICE CALL - PLACEHOLDER
+// ✅ START VOICE CALL - PLACEHOLDER
 function startVoiceCall() {
   const patientName = window.activePatient?.patientName || 'the patient';
   
@@ -2730,7 +2730,7 @@ function startVoiceCall() {
 }
 
 
-// âœ… START VIDEO CALL - PLACEHOLDER
+// ✅ START VIDEO CALL - PLACEHOLDER
 function startVideoCall() {
   const patientName = window.activePatient?.patientName || 'the patient';
   
@@ -2751,7 +2751,7 @@ async function endConsultation() {
   console.log('ðŸ›‘ Ending consultation...');
   
   try {
-    // âœ… Notify Firebase that doctor ended consultation
+    // ✅ Notify Firebase that doctor ended consultation
     if (window.activePatient && window.activePatient.id && window.firebaseDB) {
       const { doc, updateDoc, serverTimestamp } = window.firestoreFunctions;
       
@@ -2761,7 +2761,7 @@ async function endConsultation() {
         endedBy: 'doctor'
       });
       
-      console.log('âœ… Consultation ended in Firebase');
+      console.log('✅ Consultation ended in Firebase');
     }
   } catch (error) {
     console.error('âŒ Error updating Firebase:', error);
@@ -2789,14 +2789,14 @@ async function endConsultation() {
   if (chatWindow) {
     chatWindow.innerHTML = `
       <div class="bot-msg">
-        âœ… <strong>Consultation ended.</strong><br>
+        ✅ <strong>Consultation ended.</strong><br>
         You can now accept new patients from the Patient List.
       </div>
     `;
   }
   
-  console.log('âœ… Consultation ended successfully');
-  alert('âœ… Consultation ended successfully.');
+  console.log('✅ Consultation ended successfully');
+  alert('✅ Consultation ended successfully.');
 }
 
 
@@ -2807,7 +2807,7 @@ function startListeningForDoctorAcceptance(requestId, doctorName) {
   
   if (!window.firebaseDB) return;
   
-  // âœ… Prevent duplicate listeners
+  // ✅ Prevent duplicate listeners
   if (window.acceptanceListener) {
     console.log('âš ï¸ Already listening, cleaning up old listener...');
     window.acceptanceListener();
@@ -2815,7 +2815,7 @@ function startListeningForDoctorAcceptance(requestId, doctorName) {
   
   const { doc, onSnapshot } = window.firestoreFunctions;
   
-  // âœ… LISTEN TO REQUEST DOCUMENT
+  // ✅ LISTEN TO REQUEST DOCUMENT
   const unsubscribe = onSnapshot(
     doc(window.firebaseDB, 'patientRequests', requestId),
     (docSnapshot) => {
@@ -2824,13 +2824,13 @@ function startListeningForDoctorAcceptance(requestId, doctorName) {
         
         console.log('ðŸ“¡ Request status update:', data.status);
         
-        // âœ… CHECK IF DOCTOR ACCEPTED
+        // ✅ CHECK IF DOCTOR ACCEPTED
         if (data.status === 'accepted' && !data.notified) {
           // Stop listening
           unsubscribe();
           window.acceptanceListener = null;
           
-          // âœ… SHOW NOTIFICATION TO PATIENT
+          // ✅ SHOW NOTIFICATION TO PATIENT
           showDoctorAcceptanceNotification(doctorName, requestId, data);
         }
       }
@@ -2842,14 +2842,14 @@ function startListeningForDoctorAcceptance(requestId, doctorName) {
   
   // Store unsubscribe function for cleanup
   window.acceptanceListener = unsubscribe;
-  console.log('âœ… Real-time listener activated for request:', requestId);
+  console.log('✅ Real-time listener activated for request:', requestId);
 }
 
-// âœ… SHOW NOTIFICATION WHEN DOCTOR ACCEPTS - FIXED
+// ✅ SHOW NOTIFICATION WHEN DOCTOR ACCEPTS - FIXED
 function showDoctorAcceptanceNotification(doctorName, requestId, patientData) {
   console.log('ðŸ”” Doctor accepted! Showing notification...');
   
-  // âœ… CREATE CUSTOM NOTIFICATION MODAL
+  // ✅ CREATE CUSTOM NOTIFICATION MODAL
   const modalHTML = `
     <div id="acceptanceNotification" class="modal-overlay" style="display: flex;">
       <div class="modal-content" style="max-width: 450px; text-align: center;">
@@ -2910,12 +2910,12 @@ function showDoctorAcceptanceNotification(doctorName, requestId, patientData) {
   document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
-// âœ… PATIENT ACCEPTS TO START CONSULTATION - NEW
+// ✅ PATIENT ACCEPTS TO START CONSULTATION - NEW
 async function startPatientConsultation(doctorName, requestId, patientData) {
   console.log('ðŸ¤ Patient accepted consultation');
   
   try {
-    // âœ… MARK AS NOTIFIED IN FIREBASE
+    // ✅ MARK AS NOTIFIED IN FIREBASE
     if (window.firebaseDB) {
       const { doc, updateDoc } = window.firestoreFunctions;
       
@@ -2926,16 +2926,16 @@ async function startPatientConsultation(doctorName, requestId, patientData) {
       });
     }
     
-    // âœ… CLOSE NOTIFICATION
+    // ✅ CLOSE NOTIFICATION
     const modal = document.getElementById('acceptanceNotification');
     if (modal) modal.remove();
     
-    // âœ… SHOW SUCCESS MESSAGE
+    // ✅ SHOW SUCCESS MESSAGE
     alert(`Consultation Started! You are now connected with Dr. ${doctorName}.`);
     
-    // âœ… CONVERT CHAT INTERFACE TO CONSULTATION MODE
+    // ✅ CONVERT CHAT INTERFACE TO CONSULTATION MODE
      // Convert chat interface to consultation mode
-  convertPatientToConsultationMode(doctorName, requestId, patientData);  // âœ… Add requestId
+  convertPatientToConsultationMode(doctorName, requestId, patientData);  // ✅ Add requestId
 
     
   } catch (error) {
@@ -2945,11 +2945,11 @@ async function startPatientConsultation(doctorName, requestId, patientData) {
 }
 
 
-// âœ… CONVERT PATIENT CHAT TO CONSULTATION MODE - COMPLETE VERSION
+// ✅ CONVERT PATIENT CHAT TO CONSULTATION MODE - COMPLETE VERSION
 function convertPatientToConsultationMode(doctorName, requestId, patientData) {
   console.log('ðŸ”„ Converting to consultation mode...');
   
-  // âœ… Store consultation info WITH REQUEST ID
+  // ✅ Store consultation info WITH REQUEST ID
   window.activeConsultation = {
     doctorName: doctorName,
     requestId: requestId,
@@ -2958,20 +2958,20 @@ function convertPatientToConsultationMode(doctorName, requestId, patientData) {
     startedAt: new Date().toISOString()
   };
   
-  console.log('âœ… Stored activeConsultation:', window.activeConsultation);
+  console.log('✅ Stored activeConsultation:', window.activeConsultation);
   
-  // âœ… HIDE NORMAL SEARCH BAR
+  // ✅ HIDE NORMAL SEARCH BAR
   const searchBar = document.querySelector('.search-bar');
   if (searchBar) {
     searchBar.style.display = 'none';
   }
   
-  // âœ… UPDATE CHAT WINDOW WITH GREETING
+  // ✅ UPDATE CHAT WINDOW WITH GREETING
   const chatWindow = document.getElementById('chatWindow');
   if (chatWindow) {
     chatWindow.innerHTML = `
       <div class="bot-msg" style="background: #10b981;">
-        <strong>âœ… Consultation Started!</strong><br>
+        <strong>✅ Consultation Started!</strong><br>
         You are now connected with <strong>Dr. ${doctorName}</strong>.<br>
         You can start chatting with the doctor below.
       </div>
@@ -2979,7 +2979,7 @@ function convertPatientToConsultationMode(doctorName, requestId, patientData) {
     chatWindow.scrollTop = chatWindow.scrollHeight;
   }
   
-  // âœ… CREATE NEW CONSULTATION CONTROLS
+  // ✅ CREATE NEW CONSULTATION CONTROLS
   const chatSection = document.querySelector('.chat-section');
   if (!chatSection) return;
   
@@ -2987,7 +2987,7 @@ function convertPatientToConsultationMode(doctorName, requestId, patientData) {
   const existing = document.getElementById('patientConsultationControls');
   if (existing) existing.remove();
   
-  // âœ… CREATE CONSULTATION BAR
+  // ✅ CREATE CONSULTATION BAR
   const consultationHTML = `
     <div id="patientConsultationControls" style="
       flex: 0 0 70px;
@@ -3038,17 +3038,17 @@ function convertPatientToConsultationMode(doctorName, requestId, patientData) {
   
   chatSection.insertAdjacentHTML('beforeend', consultationHTML);
   
-  console.log('âœ… Patient consultation mode activated');
+  console.log('✅ Patient consultation mode activated');
   
-  // âœ… START LISTENING FOR DOCTOR MESSAGES
+  // ✅ START LISTENING FOR DOCTOR MESSAGES
   startListeningToDoctorMessages(requestId);
   
-  // âœ… START LISTENING FOR CONSULTATION END
+  // ✅ START LISTENING FOR CONSULTATION END
   listenForConsultationEnd(requestId);
 }
 
 
-// âœ… LISTEN FOR DOCTOR MESSAGES IN REAL-TIME
+// ✅ LISTEN FOR DOCTOR MESSAGES IN REAL-TIME
 function startListeningToDoctorMessages(requestId) {
   console.log('ðŸ‘‚ Patient listening for doctor messages...');
   
@@ -3086,7 +3086,7 @@ function displayMessageInChat(message, sender) {
   const chatWindow = document.getElementById('chatWindow');
   if (!chatWindow) return;
   
-  // âœ… FIX: Determine correct CSS class based on sender
+  // ✅ FIX: Determine correct CSS class based on sender
   let className;
   
   // Check if we're in doctor mode
@@ -3109,7 +3109,7 @@ function displayMessageInChat(message, sender) {
 
 
 
-// âœ… KEEP AND FIX THIS ONE
+// ✅ KEEP AND FIX THIS ONE
 async function sendPatientMessage() {
   const input = document.getElementById('patientConsultationInput');
   
@@ -3122,7 +3122,7 @@ async function sendPatientMessage() {
     return;
   }
   
-  // âœ… ADD VALIDATION
+  // ✅ ADD VALIDATION
   console.log('ðŸ” Checking window.activeConsultation:', window.activeConsultation);
   
   if (!window.activeConsultation || !window.activeConsultation.requestId) {
@@ -3131,7 +3131,7 @@ async function sendPatientMessage() {
     return;
   }
   
-  console.log('âœ… Request ID found:', window.activeConsultation.requestId);
+  console.log('✅ Request ID found:', window.activeConsultation.requestId);
   
   // Add message to chat
   const chatWindow = document.getElementById('chatWindow');
@@ -3143,7 +3143,7 @@ async function sendPatientMessage() {
   
   input.value = '';
   
-  // âœ… SEND TO FIREBASE
+  // ✅ SEND TO FIREBASE
   try {
     if (!window.firebaseDB) {
       console.error('âŒ Firebase not initialized');
@@ -3161,7 +3161,7 @@ async function sendPatientMessage() {
       timestamp: serverTimestamp()
     });
     
-    console.log('âœ… Patient message sent successfully:', message);
+    console.log('✅ Patient message sent successfully:', message);
     
   } catch (error) {
     console.error('âŒ Error sending message:', error);
@@ -3175,7 +3175,7 @@ async function declineConsultation(requestId) {
   console.log('âŒ Patient declined consultation');
   
   try {
-    // âœ… Update Firebase - mark as declined
+    // ✅ Update Firebase - mark as declined
     if (window.firebaseDB) {
       const { doc, updateDoc } = window.firestoreFunctions;
       await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
@@ -3185,14 +3185,14 @@ async function declineConsultation(requestId) {
         declineReason: 'Patient chose to connect later'
       });
       
-      console.log('âœ… Request marked as declined in Firebase');
+      console.log('✅ Request marked as declined in Firebase');
     }
     
     // Close notification
     const modal = document.getElementById('acceptanceNotification');
     if (modal) modal.remove();
     
-    alert('âœ… You can connect with the doctor later from your consultation history.');
+    alert('✅ You can connect with the doctor later from your consultation history.');
     
   } catch (error) {
     console.error('âŒ Error declining consultation:', error);
@@ -3204,10 +3204,10 @@ async function declineConsultation(requestId) {
 
 // Patient clicks "Connect Now"
 async function startConsultation(doctorName, requestId) {
-  console.log('âœ… Patient accepted consultation');
+  console.log('✅ Patient accepted consultation');
   
   try {
-    // âœ… MARK AS NOTIFIED IN FIREBASE
+    // ✅ MARK AS NOTIFIED IN FIREBASE
     if (window.firebaseDB) {
       const { doc, updateDoc } = window.firestoreFunctions;
       await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
@@ -3217,14 +3217,14 @@ async function startConsultation(doctorName, requestId) {
       });
     }
     
-    // âœ… CLOSE NOTIFICATION
+    // ✅ CLOSE NOTIFICATION
     const modal = document.getElementById('acceptanceNotification');
     if (modal) modal.remove();
     
-    // âœ… SHOW SUCCESS MESSAGE
+    // ✅ SHOW SUCCESS MESSAGE
     alert(`ðŸŽ‰ Consultation Started!\n\nYou are now connected with Dr. ${doctorName}.`);
     
-    // âœ… CONVERT CHAT INTERFACE TO CONSULTATION MODE
+    // ✅ CONVERT CHAT INTERFACE TO CONSULTATION MODE
     convertToConsultationMode(doctorName);
     
   } catch (error) {
@@ -3239,7 +3239,7 @@ async function declineConsultation(requestId) {
   console.log('âŒ Patient declined consultation');
   
   try {
-    // âœ… NOTIFY DOCTOR THAT PATIENT DECLINED
+    // ✅ NOTIFY DOCTOR THAT PATIENT DECLINED
     if (window.firebaseDB) {
       const { doc, updateDoc } = window.firestoreFunctions;
       await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
@@ -3249,7 +3249,7 @@ async function declineConsultation(requestId) {
       });
     }
     
-    // âœ… CLOSE NOTIFICATION
+    // ✅ CLOSE NOTIFICATION
     const modal = document.getElementById('acceptanceNotification');
     if (modal) modal.remove();
     
@@ -3265,13 +3265,13 @@ async function declineConsultation(requestId) {
 function convertToConsultationMode(doctorName) {
   console.log('ðŸ”„ Converting to consultation mode...');
   
-  // âœ… HIDE SEARCH BAR
+  // ✅ HIDE SEARCH BAR
   const searchBar = document.querySelector('.search-bar');
   if (searchBar) {
     searchBar.style.display = 'none';
   }
   
-  // âœ… CREATE NEW CONSULTATION CONTROLS
+  // ✅ CREATE NEW CONSULTATION CONTROLS
   const chatSection = document.querySelector('.chat-section');
   if (!chatSection) return;
   
@@ -3279,7 +3279,7 @@ function convertToConsultationMode(doctorName) {
   const existing = document.getElementById('consultationControls');
   if (existing) existing.remove();
   
-  // âœ… CREATE CONSULTATION BAR WITH VIDEO/VOICE CALL
+  // ✅ CREATE CONSULTATION BAR WITH VIDEO/VOICE CALL
   const consultationHTML = `
     <div id="consultationControls" style="
       flex: 0 0 70px;
@@ -3324,12 +3324,12 @@ function convertToConsultationMode(doctorName) {
   
   chatSection.insertAdjacentHTML('beforeend', consultationHTML);
   
-  // âœ… UPDATE CHAT WINDOW WITH GREETING
+  // ✅ UPDATE CHAT WINDOW WITH GREETING
   const chatWindow = document.getElementById('chatWindow');
   if (chatWindow) {
     chatWindow.innerHTML += `
       <div class="bot-msg" style="background: #10b981;">
-        âœ… <strong>Consultation Started!</strong><br>
+        ✅ <strong>Consultation Started!</strong><br>
         You are now connected with <strong>Dr. ${doctorName}</strong>.<br>
         You can start chatting or click the call buttons to start a voice/video call.
       </div>
@@ -3337,11 +3337,11 @@ function convertToConsultationMode(doctorName) {
     chatWindow.scrollTop = chatWindow.scrollHeight;
   }
   
-  console.log('âœ… Consultation mode activated');
+  console.log('✅ Consultation mode activated');
 }
 
 
-// âœ… PLACEHOLDER FUNCTIONS FOR CALLS
+// ✅ PLACEHOLDER FUNCTIONS FOR CALLS
 function sendConsultationMessage() {
   const input = document.getElementById('consultationInput');
   if (!input) return;
@@ -3623,7 +3623,7 @@ function showDoctorConnectionModal(doctor) {
   // Set innerHTML
   modalDiv.innerHTML = `
     <div class="modal-content" style="max-width: 450px;">
-      <button class="modal-close" id="closeConnModalBtn">âœ•</button>
+      <button class="modal-close" id="closeConnModalBtn">❌•</button>
       
       <div style="text-align: center; padding: 20px 0;">
         <div style="font-size: 4rem; margin-bottom: 15px;">ðŸ‘¨â€âš•ï¸</div>
@@ -3663,7 +3663,7 @@ function showDoctorConnectionModal(doctor) {
         </button>
         <button id="confirmConnBtn" 
                 style="flex: 1; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-          âœ“ Connect Now
+          ❌“ Connect Now
         </button>
       </div>
     </div>
@@ -3672,7 +3672,7 @@ function showDoctorConnectionModal(doctor) {
   // Add to page
   document.body.appendChild(modalDiv);
   
-  // âœ… ATTACH EVENT LISTENERS (NOT INLINE ONCLICK)
+  // ✅ ATTACH EVENT LISTENERS (NOT INLINE ONCLICK)
   document.getElementById('closeConnModalBtn').onclick = closeDoctorConnectionModal;
   document.getElementById('cancelConnBtn').onclick = closeDoctorConnectionModal;
   document.getElementById('confirmConnBtn').onclick = function() {
@@ -3768,14 +3768,14 @@ function getDoctorWarningMessage(status) {
 async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   closeDoctorConnectionModal();
   
-  // âœ… ASK FOR NAME
+  // ✅ ASK FOR NAME
   const patientName = prompt('Please enter your name:', 'Anonymous Patient');
   if (!patientName || patientName.trim() === '') {
     alert('âŒ Name is required to connect with doctor');
     return;
   }
   
-  // âœ… ASK FOR AGE
+  // ✅ ASK FOR AGE
   const patientAge = prompt('Please enter your age:', '');
   if (!patientAge || isNaN(patientAge) || patientAge < 1) {
     alert('âŒ Valid age is required');
@@ -3790,30 +3790,30 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
     
     const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
     
-    // âœ… SAVE REQUEST WITH NAME, AGE, AND STATUS
+    // ✅ SAVE REQUEST WITH NAME, AGE, AND STATUS
     const requestData = {
       patientName: patientName.trim(),
-      age: parseInt(patientAge), // âœ… Save age as number
+      age: parseInt(patientAge), // ✅ Save age as number
       doctorId: doctorId,
       doctorName: doctorName,
       doctorSpecialty: doctorSpecialty,
       urgency: 'normal',
-      status: 'pending', // âœ… Status: pending (waiting for doctor)
+      status: 'pending', // ✅ Status: pending (waiting for doctor)
       timestamp: serverTimestamp(),
       message: `Patient ${patientName} (Age: ${patientAge}) wants to consult with you.`,
-      notified: false // âœ… Track if patient was notified
+      notified: false // ✅ Track if patient was notified
     };
     
     const docRef = await addDoc(collection(window.firebaseDB, 'patientRequests'), requestData);
     
-    // âœ… SAVE REQUEST ID FOR TRACKING
+    // ✅ SAVE REQUEST ID FOR TRACKING
     sessionStorage.setItem('activeRequestId', docRef.id);
     
-    alert(`âœ… Request Sent!\n\nYour consultation request has been sent to Dr. ${doctorName}.\n\nPlease keep this page open and wait for the doctor to accept your request.`);
+    alert(`✅ Request Sent!\n\nYour consultation request has been sent to Dr. ${doctorName}.\n\nPlease keep this page open and wait for the doctor to accept your request.`);
     
-    console.log('âœ… Consultation request sent:', requestData);
+    console.log('✅ Consultation request sent:', requestData);
     
-    // âœ… START LISTENING FOR DOCTOR ACCEPTANCE
+    // ✅ START LISTENING FOR DOCTOR ACCEPTANCE
     startListeningForDoctorAcceptance(docRef.id, doctorName);
     
   } catch (error) {
@@ -3851,9 +3851,9 @@ async function sendConsultationRequest(doctor) {
     
     await addDoc(collection(window.firebaseDB, 'patientRequests'), requestData);
     
-    alert(`âœ… Request Sent!\n\nYour consultation request has been sent to ${doctor.name}.\n\nPlease wait for the doctor to accept your request.`);
+    alert(`✅ Request Sent!\n\nYour consultation request has been sent to ${doctor.name}.\n\nPlease wait for the doctor to accept your request.`);
     
-    console.log('âœ… Consultation request sent:', requestData);
+    console.log('✅ Consultation request sent:', requestData);
     
   } catch (error) {
     console.error('Error sending request:', error);
@@ -3886,7 +3886,7 @@ function displayDoctors(doctors) {
   doctors.forEach(doctor => {
     const statusClass = doctor.status === 'available' ? 'status-available' :
                        doctor.status === 'engaged' ? 'status-engaged' : 'status-offline';
-    const statusText = doctor.status === 'available' ? 'âœ… Available' :
+    const statusText = doctor.status === 'available' ? '✅ Available' :
                       doctor.status === 'engaged' ? 'ðŸŸ¡ Busy' : 'âš« Offline';
     
     const card = document.createElement('div');
@@ -3909,7 +3909,7 @@ function displayDoctors(doctors) {
     doctorList.appendChild(card);
   });
   
-  console.log(`âœ… Displayed ${doctors.length} doctor card(s)`);
+  console.log(`✅ Displayed ${doctors.length} doctor card(s)`);
 }
 
 // ============================================
@@ -3940,7 +3940,7 @@ function displayDoctors(doctors) {
   doctors.forEach(doctor => {
     const statusClass = doctor.status === 'available' ? 'status-available' :
                        doctor.status === 'engaged' ? 'status-engaged' : 'status-offline';
-    const statusText = doctor.status === 'available' ? 'âœ… Available' :
+    const statusText = doctor.status === 'available' ? '✅ Available' :
                       doctor.status === 'engaged' ? 'ðŸŸ¡ Busy' : 'âš« Offline';
     
     const card = document.createElement('div');
@@ -3963,7 +3963,7 @@ function displayDoctors(doctors) {
     doctorList.appendChild(card);
   });
   
-  console.log(`âœ… Displayed ${doctors.length} doctor card(s)`);
+  console.log(`✅ Displayed ${doctors.length} doctor card(s)`);
 }
 
 
@@ -4006,15 +4006,15 @@ async function loadRealDoctors() {
       return;
     }
     
-    // âœ… CORRECT WAY to build array
+    // ✅ CORRECT WAY to build array
     const doctors = [];
     querySnapshot.forEach((doc) => {
       doctors.push({ id: doc.id, ...doc.data() });
     });
     
-    console.log(`âœ… Loaded ${doctors.length} doctor(s) from Firebase`);
+    console.log(`✅ Loaded ${doctors.length} doctor(s) from Firebase`);
     
-    // âœ… Call displayDoctors
+    // ✅ Call displayDoctors
     displayDoctors(doctors);
     
   } catch (error) {
@@ -4043,7 +4043,7 @@ function closePasswordReset() {
   document.getElementById('resetEmail').value = '';
 }
 
-// âœ… SEND PASSWORD RESET EMAIL (FIREBASE AUTH)
+// ✅ SEND PASSWORD RESET EMAIL (FIREBASE AUTH)
 async function requestResetCode() {
   const email = document.getElementById('resetEmail').value.trim();
   
@@ -4053,13 +4053,13 @@ async function requestResetCode() {
   }
   
   try {
-    // âœ… Use Firebase Auth to send password reset email
+    // ✅ Use Firebase Auth to send password reset email
     const { sendPasswordResetEmail } = window.authFunctions;
     await sendPasswordResetEmail(window.firebaseAuth, email);
     
-    alert('âœ… Password Reset Email Sent!\n\nPlease check your email inbox and click the reset link.\n\nAfter resetting your password, return here to login with your new password.');
+    alert('✅ Password Reset Email Sent!\n\nPlease check your email inbox and click the reset link.\n\nAfter resetting your password, return here to login with your new password.');
     
-    console.log('âœ… Password reset email sent to:', email);
+    console.log('✅ Password reset email sent to:', email);
     
     // Close modal and show login
     closePasswordReset();
@@ -4090,7 +4090,7 @@ async function requestResetCode() {
 <!-- Doctor Dashboard Modal -->
 <div id="doctorDashboard" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-dashboard">
-    <button class="modal-close" onclick="closeDoctorDashboard()">âœ•</button>
+    <button class="modal-close" onclick="closeDoctorDashboard()">❌•</button>
     <h2>ðŸ‘¨â€âš•ï¸ Doctor Dashboard</h2>
     
     <div class="doctor-profile">
@@ -4124,17 +4124,17 @@ async function requestResetCode() {
 
    <aside class="leftbar" id="sidebar">
   <ul class="menu">
-    <li onclick="toggleChatHistory()">ðŸ”Ž Search</li>
-    <li onclick="toggleGallery()">ðŸ§  Symtoms Gallery</li>
+    <li onclick="toggleChatHistory()">🔎 Search</li>
+    <li onclick="toggleGallery()">☢️  Symtoms Gallery</li>
   </ul>
 
       <div class="settings">
-        <div onclick="toggleSettings()" style="cursor: pointer; margin-bottom: 8px;">âš™ï¸ Settings</div>
+        <div onclick="toggleSettings()" style="cursor: pointer; margin-bottom: 8px;">⚙️ Settings</div>
         <ul id="settingsSubmenu" style="display: none; list-style: none; padding-left: 10px; margin: 0;">
- <li onclick="openAbout()" style="padding: 8px; background: #376c90; cursor: pointer; border-radius: 5px;">â„¹ï¸ ABOUT</li>
+ <li onclick="openAbout()" style="padding: 8px; background: #376c90; cursor: pointer; border-radius: 5px;">ℹ️ ABOUT</li>
 
   <li onclick="openDoctorDashboard()" style="padding: 8px; background: #2563eb; cursor: pointer; border-radius: 5px; margin-top: 5px; color: white;">
-   ðŸªª Doctor Portal
+   🪪 Doctor Portal
   </li>
 </ul>
 
@@ -4144,19 +4144,19 @@ async function requestResetCode() {
    <!-- CHAT HISTORY PANEL -->
 <aside id="chatHistoryPanel">
   <div class="history-header">
-    ðŸ“œ Chat History
+    📜 Chat History
     <button onclick="closeChatHistory()" style="float: right; background: none; border: none; color: #2563eb; font-size: 1.5rem; cursor: pointer; padding: 0; margin-left: 10px;">Ã—</button>
   </div>
   <div id="historyList"></div>
-  <button class="clear-history-btn" onclick="clearChatHistory()">ðŸ—‘ï¸ Clear History</button>
+  <button class="clear-history-btn" onclick="clearChatHistory()">🗑️ Clear History</button>
 </aside>
 
 <!-- BRAIN HEALTH GALLERY PANEL -->
 <aside id="galleryPanel" style="width: 0; background: white; border-right: 8px solid #e5e7eb; overflow-y: auto; transition: width 0.3s ease; display: flex; flex-direction: column; padding: 0;">
   <div id="galleryContent" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 2px solid #e5e7eb;">
-      <h3 style="margin: 0; color: #2563eb; font-size: 1.1rem;">ðŸ§  Brain Health Gallery</h3>
-      <button onclick="closeGallery()" style="background: none; border: none; color: #2563eb; font-size: 1.8rem; cursor: pointer; padding: 0;">Ã—</button>
+      <h3 style="margin: 0; color: #2563eb; font-size: 1.1rem;">🩺 Brain Health Gallery</h3>
+      <button onclick="closeGallery()" style="background: none; border: none; color: #2563eb; font-size: 1.8rem; cursor: pointer; padding: 0;">❌</button>
     </div>
     
     <div style="padding: 15px;">
@@ -4164,7 +4164,7 @@ async function requestResetCode() {
       
       <!-- Upload Button (Fake) -->
       <button onclick="showUploadMessage()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-weight: bold; margin-bottom: 20px; cursor: pointer; transition: 0.3s;">
-        ðŸ“¤ Upload Your Image
+       ⬆️ Upload Your Image
       </button>
       
       <!-- Gallery Grid -->
@@ -4232,44 +4232,44 @@ async function requestResetCode() {
 
     <main class="chat-section">
       <div class="top-typing-box" id="topTypingBox">
-        <div class="typing-title">âœï¸ You're typing...</div>
+        <div class="typing-title">✍️ You're typing...</div>
         <div id="topTypingContent"></div>
       </div>
 
       <div class="chat-window" id="chatWindow">
-        <div class="bot-msg"> ðŸ‘‹ Hello! Type your health question below and I'll help you find answers.</div>
+        <div class="bot-msg"> 👋 Hello dear! Type your health question below and I'll help you find answers.</div>
       </div>
 
       <div class="suggestions-box" id="suggestionsBox">
-        <div class="suggestions-title">ðŸ’¡Related Questions (click to select):</div>
+        <div class="suggestions-title">💡Related Questions (click to select):</div>
         <div id="suggestionsList"></div>
       </div>
 
       <div class="search-bar">
   <input type="text" id="userInput" placeholder="Type your health question here..." />
-  <button class="btn send" onclick="sendMessage()">âž¤</button>
+  <button class="btn send" onclick="sendMessage()">⬆️</button>
   
   <!-- These buttons will be hidden/shown based on mode -->
   <button class="btn" id="patientActionBtn" style="display: flex;">
-    <span class="mic">ðŸŽ¤</span>
-    <span class="upload">ðŸ“‚</span>
+    <span class="mic">🎤</span>
+    <span class="upload">📂</span>
   </button>
   
   <button class="btn" id="doctorVideoBtn" onclick="startVideoCall(activePatientId)" style="display: none; background: #10b981;">
-    ðŸ“¹
+    📹
   </button>
   <button class="btn" id="doctorVoiceBtn" onclick="startVoiceCall(activePatientId)" style="display: none; background: #3b82f6;">
-    ðŸ“ž
+    📞
   </button>
 </div>
 
     </main>
 
     <aside class="rightbar">
-      <button class="emergency" onclick="triggerEmergency()">ðŸš¨ Emergency</button>
+      <button class="emergency" onclick="triggerEmergency()">🚨 Emergency</button>
       
       <button class="connect-doctor" onclick="togglePatientList()" id="connectDoctorBtn" style="position: relative;">
-  <span id="patientBtnText">ðŸ“‹ Patient List</span>
+  <span id="patientBtnText">👤 Patient List</span>
   <span id="patientCountBadge" class="patient-count-badge" style="display: none;">0</span>
 </button>
 
@@ -4282,11 +4282,11 @@ async function requestResetCode() {
 
       <!-- HOSPITAL LOCATION SECTION -->
       <div class="hospital-section">
-        <h2 class="location-title" id="hospitalSectionTitle">ðŸ¥ Setup Nearest Hospital</h2>
+        <h2 class="location-title" id="hospitalSectionTitle">🏥 Setup Nearest Hospital</h2>
         
         <div class="location-form" id="locationForm">
           <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">
-            âš ï¸ Required for Emergency Button
+            ❗ Required for Emergency Button
           </p>
           
           <select id="stateInput" class="location-input" onchange="loadDistricts()">
@@ -4311,7 +4311,7 @@ async function requestResetCode() {
           </select>
           
           <button class="save-location-btn" onclick="saveUserLocation()">
-            ðŸ’¾ Save Location
+           💾 Save Location
           </button>
         </div>
         
@@ -4326,8 +4326,8 @@ async function requestResetCode() {
     
     <!-- Header Section -->
     <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 30px; border-radius: 20px 20px 0 0; position: relative;">
-      <span onclick="closeAbout()" style="position: absolute; right: 20px; top: 20px; font-size: 32px; font-weight: bold; cursor: pointer; color: white; transition: 0.3s;" onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0deg)'">Ã—</span>
-      <h1 style="color: white; margin: 0; font-size: 2rem; text-align: center;">â„¹ï¸ NEUROBUDDYY.AI Platform Guide</h1>
+      <span onclick="closeAbout()" style="position: absolute; right: 20px; top: 20px; font-size: 32px; font-weight: bold; cursor: pointer; color: white; transition: 0.3s;" onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0deg)'">❌</span>
+      <h1 style="color: white; margin: 0; font-size: 2rem; text-align: center;">🔗 NEUROBUDDYY.AI Platform Guide</h1>
       <p style="color: #e0f2fe; text-align: center; margin: 10px 0 0 0; font-size: 1.1rem;">Your Complete AI-Powered Brain Health Assistant</p>
     </div>
     
@@ -5043,7 +5043,7 @@ async function requestResetCode() {
         
         displaySavedLocation(locationData, result.hospital);
         
-       showEmergencyModal('success', 'âœ… Location Saved!', 'Your nearest hospital has been configured successfully. Emergency button is now ready to use.');
+       showEmergencyModal('success', '✅ Location Saved!', 'Your nearest hospital has been configured successfully. Emergency button is now ready to use.');
 
       } else {
         alert("âŒ Failed to save location: " + result.message);
@@ -5164,7 +5164,7 @@ async function requestResetCode() {
         font-weight: bold;
         transition: 0.2s;
       " onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-       âœï¸Edit Location
+       ❌ï¸Edit Location
       </button>
     `;
     
@@ -5214,7 +5214,7 @@ async function requestResetCode() {
     const result = await response.json();
     
     if (result.success) {
-      showEmergencyModal('success', 'âœ… Emergency Alert Sent!', `Your SOS has been successfully sent to <strong>${hospital}</strong>. Help is on the way! Stay calm and stay where you are.`);
+      showEmergencyModal('success', '✅ Emergency Alert Sent!', `Your SOS has been successfully sent to <strong>${hospital}</strong>. Help is on the way! Stay calm and stay where you are.`);
     } else {
       showEmergencyModal('error', 'âŒ Failed to Send Alert', result.message || 'Unable to send emergency alert. Please try again or call 108 directly.');
     }
@@ -5262,7 +5262,7 @@ function showEmergencyModal(type, title, message) {
   } else if (type === 'success') {
     backgroundColor = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
     iconColor = '#ffffff';
-    icon = '<div style="font-size: 5rem; margin-bottom: 15px;">âœ…</div>';
+    icon = '<div style="font-size: 5rem; margin-bottom: 15px;">✅</div>';
     showCloseButton = true;
   } else {
     backgroundColor = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
@@ -5336,7 +5336,7 @@ function showEmergencyModal(type, title, message) {
   
   saveChatHistory();
   
-  // âœ… NEW: Sync to Firebase for cross-device access
+  // ✅ NEW: Sync to Firebase for cross-device access
   try {
     if (window.firebaseDB) {
       const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
@@ -5354,7 +5354,7 @@ function showEmergencyModal(type, title, message) {
         timestamp: serverTimestamp()
       });
       
-      console.log('âœ… Chat history synced to Firebase');
+      console.log('✅ Chat history synced to Firebase');
     }
   } catch (error) {
     console.error('âš ï¸ Failed to sync chat history:', error);
@@ -5376,7 +5376,7 @@ function showEmergencyModal(type, title, message) {
   }
 }
 
-// âœ… NEW: Close history independently
+// ✅ NEW: Close history independently
 function closeChatHistory() {
   const panel = document.getElementById('chatHistoryPanel');
   panel.classList.remove('open');
@@ -5459,7 +5459,7 @@ async function sendPasswordResetEmail(email) {
     });
     
     // Show the reset code (in production, send via email)
-    alert(`âœ… Reset Code: ${resetToken}\n\nShare this code with the doctor.\nValid for 30 minutes.`);
+    alert(`✅ Reset Code: ${resetToken}\n\nShare this code with the doctor.\nValid for 30 minutes.`);
     console.log('Password Reset Code:', resetToken);
     
     return resetToken;
@@ -5503,7 +5503,7 @@ async function resetPassword(email, resetCode, newPassword) {
       resetExpiry: null
     });
     
-    alert('âœ… Password reset successful!');
+    alert('✅ Password reset successful!');
     return true;
   } catch (error) {
     console.error('Reset error:', error);
@@ -5529,7 +5529,7 @@ async function resetPassword(email, resetCode, newPassword) {
   // Toggle sidebar
   sidebar.classList.toggle("open");
   
-  // âœ… NEW: Auto-close history when sidebar closes
+  // ✅ NEW: Auto-close history when sidebar closes
   if (!sidebar.classList.contains("open")) {
     historyPanel.classList.remove("open");
   }
@@ -5602,14 +5602,14 @@ async function resetPassword(email, resetCode, newPassword) {
     const userText = userInputField.value.trim();
     if (!userText) return;
     
-    // âœ… Doctor sending to patient
+    // ✅ Doctor sending to patient
     if (localStorage.getItem('userMode') === 'doctor' && activePatientId) {
       await sendDoctorMessage(activePatientId, userText);
       userInputField.value = '';
       return;
     }
     
-    // âœ… Patient sending to doctor
+    // ✅ Patient sending to doctor
     if (activePatientConversation) {
       await sendPatientMessage(activePatientConversation, userText);
       userInputField.value = '';
@@ -5750,7 +5750,7 @@ async function loadRealDoctors() {
       });
     });
     
-    console.log(`âœ… Loaded ${doctors.length} doctors from Firebase`);
+    console.log(`✅ Loaded ${doctors.length} doctors from Firebase`);
     displayDoctors(doctors);
     
   } catch (error) {
@@ -5847,7 +5847,7 @@ function showUrgencySelectionModal(doctorId, doctorData) {
           </button>
           
           <button onclick="validateAndSubmit('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'green')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(16,185,129,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-            âœ… Normal - When Doctor is Free
+            ✅ Normal - When Doctor is Free
           </button>
           
         </div>
@@ -5871,7 +5871,7 @@ function showUrgencySelectionModal(doctorId, doctorData) {
 }
 
 
-// âœ… VALIDATION FUNCTION (SEPARATE - NOT INSIDE submitPatientRequest)
+// ✅ VALIDATION FUNCTION (SEPARATE - NOT INSIDE submitPatientRequest)
 function validateAndSubmit(doctorId, doctorData, urgency) {
   // Get inputs
   const nameInput = document.getElementById('patientNameInput');
@@ -5880,7 +5880,7 @@ function validateAndSubmit(doctorId, doctorData, urgency) {
   const patientName = nameInput.value.trim();
   const patientAge = ageInput.value.trim();
   
-  // âœ… VALIDATE NAME
+  // ✅ VALIDATE NAME
   if (!patientName) {
     alert('âš ï¸ Please enter your name');
     nameInput.focus();
@@ -5888,7 +5888,7 @@ function validateAndSubmit(doctorId, doctorData, urgency) {
     return;
   }
   
-  // âœ… VALIDATE AGE
+  // ✅ VALIDATE AGE
   if (!patientAge) {
     alert('âš ï¸ Please enter your age');
     ageInput.focus();
@@ -5904,12 +5904,12 @@ function validateAndSubmit(doctorId, doctorData, urgency) {
     return;
   }
   
-  // âœ… ALL VALID - NOW SUBMIT
+  // ✅ ALL VALID - NOW SUBMIT
   submitPatientRequest(doctorId, doctorData, urgency);
 }
 
 
-// âœ… SUBMIT FUNCTION (RUNS AFTER VALIDATION PASSES)
+// ✅ SUBMIT FUNCTION (RUNS AFTER VALIDATION PASSES)
 async function submitPatientRequest(doctorId, doctorData, urgency) {
   // Get patient info from modal inputs
   const patientName = document.getElementById('patientNameInput').value.trim();
@@ -5928,7 +5928,7 @@ async function submitPatientRequest(doctorId, doctorData, urgency) {
     
     const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
     
-    // âœ… CREATE PATIENT REQUEST WITH ALL DATA
+    // ✅ CREATE PATIENT REQUEST WITH ALL DATA
     const patientRequest = {
       doctorId: doctorId,
       doctorName: doctorData.name || 'Unknown',
@@ -5944,7 +5944,7 @@ async function submitPatientRequest(doctorId, doctorData, urgency) {
     // Save to Firebase
     const docRef = await addDoc(collection(window.firebaseDB, 'patientRequests'), patientRequest);
     
-    console.log('âœ… Patient request created with ID:', docRef.id);
+    console.log('✅ Patient request created with ID:', docRef.id);
     
     // Close loading and show success
     closeEmergencyModal();
@@ -5995,20 +5995,20 @@ async function initializeDoctorMode() {
   // ... rest of your existing code
 
 
-  // âœ… HIDE HOSPITAL SECTION
+  // ✅ HIDE HOSPITAL SECTION
   const hospitalSection = document.querySelector('.hospital-section');
   if (hospitalSection) {
     hospitalSection.style.display = 'none';
   }
   
-  // âœ… CLEAR DOCTOR LIST CONTAINER
+  // ✅ CLEAR DOCTOR LIST CONTAINER
   const doctorListContainer = document.getElementById('doctorListContainer');
   if (doctorListContainer) {
     doctorListContainer.classList.remove('expanded');
-    doctorListContainer.innerHTML = '<div id="doctorList"></div>'; // âœ… Create doctorList element
+    doctorListContainer.innerHTML = '<div id="doctorList"></div>'; // ✅ Create doctorList element
   }
   
-  // âœ… UPDATE BUTTON TO "PATIENT LIST"
+  // ✅ UPDATE BUTTON TO "PATIENT LIST"
   const btn = document.getElementById('connectDoctorBtn');
   const btnText = document.getElementById('patientBtnText');
   const badge = document.getElementById('patientCountBadge');
@@ -6023,16 +6023,16 @@ async function initializeDoctorMode() {
     btn.onclick = togglePatientList;
   }
   
-  // âœ… SHOW DOCTOR CHAT GREETING
+  // ✅ SHOW DOCTOR CHAT GREETING
   initializeDoctorChatArea();
   
-  // âœ… CLEAR ANY EXISTING INTERVALS
+  // ✅ CLEAR ANY EXISTING INTERVALS
   if (window.doctorRefreshInterval) {
     clearInterval(window.doctorRefreshInterval);
     window.doctorRefreshInterval = null;
   }
   
-  // âœ… AUTO-REFRESH WITH SAFETY CHECKS
+  // ✅ AUTO-REFRESH WITH SAFETY CHECKS
   window.doctorRefreshInterval = setInterval(() => {
     // Only refresh if:
     // 1. Still in doctor mode
@@ -6053,7 +6053,7 @@ async function initializeDoctorMode() {
     }
   }, 5000); // 5 seconds for faster updates
   
-  console.log('âœ… Doctor mode fully activated');
+  console.log('✅ Doctor mode fully activated');
 }
 
 
@@ -6061,26 +6061,26 @@ async function initializeDoctorMode() {
 function initializePatientMode() {
   console.log('ðŸ‘¤ PATIENT MODE INITIALIZED');
   
-  // âœ… SHOW EMERGENCY BUTTON
+  // ✅ SHOW EMERGENCY BUTTON
   const emergencyBtn = document.querySelector('.emergency');
   if (emergencyBtn) {
     emergencyBtn.style.display = 'block';
   }
   
-  // âœ… SHOW HOSPITAL SECTION
+  // ✅ SHOW HOSPITAL SECTION
   const hospitalSection = document.querySelector('.hospital-section');
   if (hospitalSection) {
     hospitalSection.style.display = 'block';
   }
   
-  // âœ… CLEAR PATIENT LIST CONTAINER AND CREATE doctorList element
+  // ✅ CLEAR PATIENT LIST CONTAINER AND CREATE doctorList element
   const patientListContainer = document.getElementById('doctorListContainer');
   if (patientListContainer) {
     patientListContainer.classList.remove('expanded');
-    patientListContainer.innerHTML = '<div id="doctorList"></div>'; // âœ… Create doctorList element
+    patientListContainer.innerHTML = '<div id="doctorList"></div>'; // ✅ Create doctorList element
   }
   
-  // âœ… UPDATE BUTTON TO "CONNECT TO DOCTOR"
+  // ✅ UPDATE BUTTON TO "CONNECT TO DOCTOR"
   const btn = document.getElementById('connectDoctorBtn');
   const btnText = document.getElementById('patientBtnText');
   
@@ -6091,31 +6091,31 @@ function initializePatientMode() {
   }
   
   if (btn) {
-    btn.onclick = togglePatientList; // âœ… Use togglePatientList (same function for both modes)
+    btn.onclick = togglePatientList; // ✅ Use togglePatientList (same function for both modes)
   }
   
-  // âœ… RESET CHAT WINDOW TO DEFAULT
+  // ✅ RESET CHAT WINDOW TO DEFAULT
   const chatWindow = document.getElementById('chatWindow');
   if (chatWindow) {
     chatWindow.innerHTML = '<div class="bot-msg">Hello! ðŸ‘‹ Type your health question below and I\'ll help you find answers.</div>';
   }
   
-  // âœ… SHOW SEARCH BAR
+  // ✅ SHOW SEARCH BAR
   const searchBar = document.querySelector('.search-bar');
   if (searchBar) {
     searchBar.style.display = 'flex';
   }
   
-  // âœ… CLEAR ANY EXISTING INTERVALS
+  // ✅ CLEAR ANY EXISTING INTERVALS
   if (window.patientRefreshInterval) {
     clearInterval(window.patientRefreshInterval);
     window.patientRefreshInterval = null;
   }
   
-  // âœ… DON'T AUTO-LOAD - Load only when button is clicked
+  // ✅ DON'T AUTO-LOAD - Load only when button is clicked
   // Doctors will be loaded when user clicks "Connect to Doctor"
   
-  console.log('âœ… Patient mode fully activated');
+  console.log('✅ Patient mode fully activated');
 }
 
 
@@ -6135,11 +6135,11 @@ function selectPatient(patientId, patientData) {
   loadConversationHistory(patientId);
   startConversationPolling(patientId);
 
-  console.log('âœ… Conversation activated with patient:', patientId);
+  console.log('✅ Conversation activated with patient:', patientId);
 }
 
 function activateConversationArea(patientId, patientData) {
-  const chatWindow = document.getElementById('chatWindow');   // âœ… fixed
+  const chatWindow = document.getElementById('chatWindow');   // ✅ fixed
 
   // Determine urgency display and color
   let urgencyColor = '#10b981'; // Green default
@@ -6195,7 +6195,7 @@ function activateConversationArea(patientId, patientData) {
   loadConversationHistory(patientId);
   startConversationPolling(patientId);
 
-  console.log('âœ… Conversation header rendered for patient:', patientId);
+  console.log('✅ Conversation header rendered for patient:', patientId);
    }
 
 async function loadConversationHistory(patientId) {
@@ -6291,8 +6291,8 @@ async function cancelPatient(patientId) {
     const patientRef = doc(window.firebaseDB, 'patientRequests', patientId);
     await deleteDoc(patientRef);
     
-    console.log('âœ… Patient consultation cancelled');
-    alert('âœ… Patient consultation cancelled');
+    console.log('✅ Patient consultation cancelled');
+    alert('✅ Patient consultation cancelled');
     
     // Reload patient list
     loadPatientList();
@@ -6307,18 +6307,18 @@ function updatePatientCountBadge(count) {
   const badge = document.getElementById('patientCountBadge');
   const btnText = document.getElementById('patientBtnText');
   
-  // âœ… CHECK IF ELEMENTS EXIST
+  // ✅ CHECK IF ELEMENTS EXIST
   if (!badge || !btnText) {
     console.warn('âš ï¸ Badge elements not found');
     return;
   }
   
-  // âœ… ALWAYS SHOW BADGE IF COUNT > 0 (persistent notification)
+  // ✅ ALWAYS SHOW BADGE IF COUNT > 0 (persistent notification)
   if (count > 0) {
     badge.textContent = count;
     badge.style.display = 'flex';
     
-    // âœ… UPDATE TEXT ONLY IF LIST IS CLOSED
+    // ✅ UPDATE TEXT ONLY IF LIST IS CLOSED
     if (!doctorListVisible) {
       btnText.textContent = `ðŸ“‹ ${count} Patient${count > 1 ? 's' : ''} Waiting`;
     }
@@ -6434,7 +6434,7 @@ function activatePatientConversation(requestId, requestData) {
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <h3 style="margin: 0; color: #111827; font-size: 1.2rem;">ðŸ‘¨â€âš•ï¸ Dr. ${requestData.doctorName}</h3>
-          <p style="margin: 5px 0 0 0; color: #1e40af; font-size: 0.9rem;">âœ… Doctor is now attending to you</p>
+          <p style="margin: 5px 0 0 0; color: #1e40af; font-size: 0.9rem;">✅ Doctor is now attending to you</p>
         </div>
         <div style="display: flex; gap: 10px;">
           <button onclick="patientStartVideoCall()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
@@ -6466,7 +6466,7 @@ function activatePatientConversation(requestId, requestData) {
   startPatientConversationPolling(requestId);
   
   // Show notification
-  showEmergencyModal('success', 'âœ… Doctor Connected!', 'Dr. ' + requestData.doctorName + ' has accepted your consultation request. You can now chat with the doctor.');
+  showEmergencyModal('success', '✅ Doctor Connected!', 'Dr. ' + requestData.doctorName + ' has accepted your consultation request. You can now chat with the doctor.');
 }
 
 async function loadPatientConversation(requestId) {
@@ -6577,18 +6577,18 @@ function loadHospitalsFromFirebase() {
 window.addEventListener('load', async () => {
   console.log('ðŸš€ Page loaded');
   
-  // âœ… CHECK FIREBASE AUTH STATE FIRST
+  // ✅ CHECK FIREBASE AUTH STATE FIRST
   const { onAuthStateChanged } = window.authFunctions;
   
   onAuthStateChanged(window.firebaseAuth, async (user) => {
     if (user) {
       // User is logged in
-      console.log('âœ… User authenticated:', user.uid);
+      console.log('✅ User authenticated:', user.uid);
 
-      // âœ… INITIALIZE PEERJS
+      // ✅ INITIALIZE PEERJS
     initializePeerJS(user.uid);
     
-    // âœ… LISTEN FOR CALL INVITATIONS
+    // ✅ LISTEN FOR CALL INVITATIONS
     listenForCallInvitations();
       
       // Check if user is doctor or patient
@@ -6616,10 +6616,10 @@ window.addEventListener('load', async () => {
       const userMode = localStorage.getItem('userMode');
       
       if (userMode === 'doctor' && doctorSession) {
-        console.log('âœ… Doctor session restored');
+        console.log('✅ Doctor session restored');
         initializeDoctorMode();
       } else if (userMode === 'guest') {
-        console.log('âœ… Guest mode active');
+        console.log('✅ Guest mode active');
         initializePatientMode();
       } else {
         // First visit - show role selection
@@ -6632,7 +6632,7 @@ window.addEventListener('load', async () => {
   loadHospitalsFromFirebase();
 });
 
-// âœ… CHECK USER ROLE (doctor or patient)
+// ✅ CHECK USER ROLE (doctor or patient)
 async function checkUserRole(userId) {
   try {
     const { collection, query, where, getDocs } = window.firestoreFunctions;
@@ -6667,7 +6667,7 @@ async function checkUserRole(userId) {
   }
 }
 
-// âœ… GET DOCTOR DATA BY USER ID
+// ✅ GET DOCTOR DATA BY USER ID
 async function getDoctorData(userId) {
   try {
     const { collection, query, where, getDocs } = window.firestoreFunctions;
@@ -6758,7 +6758,7 @@ function continueAsGuest() {
   document.getElementById('roleModal').style.display = 'none';
   localStorage.setItem('userMode', 'guest');
   initializePatientMode();
-  console.log('âœ… Guest mode active');
+  console.log('✅ Guest mode active');
 }
 
 
@@ -6788,7 +6788,7 @@ function closeDoctorLogin() {
   document.getElementById('doctorLoginForm').reset();
 }
 
-// âœ… DOCTOR REGISTRATION WITH FIREBASE AUTH
+// ✅ DOCTOR REGISTRATION WITH FIREBASE AUTH
 async function registerDoctor(event) {
   event.preventDefault();
   
@@ -6804,15 +6804,15 @@ async function registerDoctor(event) {
   document.getElementById('regBtnLoader').style.display = 'inline';
   
   try {
-    // âœ… Create Firebase Auth account
+    // ✅ Create Firebase Auth account
     const { createUserWithEmailAndPassword } = window.authFunctions;
     const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
     const user = userCredential.user;
     
-    // âœ… Save doctor data to Firestore
+    // ✅ Save doctor data to Firestore
     const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
     const docRef = await addDoc(collection(window.firebaseDB, 'doctors'), {
-      userId: user.uid,  // âœ… Link to Firebase Auth
+      userId: user.uid,  // ✅ Link to Firebase Auth
       name: name,
       email: email,
       specialty: specialty,
@@ -6824,8 +6824,8 @@ async function registerDoctor(event) {
       role: 'doctor'
     });
     
-    console.log('âœ… Doctor registered:', docRef.id);
-    alert('âœ… Registration successful! You are now logged in.');
+    console.log('✅ Doctor registered:', docRef.id);
+    alert('✅ Registration successful! You are now logged in.');
     
     // Save session and initialize
     const doctorData = {
@@ -6864,7 +6864,7 @@ async function registerDoctor(event) {
 }
 
 
-// âœ… DOCTOR LOGIN WITH FIREBASE AUTH
+// ✅ DOCTOR LOGIN WITH FIREBASE AUTH
 async function loginDoctor(event) {
   event.preventDefault();
   
@@ -6876,12 +6876,12 @@ async function loginDoctor(event) {
   document.getElementById('loginBtnLoader').style.display = 'inline';
   
   try {
-    // âœ… Sign in with Firebase Auth
+    // ✅ Sign in with Firebase Auth
     const { signInWithEmailAndPassword } = window.authFunctions;
     const userCredential = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
     const user = userCredential.user;
     
-    // âœ… Get doctor data from Firestore
+    // ✅ Get doctor data from Firestore
     const doctorData = await getDoctorData(user.uid);
     
     if (!doctorData) {
@@ -6964,20 +6964,20 @@ function switchToDoctorMode(doctorData) {
   if (videoBtn) videoBtn.style.display = 'flex';
   if (voiceBtn) voiceBtn.style.display = 'flex';
   
-  console.log('âœ… Switched to Doctor Mode');
+  console.log('✅ Switched to Doctor Mode');
 }
 
 // Initialize Doctor Chat Area with Welcome Message
 function initializeDoctorChatArea() {
-  console.log('âœ… Doctor chat area initialized');
+  console.log('✅ Doctor chat area initialized');
   
   const chatWindow = document.getElementById('chatWindow');
   if (!chatWindow) return;
   
-  // âœ… Get patient count
+  // ✅ Get patient count
   const patientCount = document.querySelectorAll('.doctor-card').length || 0;
   
-  // âœ… Show welcome banner with patient count
+  // ✅ Show welcome banner with patient count
   chatWindow.innerHTML = `
     <div class="bot-msg" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white;">
       <strong>ðŸ‘¨â€âš•ï¸ Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
@@ -6989,13 +6989,13 @@ function initializeDoctorChatArea() {
     </div>
   `;
   
-  // âœ… IMPORTANT: Make sure search bar is visible and working
+  // ✅ IMPORTANT: Make sure search bar is visible and working
   const searchBar = document.querySelector('.search-bar');
   if (searchBar) {
     searchBar.style.display = 'flex';
   }
   
-  console.log(`âœ… Doctor chat area initialized (${patientCount} patients waiting)`);
+  console.log(`✅ Doctor chat area initialized (${patientCount} patients waiting)`);
 }
 
 
@@ -7059,7 +7059,7 @@ function togglePatientList() {
 async function loadPatientList() {
   console.log('ðŸ“‹ Loading patient list...');
   
-  // âœ… PREVENT MULTIPLE SIMULTANEOUS LOADS
+  // ✅ PREVENT MULTIPLE SIMULTANEOUS LOADS
   if (window.isLoadingPatients) {
     console.log('â³ Already loading patients, skipping...');
     return;
@@ -7067,13 +7067,13 @@ async function loadPatientList() {
   
   window.isLoadingPatients = true;
   
-  // âœ… FIND THE CONTAINER
+  // ✅ FIND THE CONTAINER
   const doctorList = document.getElementById('doctorList');
   
   if (!doctorList) {
     console.error('âŒ doctorList element not found in loadPatientList');
     window.isLoadingPatients = false;
-    return; // âœ… EXIT EARLY - DON'T CONTINUE
+    return; // ✅ EXIT EARLY - DON'T CONTINUE
   }
   
   doctorList.innerHTML = '<p class="loading-doctors">â³ Loading patients...</p>';
@@ -7112,7 +7112,7 @@ async function loadPatientList() {
       patients.push({ id: doc.id, ...doc.data() });
     });
     
-    console.log(`âœ… Loaded ${patients.length} patient(s)`);
+    console.log(`✅ Loaded ${patients.length} patient(s)`);
     displayPatients(patients);
     
   } catch (error) {
@@ -7218,7 +7218,7 @@ async function loadPatientList() {
       patients.push({ id: doc.id, ...doc.data() });
     });
     
-    console.log(`âœ… Loaded ${patients.length} patient(s)`);
+    console.log(`✅ Loaded ${patients.length} patient(s)`);
     displayPatients(patients);
     
   } catch (error) {
@@ -7256,7 +7256,7 @@ function selectPatient(patientId, patientData) {
   loadConversationHistory(patientId);
   startConversationPolling(patientId);
 
-  console.log('âœ… Conversation activated with patient:', patientId);
+  console.log('✅ Conversation activated with patient:', patientId);
 }
 
 // ========== END DOCTOR MODE INTERFACE ==========
@@ -7309,8 +7309,8 @@ async function updateDoctorStatus() {
     currentDoctor.status = newStatus;
     sessionStorage.setItem('doctorSession', JSON.stringify(currentDoctor));
     
-    console.log('âœ… Status updated to:', newStatus);
-    alert('âœ… Status updated to: ' + newStatus.toUpperCase());
+    console.log('✅ Status updated to:', newStatus);
+    alert('✅ Status updated to: ' + newStatus.toUpperCase());
     
     // Reload doctors list
     if (doctorListVisible) {
@@ -7416,11 +7416,11 @@ function toggleMenu() {
   }
 }
 
-// âœ… FORCE CACHE CLEAR - ADD THIS
+// ✅ FORCE CACHE CLEAR - ADD THIS
 console.log('ðŸ”„ Script version: 2.0 - ' + new Date().toISOString());
 
 // Verify functions exist
-console.log('âœ… Functions loaded:', {
+console.log('✅ Functions loaded:', {
   startDoctorChat: typeof startDoctorChat,
   sendDoctorMessage: typeof sendDoctorMessage,
   loadPatientList: typeof loadPatientList
