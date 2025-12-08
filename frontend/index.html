@@ -917,8 +917,8 @@
 <body>
 
   <header class="topbar">
-    <button class="hamburger" onclick="toggleMenu()">â˜°</button>
-    ðŸŽ€ NEURO BUDDYY
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+    🎀 NEURO BUDDYY
   </header>
 
 <!-- Role Selection Modal - First Visit -->
@@ -930,25 +930,25 @@
     <div class="role-buttons">
       <!-- Doctor Option -->
       <button class="btn-role btn-doctor" onclick="showDoctorLogin()">
-        ðŸ‘¨â€âš•ï¸ I'm a Doctor
+       👨‍⚕️ I'm a Doctor
       </button>
       
       <!-- Patient Login Option -->
       <button class="btn-role" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;" onclick="showPatientAuth()">
-        ðŸ§‘ I'm a Patient (Login/Register)
+       🧑‍🤝‍🧑 I'm a Patient (Login/Register)
       </button>
       
       <!-- Guest Option -->
       <button class="btn-role btn-guest" onclick="continueAsGuest()">
-        ðŸ‘¤ Continue as Guest (No Login Required)
+        👤Continue as Guest (No Login Required)
       </button>
     </div>
     
     <p style="margin-top: 20px; font-size: 0.9rem; color: #999;">
       <strong>Benefits of Creating an Account:</strong><br>
-      â€¢ Access consultation history from any device<br>
-      â€¢ Save chat history permanently<br>
-      â€¢ Faster future consultations (no need to re-enter details)
+      ~ Access consultation history from any device<br>
+      ~ Save chat history permanently<br>
+      ~ Faster future consultations (no need to re-enter details)
     </p>
   </div>
 </div>
@@ -2311,10 +2311,11 @@ function displayPatients(patients) {
       <div class="status-indicator status-available"></div>
     `;
     
-    card.addEventListener('click', () => {
-      console.log('ðŸ”µ Patient card clicked:', patient);
-      acceptPatientRequest(patient);
-    });
+   card.addEventListener('click', () => {
+  console.log('🔵Patient card clicked:', patient);
+  acceptPatientRequest(patient.id, patient.patientName, patient.urgency);  // ✅ CORRECT - pass individual values
+});
+
     
     doctorList.appendChild(card);
   });
@@ -5765,12 +5766,12 @@ function toggleDoctorList() {
   
   if (!doctorListVisible) {
     container.classList.add('expanded');
-    btn.textContent = 'ðŸš« Close Doctor List';
+    btn.textContent = '❌Close Doctor List';
     loadRealDoctors(); // Ã¢Å“â€¦ Call the REAL function
     doctorListVisible = true;
   } else {
     container.classList.remove('expanded');
-    btn.textContent = 'ðŸ‘¨â€âš•ï¸ Connect to Doctors';
+    btn.textContent = '👨‍⚕️ Connect to Doctors';
     doctorListVisible = false;
   }
 }
