@@ -2379,7 +2379,8 @@ async function acceptPatientRequest(requestId, patientName, urgency) {
     alert(`âœ… Request Accepted!\n\nYou are now consulting with ${patientName}.`);
     
     // Hide requests panel and show consultation interface
-    document.getElementById('doctorRequestsPanel').style.display = 'none';
+// document.getElementById('doctorRequestsPanel').style.display = 'none';  // ❌ Element doesn't exist
+
     
     // Initialize doctor consultation mode
     startDoctorConsultation(requestId, patientName);
