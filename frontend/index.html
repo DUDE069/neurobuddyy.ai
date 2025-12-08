@@ -2313,8 +2313,10 @@ function displayPatients(patients) {
     
    card.addEventListener('click', () => {
   console.log('🔵Patient card clicked:', patient);
-  acceptPatientRequest(patient.id, patient.patientName, patient.urgency);  // ✅ CORRECT - pass individual values
+  console.log('🔍 Patient ID:', patient.id);  // Add this debug line
+  acceptPatientRequest(patient);  // ✅ Pass the whole object
 });
+
 
     
     doctorList.appendChild(card);
@@ -6085,7 +6087,7 @@ function initializePatientMode() {
   // ✅ RESET CHAT WINDOW TO DEFAULT
   const chatWindow = document.getElementById('chatWindow');
   if (chatWindow) {
-    chatWindow.innerHTML = '<div class="bot-msg">Hello! ðŸ‘‹ Type your health question below and I\'ll help you find answers.</div>';
+    chatWindow.innerHTML = '<div class="bot-msg">👋Hello dear! ⬇️Type your health question below and I\'ll help you find answers.</div>';
   }
   
   // ✅ SHOW SEARCH BAR
