@@ -2348,48 +2348,36 @@ function updateDoctorBanner(patientCount) {
 
 // ========== DOCTOR ACCEPTS PATIENT REQUEST ==========
 
-// When doctor clicks patient card
-// DOCTOR ACCEPTS PATIENT REQUEST (When doctor clicks patient card)
-async function acceptPatientRequest(requestId, patientName, urgency) {
-  if (!confirm(`Accept consultation request from ${patientName}?`)) {
-    return;
-  }
+async function acceptPatientRequest(patient) {
+  if (!confirm(`Accept consultation request from ${patient.patientName}?`)) return;
   
   try {
-    const { doc, updateDoc } = window.firestoreFunctions;
+    const { doc, updateDoc, getDoc } = window.firestoreFunctions;
     
     // Update request status
-    await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
+    await updateDoc(doc(window.firebaseDB, 'patientRequests', patient.id), {
       status: 'active',
       acceptedAt: new Date().toISOString()
     });
     
-    // ✅ STORE ACTIVE PATIENT DATA GLOBALLY (for calls)
-    const { getDoc } = window.firestoreFunctions;
-    const requestDoc = await getDoc(doc(window.firebaseDB, 'patientRequests', requestId));
-    
+    // STORE ACTIVE PATIENT DATA GLOBALLY (for calls)
+    const requestDoc = await getDoc(doc(window.firebaseDB, 'patientRequests', patient.id));
     if (requestDoc.exists()) {
-      window.activePatient = {
-        id: requestId,
-        ...requestDoc.data()
-      };
+      window.activePatient = { id: patient.id, ...requestDoc.data() };
       console.log('✅ Active patient stored:', window.activePatient);
     }
     
-    alert(`✅ Request Accepted!\n\nYou are now consulting with ${patientName}.`);
+    alert('✅ Request Accepted! You are now consulting with ' + patient.patientName + '.');
     
-    // Hide requests panel and show consultation interface
-// document.getElementById('doctorRequestsPanel').style.display = 'none';  // ❌ Element doesn't exist
-
-    
-    // Initialize doctor consultation mode
-    startDoctorConsultation(requestId, patientName);
+    // ✅ FIX: Call the correct function
+    startDoctorChat(patient);  // This function exists!
     
   } catch (error) {
-    console.error('âŒ Error accepting request:', error);
-    alert('Failed to accept request. Please try again.');
+    console.error('❌ Error accepting request:', error);
+    alert('❌ Failed to accept request. Please try again.');
   }
 }
+
 
 // ✅ ADD THIS NEW FUNCTION
 function convertToConsultationWaitingMode(patient) {
