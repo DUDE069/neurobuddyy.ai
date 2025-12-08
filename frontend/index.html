@@ -6706,10 +6706,17 @@ let currentDoctor = null; // Store logged-in doctor data
 
 // Check if doctor is already logged in (session storage)
 function checkDoctorSession() {
-  const doctorSession = sessionStorage.getItem('doctorSession');
+  // Check sessionStorage first
+  let doctorSession = sessionStorage.getItem('doctorSession');
+  
+  // If not in sessionStorage, check localStorage
+  if (!doctorSession) {
+    doctorSession = localStorage.getItem('activeDoctorSession');
+  }
+  
   if (doctorSession) {
     currentDoctor = JSON.parse(doctorSession);
-    console.log('Ã¢Å“â€¦ Doctor session found:', currentDoctor.name);
+    console.log('✅ Doctor session found:', currentDoctor.name);
     return true;
   }
   return false;
@@ -6865,16 +6872,22 @@ async function loginDoctor(event) {
       return;
     }
     
-    console.log('âœ… Doctor logged in:', doctorData.id);
-    alert('âœ… Welcome back, Dr. ' + doctorData.name + '!');
-    
-    // Save session
-    localStorage.setItem('activeDoctorSession', JSON.stringify(doctorData));
-    localStorage.setItem('userMode', 'doctor');
-    
-    // Close modal and initialize
-    closeDoctorLogin();
-    initializeDoctorMode();
+   console.log('✅ Doctor logged in:', doctorData.id);
+alert('✅ Welcome back, Dr. ' + doctorData.name + '!');
+
+// ✅ FIX: Save to BOTH localStorage AND sessionStorage with correct keys
+localStorage.setItem('activeDoctorSession', JSON.stringify(doctorData));
+localStorage.setItem('userMode', 'doctor');
+
+// ✅ ADD THESE LINES:
+sessionStorage.setItem('doctorSession', JSON.stringify(doctorData));
+currentDoctor = doctorData;  // Set the global variable
+console.log('✅ currentDoctor set:', currentDoctor);
+
+// Close modal and initialize
+closeDoctorLogin();
+initializeDoctorMode();
+
     
   } catch (error) {
     console.error('âŒ Login error:', error);
