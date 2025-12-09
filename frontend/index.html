@@ -1795,6 +1795,14 @@ async function endCall() {
   }
 }
 
+// ========== UNIFIED LOGIN ENTRY POINT ==========
+
+// Show unified auth modal
+function showAuthModal() {
+  document.getElementById('roleModal').style.display = 'flex';
+}
+
+
 
 
 // ============================================
@@ -4232,9 +4240,10 @@ async function requestResetCode() {
         <ul id="settingsSubmenu" style="display: none; list-style: none; padding-left: 10px; margin: 0;">
  <li onclick="openAbout()" style="padding: 8px; background: #376c90; cursor: pointer; border-radius: 5px;">ℹ️ ABOUT</li>
 
-  <li onclick="openDoctorDashboard()" style="padding: 8px; background: #2563eb; cursor: pointer; border-radius: 5px; margin-top: 5px; color: white;">
-   🪪 Doctor Portal
-  </li>
+ <li onclick="showAuthModal()" style="padding: 8px; background: #2563eb; cursor: pointer; border-radius: 5px; margin-top: 5px; color: white;">
+  🔐 Login
+</li>
+
 </ul>
 
       </div>
