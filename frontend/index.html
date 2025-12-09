@@ -956,7 +956,7 @@
 <!-- ✅ PATIENT LOGIN/REGISTER MODAL -->
 <div id="patientAuthModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
-    <button class="modal-close" onclick="closePatientAuth()">Ã—</button>
+    <button class="modal-close" onclick="closePatientAuth()">❌</button>
     
     <!-- Login Form -->
     <div id="patientLoginForm">
@@ -1160,7 +1160,7 @@
 <!-- ✅ DOCTOR PASSWORD RESET MODAL (SIMPLIFIED) -->
 <div id="passwordResetModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
-    <button class="modal-close" onclick="closePasswordReset()">Ã—</button>
+    <button class="modal-close" onclick="closePasswordReset()">✖️</button>
     <h2>Reset Password</h2>
     
     <p style="color: #666; margin-bottom: 20px;">
@@ -1945,6 +1945,7 @@ async function registerPatient(event) {
 }
 
 // ✅ PATIENT LOGIN
+// PATIENT LOGIN
 async function loginPatient(event) {
   event.preventDefault();
   
@@ -1961,21 +1962,25 @@ async function loginPatient(event) {
     const user = userCredential.user;
     
     console.log('✅ Patient logged in:', user.uid);
-    alert('✅ Welcome back!');
     
-    // Close modal and initialize patient mode
+    // ✅ CLOSE MODAL IMMEDIATELY
     closePatientAuth();
-    initializePatientMode();
+    
+    // ✅ Wait a bit then show message and initialize
+    setTimeout(() => {
+      alert('Welcome back!');
+      // Don't call initializePatientMode here - auth state listener will handle it
+    }, 300);
     
   } catch (error) {
-    console.error('âŒ Login error:', error);
+    console.error('❌ Login error:', error);
     
     if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-      alert('âŒ Invalid email or password.');
+      alert('Invalid email or password.');
     } else if (error.code === 'auth/invalid-credential') {
-      alert('âŒ Invalid credentials. Please check your email and password.');
+      alert('Invalid credentials. Please check your email and password.');
     } else {
-      alert('âŒ Login failed: ' + error.message);
+      alert('Login failed: ' + error.message);
     }
   } finally {
     // Hide loading
@@ -4444,7 +4449,7 @@ async function requestResetCode() {
       
       <!-- What is NEUROBUDDYY.AI -->
       <section style="margin-bottom: 35px;">
-        <h2 style="color: #2563eb; margin-bottom: 15px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">ðŸ§  What is NEUROBUDDYY.AI?</h2>
+        <h2 style="color: #2563eb; margin-bottom: 15px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">1️⃣  What is NEUROBUDDYY.AI?</h2>
         <p style="font-size: 1rem; line-height: 1.8; color: #374151; text-align: justify;">
           NEUROBUDDYY.AI is an intelligent, AI-powered healthcare platform designed to provide instant, reliable information about neurological conditions, brain health, and general medical inquiries. Our mission is to make professional health guidance accessible to everyone, anytime, anywhere.
         </p>
@@ -4452,11 +4457,11 @@ async function requestResetCode() {
       
       <!-- Two Modes Section -->
       <section style="margin-bottom: 35px;">
-        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">ðŸ‘¥ Two Modes of Operation</h2>
+        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">2️⃣ Two Modes of Operation</h2>
         
         <!-- Patient Mode -->
         <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 5px solid #10b981;">
-          <h3 style="color: #065f46; margin: 0 0 10px 0; font-size: 1.2rem;">ðŸ©º Patient Mode (Default)</h3>
+          <h3 style="color: #065f46; margin: 0 0 10px 0; font-size: 1.2rem;">👤 Patient Mode (Default)</h3>
           <p style="color: #064e3b; margin: 8px 0; font-size: 0.95rem;"><strong>For:</strong> General users seeking medical information</p>
           <p style="color: #064e3b; margin: 8px 0; font-size: 0.95rem;"><strong>Features:</strong></p>
           <ul style="color: #064e3b; margin: 10px 0; padding-left: 20px;">
@@ -4472,7 +4477,7 @@ async function requestResetCode() {
         
         <!-- Doctor Mode -->
         <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 20px; border-radius: 12px; border-left: 5px solid #2563eb;">
-          <h3 style="color: #1e40af; margin: 0 0 10px 0; font-size: 1.2rem;">ðŸ‘¨â€âš•ï¸ Doctor Mode (Professional)</h3>
+          <h3 style="color: #1e40af; margin: 0 0 10px 0; font-size: 1.2rem;">👨‍⚕️ Doctor Mode (Professional)</h3>
           <p style="color: #1e3a8a; margin: 8px 0; font-size: 0.95rem;"><strong>For:</strong> Registered neurologists and healthcare professionals</p>
           <p style="color: #1e3a8a; margin: 8px 0; font-size: 0.95rem;"><strong>Features:</strong></p>
           <ul style="color: #1e3a8a; margin: 10px 0; padding-left: 20px;">
@@ -4486,13 +4491,13 @@ async function requestResetCode() {
         </div>
         
         <div style="background: #fef3c7; padding: 15px; border-radius: 10px; margin-top: 15px; border-left: 5px solid #f59e0b;">
-          <p style="margin: 0; color: #92400e; font-size: 0.95rem;"><strong>âš ï¸ Mode Selection:</strong> Upon first visit, you'll see a registration interface asking "Are you a healthcare professional?" Choose your mode accordingly. Doctors must register with valid credentials.</p>
+          <p style="margin: 0; color: #92400e; font-size: 0.95rem;"><strong>‼️ Mode Selection:</strong> Upon first visit, you'll see a registration interface asking "Are you a healthcare professional?" Choose your mode accordingly. Doctors must register with valid credentials.</p>
         </div>
       </section>
       
       <!-- How to Use Section -->
       <section style="margin-bottom: 35px;">
-        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">ðŸ“– How to Use the Platform</h2>
+        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">3️⃣ How to Use the Platform</h2>
         
         <div style="background: #f9fafb; padding: 20px; border-radius: 12px; border: 2px solid #e5e7eb;">
           <h3 style="color: #374151; margin-top: 0; font-size: 1.1rem;">For Patients:</h3>
@@ -4518,36 +4523,36 @@ async function requestResetCode() {
       <!-- Important Notice -->
       <section style="margin-bottom: 35px;">
         <div style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); padding: 20px; border-radius: 12px; border-left: 5px solid #dc2626;">
-          <h3 style="color: #991b1b; margin: 0 0 10px 0; font-size: 1.2rem;">âš ï¸ Important Disclaimer</h3>
+          <h3 style="color: #991b1b; margin: 0 0 10px 0; font-size: 1.2rem;">☢️ Important Disclaimer</h3>
           <p style="color: #7f1d1d; margin: 0; line-height: 1.7; font-size: 0.95rem;">
-            NEUROBUDDYY.AI is an informational tool and <strong>NOT a replacement for professional medical advice, diagnosis, or treatment</strong>. Always consult with qualified healthcare providers for medical concerns. In case of emergency, call your local emergency services (India: 108) immediately.
+            NEUROBUDDYY.AI is an informational tool and <strong>NOT a replacement for professional medical advice, diagnosis, or treatment</strong>. Always consult with qualified healthcare providers for medical concerns. In case of emergency, call your local emergency services ❗108 immediately.
           </p>
         </div>
       </section>
       
       <!-- Contact & Support -->
       <section style="margin-bottom: 20px;">
-        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">ðŸ“ž Support & Contact</h2>
+        <h2 style="color: #2563eb; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px;">4️⃣ Support & Contact</h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
           
           <!-- Email Support -->
           <div style="background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); padding: 20px; border-radius: 12px; text-align: center;">
-            <div style="font-size: 2.5rem; margin-bottom: 10px;">ðŸ“§</div>
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📪</div>
             <h3 style="color: #5b21b6; margin: 0 0 8px 0; font-size: 1rem;">Email Support</h3>
             <a href="mailto:support@neurobuddyy.ai" style="color: #6d28d9; text-decoration: none; font-weight: bold; font-size: 0.9rem;">##############</a>
           </div>
           
           <!-- Phone Support -->
           <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); padding: 20px; border-radius: 12px; text-align: center;">
-            <div style="font-size: 2.5rem; margin-bottom: 10px;">ðŸ“±</div>
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">☎️</div>
             <h3 style="color: #065f46; margin: 0 0 8px 0; font-size: 1rem;"> Support</h3>
             <a href="tel:+919876543210" style="color: #047857; text-decoration: none; font-weight: bold; font-size: 0.9rem;">+91 **********</a>
           </div>
           
           <!-- Developer -->
           <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 12px; text-align: center;">
-            <div style="font-size: 2.5rem; margin-bottom: 10px;">ðŸ’»</div>
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">🖥️</div>
             <h3 style="color: #92400e; margin: 0 0 8px 0; font-size: 1rem;">Developer</h3>
             <p style="color: #d31111; margin: 0; font-weight: bold; font-size: 0.9rem;">ARIYAN AND JYOTISHMAN</p>
           </div>
@@ -4557,7 +4562,7 @@ async function requestResetCode() {
       
       <!-- Footer -->
       <div style="text-align: center; padding-top: 20px; border-top: 2px solid #e5e7eb;">
-        <p style="color: #2563eb; font-weight: bold; font-size: 1rem; margin: 10px 0;">Â© 2025 NEUROBUDDYY.AI</p>
+        <p style="color: #2563eb; font-weight: bold; font-size: 1rem; margin: 10px 0;">© 2025 NEUROBUDDYY.AI</p>
         <p style="color: #6b7280; font-size: 0.85rem; margin: 5px 0;">Empowering Health Through Artificial Intelligence</p>
         <p style="color: #9ca3af; font-size: 0.8rem; margin: 5px 0;">Version 1.0 | Built with Firebase & FastAPI</p>
       </div>
@@ -5125,7 +5130,7 @@ async function requestResetCode() {
     const area = document.getElementById('areaInput').value;
     
     if (!state || !district || !area) {
-      alert("Ã¢Å¡ Ã¯Â¸Â Please fill all location fields!");
+      alert("❗ Please fill all location fields!");
       return;
     }
     
