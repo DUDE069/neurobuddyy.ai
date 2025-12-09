@@ -4298,9 +4298,6 @@ async function requestResetCode() {
     
   </div>
 </ul>
-
-
-      </div>
     </aside>
 
    <!-- CHAT HISTORY PANEL -->
@@ -7653,7 +7650,8 @@ async function logoutUser() {
 // PUT THIS INSIDE YOUR EXISTING onAuthStateChanged BLOCK
 // usually at the very bottom of your script
 
-onAuthStateChanged(window.firebaseAuth, (user) => {
+window.authFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
+
   const profileBtn = document.getElementById('myProfileBtn');
   const authBtn = document.getElementById('authBtn');
   
