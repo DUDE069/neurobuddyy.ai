@@ -6180,9 +6180,28 @@ async function initializeDoctorMode() {
 
 
 // Initialize Patient/Guest Mode
+// Initialize Patient/Guest Mode
 function initializePatientMode() {
-  console.log('ðŸ‘¤ PATIENT MODE INITIALIZED');
+  console.log('👤 PATIENT MODE INITIALIZED');
   
+  // ============================================================
+  // ✅ FIX: FORCE CLOSE ALL AUTH MODALS
+  // This ensures the screen unlocks after login!
+  // ============================================================
+  const modalsToClose = [
+    'patientAuthModal', 
+    'doctorLoginModal', 
+    'doctorRegModal', 
+    'roleModal',      // <--- The "Doctor vs Patient" screen
+    'authModal'       // <--- The "Login vs Register" screen
+  ];
+  
+  modalsToClose.forEach(id => {
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'none';
+  });
+  // ============================================================
+
   // ✅ SHOW EMERGENCY BUTTON
   const emergencyBtn = document.querySelector('.emergency');
   if (emergencyBtn) {
@@ -6199,7 +6218,7 @@ function initializePatientMode() {
   const patientListContainer = document.getElementById('doctorListContainer');
   if (patientListContainer) {
     patientListContainer.classList.remove('expanded');
-    patientListContainer.innerHTML = '<div id="doctorList"></div>'; // ✅ Create doctorList element
+    patientListContainer.innerHTML = '<div id="doctorList"></div>';
   }
   
   // ✅ UPDATE BUTTON TO "CONNECT TO DOCTOR"
@@ -6213,7 +6232,7 @@ function initializePatientMode() {
   }
   
   if (btn) {
-    btn.onclick = togglePatientList; // ✅ Use togglePatientList (same function for both modes)
+    btn.onclick = togglePatientList;
   }
   
   // ✅ RESET CHAT WINDOW TO DEFAULT
@@ -6233,9 +6252,6 @@ function initializePatientMode() {
     clearInterval(window.patientRefreshInterval);
     window.patientRefreshInterval = null;
   }
-  
-  // ✅ DON'T AUTO-LOAD - Load only when button is clicked
-  // Doctors will be loaded when user clicks "Connect to Doctor"
   
   console.log('✅ Patient mode fully activated');
 }
