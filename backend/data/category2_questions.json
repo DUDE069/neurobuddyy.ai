@@ -6000,7 +6000,310 @@
       "question": "What are the best home remedies for annual physical exams important?",
       "answer": "For annual physical exams important, home remedies often focus on symptom relief and rest. Annual physical exams allow doctors to check for early signs of disease, assess your risk factors, update vaccinations, and discuss healthy lifestyle habits. Early detection often leads to better outcomes. **Treatment & Solution:** Focus on non-pharmacological methods like rest, hydration, and avoiding triggers. Consult a doctor if symptoms worsen or persist beyond a week.",
       "category": "preventive_care"
-    }
-  ]
-}
+    },
+  {
+    "id": 1001,
+    "question": "What lifestyle changes can help reduce the severity of cluster headaches?",
+    "answer": "Reducing alcohol intake, avoiding strong odors, maintaining regular sleep patterns, and following a neurologist-recommended treatment plan can help reduce severity.",
+    "category": "headache"
+  },
+  {
+    "id": 1002,
+    "question": "How can someone manage vestibular migraines?",
+    "answer": "Management may include avoiding triggers, practicing balance exercises, staying hydrated, and using medications prescribed by a healthcare professional.",
+    "category": "migraine"
+  },
+  {
+    "id": 1003,
+    "question": "What steps help reduce the risk of developing Alzheimer's disease?",
+    "answer": "Regular exercise, mental stimulation, social engagement, balanced diet, good sleep, and controlling blood pressure may help reduce risk.",
+    "category": "alzheimers"
+  },
+  {
+    "id": 1004,
+    "question": "How can early signs of Parkinson’s disease be managed?",
+    "answer": "Physical activity, medication prescribed by specialists, and speech or occupational therapy can help manage early symptoms.",
+    "category": "parkinsons"
+  },
+  {
+    "id": 1005,
+    "question": "How can someone support cognitive recovery after a concussion?",
+    "answer": "Rest, avoiding screens temporarily, gradually returning to activity, hydration, and following medical guidance support cognitive recovery.",
+    "category": "concussion"
+  },
+  {
+    "id": 1006,
+    "question": "What helps reduce symptoms of trigeminal neuralgia?",
+    "answer": "Prescription medications, avoiding cold wind exposure, stress reduction, and following a neurologist’s treatment plan may help.",
+    "category": "nerve_pain"
+  },
+  {
+    "id": 1007,
+    "question": "How can peripheral neuropathy discomfort be eased naturally?",
+    "answer": "Light exercise, managing blood sugar, warm foot baths, and reducing alcohol intake may ease discomfort.",
+    "category": "neuropathy"
+  },
+  {
+    "id": 1008,
+    "question": "How can someone cope with the cognitive effects of multiple sclerosis?",
+    "answer": "Cognitive exercises, adequate sleep, stress reduction, physical activity, and medical treatment may help manage symptoms.",
+    "category": "multiple_sclerosis"
+  },
+  {
+    "id": 1009,
+    "question": "What supports nerve healing after a mild nerve injury?",
+    "answer": "Adequate rest, gentle physical therapy, good nutrition, and avoiding repetitive strain support healing.",
+    "category": "nerve_injury"
+  },
+  {
+    "id": 1010,
+    "question": "How can families support someone with early dementia?",
+    "answer": "Providing structured routines, simplifying tasks, offering emotional support, and ensuring medical follow-up can help.",
+    "category": "dementia"
+  },
 
+  {
+    "id": 1011,
+    "question": "How can someone prevent tension-type headaches?",
+    "answer": "Good posture, hydration, regular stretching, and stress-management techniques may help prevent them.",
+    "category": "headache"
+  },
+  {
+    "id": 1012,
+    "question": "How can sleep hygiene help reduce seizure frequency?",
+    "answer": "Maintaining consistent sleep schedules and avoiding sleep deprivation can help reduce seizure risk.",
+    "category": "epilepsy"
+  },
+  {
+    "id": 1013,
+    "question": "What can improve recovery after a mild traumatic brain injury?",
+    "answer": "Gradual return to activity, cognitive rest, hydration, and medical guidance can support recovery.",
+    "category": "tbi"
+  },
+  {
+    "id": 1014,
+    "question": "How can chronic dizziness from vestibular disorders be managed?",
+    "answer": "Vestibular rehabilitation therapy, hydration, and avoiding rapid head movements may help.",
+    "category": "vestibular"
+  },
+  {
+    "id": 1015,
+    "question": "What steps help reduce symptoms of restless legs syndrome?",
+    "answer": "Improving sleep habits, stretching, reducing caffeine, and following medical advice can help.",
+    "category": "sleep_disorder"
+  },
+  {
+    "id": 1016,
+    "question": "How can someone manage migraine with aura?",
+    "answer": "Avoiding triggers, staying hydrated, managing stress, and using prescribed treatments may help.",
+    "category": "migraine"
+  },
+  {
+    "id": 1017,
+    "question": "How can brain fog from chronic illness be reduced?",
+    "answer": "Adequate sleep, hydration, pacing activities, and limiting multitasking may help reduce brain fog.",
+    "category": "cognitive"
+  },
+  {
+    "id": 1018,
+    "question": "What supports rehabilitation after spinal cord injury?",
+    "answer": "Physical therapy, assistive devices, mental health support, and consistent medical care support recovery.",
+    "category": "spinal_cord"
+  },
+  {
+    "id": 1019,
+    "question": "How can someone manage chronic nerve pain naturally?",
+    "answer": "Gentle exercise, mindfulness, warm compresses, and sleep support may help reduce discomfort.",
+    "category": "nerve_pain"
+  },
+  {
+    "id": 1020,
+    "question": "What helps reduce vertigo episodes?",
+    "answer": "Hydration, vestibular therapy, avoiding sudden head movements, and following medical guidance may help.",
+    "category": "vertigo"
+  },
+
+  {
+    "id": 1021,
+    "question": "How can someone with MS manage fatigue?",
+    "answer": "Energy pacing, cooling strategies, regular light exercise, and sleep support may help reduce MS fatigue.",
+    "category": "multiple_sclerosis"
+  },
+  {
+    "id": 1022,
+    "question": "How can someone manage anxiety-related headaches?",
+    "answer": "Relaxation techniques, breathing exercises, good sleep habits, and stress-management can help.",
+    "category": "headache"
+  },
+  {
+    "id": 1023,
+    "question": "What approaches help with post-stroke speech recovery?",
+    "answer": "Speech therapy, repetition exercises, and supportive communication strategies can help.",
+    "category": "stroke"
+  },
+  {
+    "id": 1024,
+    "question": "How can someone manage chronic migraines at work?",
+    "answer": "Taking breaks, reducing bright-light exposure, staying hydrated, and monitoring triggers can help.",
+    "category": "migraine"
+  },
+  {
+    "id": 1025,
+    "question": "How can nerve compression symptoms be reduced?",
+    "answer": "Postural changes, stretching, avoiding repetitive strain, and medical evaluation may reduce symptoms.",
+    "category": "nerve_compression"
+  },
+  {
+    "id": 1026,
+    "question": "What supports recovery after brain surgery?",
+    "answer": "Rest, gradual activity increase, follow-up visits, and mental health support can aid recovery.",
+    "category": "surgery_recovery"
+  },
+  {
+    "id": 1027,
+    "question": "How can someone cope with early cognitive decline?",
+    "answer": "Structured routines, mental exercises, and healthy lifestyle habits may support function.",
+    "category": "cognitive"
+  },
+  {
+    "id": 1028,
+    "question": "What helps reduce symptoms of autonomic dysfunction?",
+    "answer": "Hydration, slow position changes, compression garments, and medical guidance may help.",
+    "category": "autonomic"
+  },
+  {
+    "id": 1029,
+    "question": "How can chronic eye strain headaches be prevented?",
+    "answer": "Taking screen breaks, proper lighting, and using the 20-20-20 rule can help prevent strain.",
+    "category": "headache"
+  },
+  {
+    "id": 1030,
+    "question": "What steps help improve balance in neurological conditions?",
+    "answer": "Balance exercises, physical therapy, and strengthening workouts may help improve stability.",
+    "category": "balance"
+  },
+
+  {
+    "id": 1031,
+    "question": "How can someone reduce the risk of a second stroke?",
+    "answer": "Managing blood pressure, exercising, eating a heart-healthy diet, and taking prescribed medications may reduce risk.",
+    "category": "stroke"
+  },
+  {
+    "id": 1032,
+    "question": "How can nerve-related facial pain be soothed?",
+    "answer": "Warm compresses, relaxation, and medical evaluation can help manage facial nerve pain.",
+    "category": "nerve_pain"
+  },
+  {
+    "id": 1033,
+    "question": "How can someone manage cognitive fatigue after illness?",
+    "answer": "Pacing tasks, resting between activities, hydration, and consistent sleep may help.",
+    "category": "cognitive"
+  },
+  {
+    "id": 1034,
+    "question": "What helps calm overstimulation-related headaches?",
+    "answer": "Reducing noise/light exposure, resting in a quiet space, and deep breathing may help.",
+    "category": "headache"
+  },
+  {
+    "id": 1035,
+    "question": "How can someone manage emotional changes after a neurological injury?",
+    "answer": "Therapy, social support, and stress-reduction strategies can support emotional recovery.",
+    "category": "mental_health"
+  },
+  {
+    "id": 1036,
+    "question": "What habits support long-term brain health?",
+    "answer": "Regular exercise, cognitive challenges, good sleep, socializing, and balanced nutrition support brain health.",
+    "category": "general_brain_health"
+  },
+  {
+    "id": 1037,
+    "question": "How can someone reduce neuropathic burning sensations?",
+    "answer": "Gentle stretching, warm socks, hydration, and medical evaluation may help manage symptoms.",
+    "category": "neuropathy"
+  },
+  {
+    "id": 1038,
+    "question": "How can chronic stress affect the brain?",
+    "answer": "Chronic stress may affect memory, focus, and sleep; stress-management can help reduce these effects.",
+    "category": "stress"
+  },
+  {
+    "id": 1039,
+    "question": "What supports rehabilitation after a brain aneurysm?",
+    "answer": "Medication management, physical therapy, gradual return to activity, and monitoring blood pressure may support recovery.",
+    "category": "aneurysm"
+  },
+  {
+    "id": 1040,
+    "question": "How can someone reduce motion-triggered vertigo?",
+    "answer": "Slow movements, vestibular exercises, and avoiding rapid head turns may help.",
+    "category": "vertigo"
+  },
+
+  {
+    "id": 1041,
+    "question": "How can autonomic issues cause dizziness?",
+    "answer": "Autonomic dysfunction may affect blood pressure regulation, leading to dizzy spells.",
+    "category": "autonomic"
+  },
+  {
+    "id": 1042,
+    "question": "What supports healing after nerve decompression surgery?",
+    "answer": "Rest, gradual stretching, avoiding heavy strain, and follow-up care support healing.",
+    "category": "nerve_surgery"
+  },
+  {
+    "id": 1043,
+    "question": "How can someone reduce migraine triggers at home?",
+    "answer": "Managing lighting, reducing stress, maintaining hydration, and monitoring diet may help.",
+    "category": "migraine"
+  },
+  {
+    "id": 1044,
+    "question": "How can people manage sensory overload from neurological disorders?",
+    "answer": "Limiting noise, using sunglasses, taking breaks, and controlled exposure may help.",
+    "category": "sensory_overload"
+  },
+  {
+    "id": 1045,
+    "question": "What helps improve fine motor skills after neurological injury?",
+    "answer": "Repetitive exercises, occupational therapy, and gradual strengthening may help.",
+    "category": "motor_skills"
+  },
+  {
+    "id": 1046,
+    "question": "How can someone manage chronic cluster headache cycles?",
+    "answer": "Avoiding alcohol during cycles, maintaining sleep routine, and consulting specialists may help.",
+    "category": "headache"
+  },
+  {
+    "id": 1047,
+    "question": "What helps reduce sensory neuropathy in the feet?",
+    "answer": "Light exercise, proper footwear, warm foot baths, and medical review may help.",
+    "category": "neuropathy"
+  },
+  {
+    "id": 1048,
+    "question": "How can chronic neck tension contribute to headaches?",
+    "answer": "Muscle tension can irritate nerves and restrict blood flow, contributing to headaches.",
+    "category": "headache"
+  },
+  {
+    "id": 1049,
+    "question": "How can someone manage mild cognitive impairment?",
+    "answer": "Mental exercises, structured routines, sleep improvement, and healthy diet may help support cognition.",
+    "category": "cognitive"
+  },
+  {
+    "id": 1050,
+    "question": "What strategies help reduce stress-related dizziness?",
+    "answer": "Deep breathing, hydration, grounding exercises, and taking short breaks may help reduce stress-related symptoms.",
+    "category": "stress"
+  }
+]
+}

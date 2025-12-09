@@ -1861,18 +1861,36 @@ async function logoutDoctor() {
 
 // ========== PATIENT AUTHENTICATION ==========
 
-// Show/Hide patient auth modals
+/// Show/Hide patient auth modals (Bulletproof Version)
 function showPatientAuth() {
-  // ✅ FIX: Close other modals first!
-  document.getElementById('roleModal').style.display = 'none';
-  document.getElementById('authModal').style.display = 'none';
-  
-  // Show Patient Login
-  document.getElementById('patientAuthModal').style.display = 'flex';
-  document.getElementById('patientLoginForm').style.display = 'block';
-  document.getElementById('patientRegisterForm').style.display = 'none';
-  document.getElementById('patientPasswordResetForm').style.display = 'none';
+  console.log("🚀 Starting showPatientAuth...");
+
+  // 1. SAFELY close Role Selection
+  const roleModal = document.getElementById('roleModal');
+  if (roleModal) roleModal.style.display = 'none';
+
+  // 2. SAFELY close Auth Modal
+  const authModal = document.getElementById('authModal');
+  if (authModal) authModal.style.display = 'none';
+
+  // 3. SAFELY Show Patient Login
+  const patientModal = document.getElementById('patientAuthModal');
+  if (patientModal) {
+    patientModal.style.display = 'flex';
+    
+    // Ensure Login Form is the active one
+    const loginForm = document.getElementById('patientLoginForm');
+    const registerForm = document.getElementById('patientRegisterForm');
+    const resetForm = document.getElementById('patientPasswordResetForm');
+
+    if (loginForm) loginForm.style.display = 'block';
+    if (registerForm) registerForm.style.display = 'none';
+    if (resetForm) resetForm.style.display = 'none';
+  } else {
+    console.error("❌ CRITICAL: 'patientAuthModal' is missing from HTML!");
+  }
 }
+
 
 
 function closePatientAuth() {
