@@ -1554,7 +1554,7 @@ function listenForCallInvitations() {
     });
   });
   
-  console.log('ðŸ‘‚ Listening for call invitations...');
+  console.log('🔍 Listening for call invitations...');
 }
 
 // Show incoming call notification
@@ -1863,11 +1863,17 @@ async function logoutDoctor() {
 
 // Show/Hide patient auth modals
 function showPatientAuth() {
+  // ✅ FIX: Close other modals first!
+  document.getElementById('roleModal').style.display = 'none';
+  document.getElementById('authModal').style.display = 'none';
+  
+  // Show Patient Login
   document.getElementById('patientAuthModal').style.display = 'flex';
   document.getElementById('patientLoginForm').style.display = 'block';
   document.getElementById('patientRegisterForm').style.display = 'none';
   document.getElementById('patientPasswordResetForm').style.display = 'none';
 }
+
 
 function closePatientAuth() {
   document.getElementById('patientAuthModal').style.display = 'none';
@@ -2447,7 +2453,7 @@ function showWaitingForPatientBanner(patient) {
 
 // ✅ Listen for patient response (accept or decline)
 function listenForPatientResponse(patient) {
-  console.log('ðŸ‘‚ Listening for patient response...');
+  console.log('🔍 Listening for patient response...');
   
   if (!window.firebaseDB) return;
   
@@ -2691,7 +2697,7 @@ async function declineConsultation(requestId) {
 
 // ✅ LISTEN FOR PATIENT MESSAGES IN REAL-TIME
 function startListeningToPatientMessages(requestId) {
-  console.log('ðŸ‘‚ Doctor listening for patient messages...');
+  console.log('🔍 Doctor listening for patient messages...');
   
   if (!window.firebaseDB) return;
   
@@ -3171,7 +3177,7 @@ function listenForConsultationEnd(requestId) {
 
 // ✅ LISTEN FOR DOCTOR MESSAGES IN REAL-TIME
 function startListeningToDoctorMessages(requestId) {
-  console.log('ðŸ‘‚ Patient listening for doctor messages...');
+  console.log('🔍 Patient listening for doctor messages...');
   
   if (!window.firebaseDB) return;
   
@@ -5765,7 +5771,7 @@ async function resetPassword(email, resetCode, newPassword) {
 
     const loadingMsg = document.createElement("div");
     loadingMsg.className = "bot-msg";
-    loadingMsg.textContent = "ðŸ¤” Finding answer...";
+    loadingMsg.textContent = "⌛ Finding answer...";
     loadingMsg.id = "loading-msg";
     chatWindow.appendChild(loadingMsg);
     chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -6571,7 +6577,7 @@ function activatePatientConversation(requestId, requestData) {
     <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid ${urgencyColor};">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <h3 style="margin: 0; color: #111827; font-size: 1.2rem;">ðŸ‘¨â€âš•ï¸ Dr. ${requestData.doctorName}</h3>
+          <h3 style="margin: 0; color: #111827; font-size: 1.2rem;">🌬️ Dr. ${requestData.doctorName}</h3>
           <p style="margin: 5px 0 0 0; color: #1e40af; font-size: 0.9rem;">✅ Doctor is now attending to you</p>
         </div>
         <div style="display: flex; gap: 10px;">
@@ -7120,10 +7126,10 @@ function initializeDoctorChatArea() {
     <div class="bot-msg" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white;">
       <strong>ðŸ‘¨â€âš•ï¸ Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
       Ready to help patients today.<br>
-      <span style="font-size: 1.1rem; font-weight: bold;">ðŸ“‹ ${patientCount} patient(s) waiting</span>
+      <span style="font-size: 1.1rem; font-weight: bold;">▶️ ${patientCount} patient(s) waiting</span>
     </div>
     <div class="bot-msg">
-      ðŸ‘‹ Hello Doctor! While you wait for patients, feel free to ask me any medical questions or use me to research symptoms and conditions.
+     🤝 Hello Doctor! While you wait for patients, feel free to ask me any medical questions or use me to research symptoms and conditions.
     </div>
   `;
   
@@ -7240,7 +7246,7 @@ async function loadPatientList() {
     const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">ðŸ“­ No patients waiting</p>';
+      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">▶️­ No patients waiting</p>';
       window.isLoadingPatients = false;
       return;
     }
