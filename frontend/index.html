@@ -2386,7 +2386,7 @@ function updateDoctorBanner(patientCount) {
   const firstMessage = chatWindow.querySelector('.bot-msg');
   if (firstMessage) {
     firstMessage.innerHTML = `
-      <strong>ðŸ‘¨â€âš•ï¸ Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
+      <strong>🤝 Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
       Ready to help patients today.<br>
       <span style="font-size: 1.1rem; font-weight: bold;">ðŸ“‹ ${patientCount} patient(s) waiting</span>
     `;
@@ -4235,12 +4235,12 @@ async function requestResetCode() {
 <!-- Doctor Dashboard Modal -->
 <div id="doctorDashboard" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-dashboard">
-    <button class="modal-close" onclick="closeDoctorDashboard()">❌•</button>
-    <h2>ðŸ‘¨â€âš•ï¸ Doctor Dashboard</h2>
+    <button class="modal-close" onclick="closeDoctorDashboard()">❌</button>
+    <h2>👨‍⚕️Doctor Dashboard</h2>
     
     <div class="doctor-profile">
       <div class="profile-header">
-        <div class="profile-avatar">ðŸ‘¤</div>
+        <div class="profile-avatar">👨‍⚕️</div>
         <div class="profile-info">
           <h3 id="dashboardName">Loading...</h3>
           <p id="dashboardSpecialty">Loading...</p>
@@ -4251,14 +4251,14 @@ async function requestResetCode() {
       <div class="status-selector">
         <label>Your Status:</label>
         <select id="doctorStatusSelect" onchange="updateDoctorStatus()">
-          <option value="available">ðŸŸ¢Available</option>
-          <option value="engaged">ðŸ”´ Engaged</option>
-          <option value="offline">âš« Offline</option>
+          <option value="available">🟢Available</option>
+          <option value="engaged">🔴 Engaged</option>
+          <option value="offline">🔘 Offline</option>
         </select>
       </div>
       
       <div class="dashboard-actions">
-        <button class="btn-logout" onclick="logoutDoctor()">ðŸšª Logout</button>
+        <button class="btn-logout" onclick="logoutDoctor()">🚪 Logout</button>
       </div>
     </div>
   </div>
@@ -4268,21 +4268,37 @@ async function requestResetCode() {
   <div class="container">
 
    <aside class="leftbar" id="sidebar">
-  <ul class="menu">
-    <li onclick="toggleChatHistory()">🔎 Search</li>
-    <li onclick="toggleGallery()">☢️  Symtoms Gallery</li>
-  </ul>
+<!-- INSIDE <div class="leftbar"> -->
 
-      <div class="settings">
-        <div onclick="toggleSettings()" style="cursor: pointer; margin-bottom: 8px;">⚙️ Settings</div>
-        <ul id="settingsSubmenu" style="display: none; list-style: none; padding-left: 10px; margin: 0;">
- <li onclick="openAbout()" style="padding: 8px; background: #376c90; cursor: pointer; border-radius: 5px;">ℹ️ ABOUT</li>
-
- <li onclick="showAuthModal()" style="padding: 8px; background: #2563eb; cursor: pointer; border-radius: 5px; margin-top: 5px; color: white;">
-  🔐 Login
-</li>
-
+<ul class="menu">
+  <!-- Existing Items -->
+  <li onclick="toggleChatHistory()">🕒 Search History</li>
+  <li onclick="toggleGallery()">🖼️ Symptoms Gallery</li>
+  
+  <!-- SETTINGS GROUP -->
+  <li onclick="toggleSettingsMenu()" style="background: #eef2ff; font-weight: bold; margin-top: 10px;">
+    ⚙️ Settings ▼
+  </li>
+  
+  <!-- HIDDEN SETTINGS SUB-MENU -->
+  <div id="settingsSubMenu" style="display: none; padding-left: 10px;">
+    
+    <!-- 1. ABOUT (Always Visible) -->
+    <li onclick="showAboutModal()" style="font-size: 0.9rem;">ℹ️ About</li>
+    
+    <!-- 2. MY PROFILE (Hidden by default, shown when logged in) -->
+    <li id="myProfileBtn" onclick="openUserProfile()" style="display: none; font-size: 0.9rem; color: #2563eb; font-weight: bold;">
+      👤 My Profile
+    </li>
+    
+    <!-- 3. LOGIN / LOGOUT (Changes dynamically) -->
+    <li id="authBtn" onclick="handleAuthClick()" style="font-size: 0.9rem;">
+      🔐 Login
+    </li>
+    
+  </div>
 </ul>
+
 
       </div>
     </aside>
@@ -4539,7 +4555,7 @@ async function requestResetCode() {
             <li style="margin: 10px 0;"><strong>View History:</strong> Click "ðŸ”Ž Search" in the left menu to access your previous conversations.</li>
             <li style="margin: 10px 0;"><strong>Browse Gallery:</strong> Click "ðŸ§  Brain Health Gallery" to view visual guides of neurological symptoms.</li>
             <li style="margin: 10px 0;"><strong>Set Location:</strong> Configure your nearest hospital in the right sidebar for emergency alerts.</li>
-            <li style="margin: 10px 0;"><strong>Connect to Doctors:</strong> Click "ðŸ‘¨â€âš•ï¸ Connect to Doctors" to see available professionals. Click any doctor to initiate consultation.</li>
+            <li style="margin: 10px 0;"><strong>Connect to Doctors:</strong> Click "👨‍⚕️ Connect to Doctors" to see available professionals. Click any doctor to initiate consultation.</li>
             <li style="margin: 10px 0;"><strong>Emergency:</strong> Press the red "âš ï¸ Emergency" button to send instant SOS to your configured hospital.</li>
           </ol>
           
@@ -6497,6 +6513,17 @@ function updatePatientCountBadge(count) {
 
 // ========== END PHASE 3 ==========
 
+// Toggle Settings Sub-menu
+function toggleSettingsMenu() {
+  const menu = document.getElementById('settingsSubMenu');
+  if (menu.style.display === 'none') {
+    menu.style.display = 'block';
+  } else {
+    menu.style.display = 'none';
+  }
+}
+
+
 // ========== PHASE 4: PATIENT CONVERSATION INTERFACE ==========
 
 let activePatientConversation = null;
@@ -7142,7 +7169,7 @@ function initializeDoctorChatArea() {
   // ✅ Show welcome banner with patient count
   chatWindow.innerHTML = `
     <div class="bot-msg" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white;">
-      <strong>ðŸ‘¨â€âš•ï¸ Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
+      <strong>🤝Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
       Ready to help patients today.<br>
       <span style="font-size: 1.1rem; font-weight: bold;">▶️ ${patientCount} patient(s) waiting</span>
     </div>
@@ -7493,12 +7520,12 @@ function toggleDoctorList() {
   
   if (!doctorListVisible) {
     container.classList.add('expanded');
-    btn.textContent = 'ðŸš« Close Doctor List';
+    btn.textContent = '❌ Close Doctor List';
     loadRealDoctors(); // Ã¢Å“â€¦ Load real doctors from database
     doctorListVisible = true;
   } else {
     container.classList.remove('expanded');
-    btn.textContent = 'ðŸ‘¨â€âš•ï¸ Connect to Doctors';
+    btn.textContent = '👨‍⚕️Connect to Doctors';
     doctorListVisible = false;
   }
 }
@@ -7587,6 +7614,112 @@ console.log('✅ Functions loaded:', {
   sendDoctorMessage: typeof sendDoctorMessage,
   loadPatientList: typeof loadPatientList
 });
+
+// Function to handle the Login/Logout button click
+function handleAuthClick() {
+  const user = window.firebaseAuth.currentUser;
+  
+  if (user) {
+    // If user is logged in -> Ask to Logout
+    if (confirm("Are you sure you want to logout?")) {
+      logoutUser(); // This calls your unified logout function
+    }
+  } else {
+    // If user is NOT logged in -> Show Login Options
+    // This opens the "Doctor, Patient, or Guest" choice modal
+    const roleModal = document.getElementById('roleModal');
+    if (roleModal) {
+      roleModal.style.display = 'flex';
+    } else {
+      console.error("Error: roleModal not found!");
+    }
+  }
+}
+
+// Unified Logout Function (if you don't have it yet)
+async function logoutUser() {
+  try {
+    await window.authFunctions.signOut(window.firebaseAuth);
+    localStorage.removeItem('userMode'); // Clear role
+    
+    // Reset UI immediately
+    location.reload(); 
+  } catch (error) {
+    console.error("Logout failed:", error);
+    alert("Logout failed. Please try again.");
+  }
+}
+
+// PUT THIS INSIDE YOUR EXISTING onAuthStateChanged BLOCK
+// usually at the very bottom of your script
+
+onAuthStateChanged(window.firebaseAuth, (user) => {
+  const profileBtn = document.getElementById('myProfileBtn');
+  const authBtn = document.getElementById('authBtn');
+  
+  if (user) {
+    // === USER IS LOGGED IN ===
+    if (profileBtn) profileBtn.style.display = 'block'; // Show Profile
+    if (authBtn) {
+      authBtn.innerHTML = '🚪 Logout';
+      authBtn.style.color = '#dc2626'; // Red
+    }
+  } else {
+    // === USER IS GUEST ===
+    if (profileBtn) profileBtn.style.display = 'none'; // Hide Profile
+    if (authBtn) {
+      authBtn.innerHTML = '🔐 Login';
+      authBtn.style.color = '#333'; // Black
+    }
+  }
+});
+
+// Open User Profile Modal
+function openUserProfile() {
+  const user = window.firebaseAuth.currentUser;
+  
+  if (!user) {
+    alert("Please login first!");
+    return;
+  }
+  
+  // Show the modal
+  const modal = document.getElementById('userProfileModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    
+    // Fill basic info
+    document.getElementById('profileEmail').textContent = user.email;
+    document.getElementById('profileAvatar').textContent = user.email.charAt(0).toUpperCase();
+
+    // Determine Role & Fill Details
+    const role = localStorage.getItem('userMode'); // 'doctor' or 'patient'
+    
+    if (role === 'doctor') {
+        setupDoctorProfile(user.uid);
+    } else {
+        setupPatientProfile(user.uid);
+    }
+  }
+}
+
+// Close Profile Modal
+function closeUserProfile() {
+  const modal = document.getElementById('userProfileModal');
+  if (modal) modal.style.display = 'none';
+}
+
+// Helpers for Profile Data
+async function setupDoctorProfile(uid) {
+  document.getElementById('doctorFields').style.display = 'block';
+  document.getElementById('patientFields').style.display = 'none';
+  // ... (rest of logic handles automatically if empty)
+}
+
+async function setupPatientProfile(uid) {
+  document.getElementById('doctorFields').style.display = 'none';
+  document.getElementById('patientFields').style.display = 'block';
+}
 
 
 
