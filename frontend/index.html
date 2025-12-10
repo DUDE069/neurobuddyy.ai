@@ -1884,85 +1884,6 @@ function showAuthModal() {
 }
 
 // ============================================
-// ✅ MISSING FUNCTIONS FOR PATIENT-INITIATED CALLS
-// ============================================
-
-// 1. Patient starts VIDEO call
-async function patientStartVideoCall() {
-  const requestData = JSON.parse(localStorage.getItem('activePatientRequest'));
-  
-  if (!requestData || !requestData.doctorId) {
-      alert("❌ Error: No doctor found for this consultation.");
-      return;
-  }
-
-  try {
-    console.log('🟢 Patient starting video call with Doctor:', requestData.doctorId);
-    
-    // Check if PeerJS is ready
-    if (!window.peer || !window.peer.id) {
-        alert("⏳ Connection establishing... please try again in a moment.");
-        return;
-    }
-    
-    // Get local stream (Video + Audio)
-    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-    
-    // Call the doctor directly via PeerJS
-    const call = window.peer.call(requestData.doctorId, localStream);
-    
-    // Handle the outgoing call UI
-    handleOutgoingCall(call, 'video', requestData.doctorName || "Doctor");
-    
-  } catch (err) {
-    console.error("Call failed:", err);
-    alert("Call failed: " + err.message);
-  }
-}
-
-// 2. Patient starts VOICE call
-async function patientStartVoiceCall() {
-  const requestData = JSON.parse(localStorage.getItem('activePatientRequest'));
-  if (!requestData || !requestData.doctorId) return;
-
-  try {
-    console.log('🟢 Patient starting voice call...');
-    
-    // Check PeerJS
-    if (!window.peer || !window.peer.id) {
-        alert("⏳ Connection establishing... please try again.");
-        return;
-    }
-
-    // Get local stream (Audio Only)
-    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    
-    const call = window.peer.call(requestData.doctorId, localStream);
-    handleOutgoingCall(call, 'voice', requestData.doctorName || "Doctor");
-  } catch (err) {
-    alert("Call failed: " + err.message);
-  }
-}
-
-// 3. Helper to handle UI when YOU start a call
-function handleOutgoingCall(call, type, name) {
-    currentCall = call;
-    showCallingUI(name, type); // Reuses your existing UI function
-    
-    call.on('stream', (remoteStream) => {
-        handleRemoteStream(remoteStream, type); // Reuses your existing stream handler
-    });
-    
-    call.on('close', () => endCall());
-    call.on('error', (err) => {
-        console.error("PeerJS Call Error:", err);
-        endCall();
-    });
-}
-
-
-
-// ============================================
 // DOCTOR LOGIN MODAL FUNCTIONS
 // ============================================
 function showDoctorLogin() {
@@ -2377,11 +2298,14 @@ function getDoctorWarningMessage(status) {
 async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   closeDoctorConnectionModal();
 
-  // PeerJS must be ready
+  // ✅ Better check - wait and retry if needed
   if (!peer || !peer.id) {
-    alert("⚠ Connection starting... Please wait a moment and try again.");
+    alert("⚠️ Establishing connection... Please wait 3 seconds and try again.");
+    console.error("❌ PeerJS not ready. peer:", peer, "peer.id:", peer?.id);
     return;
   }
+
+  console.log("✅ PeerJS is ready with ID:", peer.id); // Confirm it's ready
 
   let patientName = "Anonymous Patient";
   let patientAge = 25;
@@ -2421,7 +2345,7 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
       status: "pending",
       timestamp: serverTimestamp(),
       message: `Patient ${patientName} (${patientAge}) wants to consult.`,
-      patientPeerId: peer.id   // ✅ IMPORTANT
+      patientPeerId: peer.id   // ✅ This will now be valid
     };
 
     if (user) {
@@ -2441,6 +2365,7 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
     alert("❌ Failed to send request.");
   }
 }
+
 
 
 
@@ -6912,62 +6837,74 @@ function cancelPatientRequest() {
 // ✅ FIXED PATIENT CALL FUNCTIONS (Replace old versions)
 // ============================================
 
-// 1. Patient starts VIDEO call
+// ============================================
+// ✅ PATIENT-INITIATED CALLS
+// ============================================
+
+// Patient starts VIDEO call
 async function patientStartVideoCall() {
-  const requestData = JSON.parse(localStorage.getItem('activePatientRequest'));
+  const requestData = JSON.parse(localStorage.getItem('activePatientRequest') || sessionStorage.getItem('activeRequestId'));
   
-  if (!requestData || !requestData.doctorId) {
-      alert("❌ Error: No doctor found for this consultation.");
-      return;
+  if (!requestData) {
+    alert("❌ Error: No active consultation found.");
+    return;
   }
 
   try {
-    console.log('🟢 Patient starting video call with Doctor:', requestData.doctorId);
-    
+    console.log("Patient starting video call...");
+
     // Check if PeerJS is ready
-    if (!window.peer || !window.peer.id) {
-        alert("⏳ Connection establishing... please try again in a moment.");
-        return;
+    if (!peer || !peer.id) {
+      alert("⚠️ Connection establishing... please try again in a moment.");
+      return;
     }
-    
+
     // Get local stream (Video + Audio)
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-    
-    // Call the doctor directly via PeerJS
-    const call = window.peer.call(requestData.doctorId, localStream);
-    
-    // Handle the outgoing call UI
-    handleOutgoingCall(call, 'video', requestData.doctorName || "Doctor");
-    
+
+    // Show calling UI
+    showCallingUI("Doctor", "video");
+
+    console.log("📞 Patient ready to receive call from doctor");
+
   } catch (err) {
     console.error("Call failed:", err);
-    alert("Call failed: " + err.message);
+    alert("❌ Call failed: " + err.message);
   }
 }
 
-// 2. Patient starts VOICE call
+// Patient starts VOICE call
 async function patientStartVoiceCall() {
-  const requestData = JSON.parse(localStorage.getItem('activePatientRequest'));
-  if (!requestData || !requestData.doctorId) return;
+  const requestData = JSON.parse(localStorage.getItem('activePatientRequest') || sessionStorage.getItem('activeRequestId'));
+  
+  if (!requestData) {
+    alert("❌ Error: No active consultation found.");
+    return;
+  }
 
   try {
-    console.log('🟢 Patient starting voice call...');
-    
+    console.log("Patient starting voice call...");
+
     // Check PeerJS
-    if (!window.peer || !window.peer.id) {
-        alert("⏳ Connection establishing... please try again.");
-        return;
+    if (!peer || !peer.id) {
+      alert("⚠️ Connection establishing... please try again.");
+      return;
     }
 
     // Get local stream (Audio Only)
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    
-    const call = window.peer.call(requestData.doctorId, localStream);
-    handleOutgoingCall(call, 'voice', requestData.doctorName || "Doctor");
+
+    // Show calling UI
+    showCallingUI("Doctor", "voice");
+
+    console.log("📞 Patient ready to receive call from doctor");
+
   } catch (err) {
-    alert("Call failed: " + err.message);
+    console.error("Call failed:", err);
+    alert("❌ Call failed: " + err.message);
   }
 }
+
 
 // 3. Helper to handle UI when YOU start a call
 function handleOutgoingCall(call, type, name) {
