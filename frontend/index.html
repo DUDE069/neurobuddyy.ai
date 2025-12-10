@@ -1387,7 +1387,7 @@
 
 
 <script>
-  // ========== WEBRTC / PEERJS INITIALIZATION ==========
+// ========== WEBRTC / PEERJS INITIALIZATION ==========
 
 let peer = null;
 let currentCall = null;
@@ -1395,12 +1395,20 @@ let localStream = null;
 let remoteStream = null;
 let callInProgress = false;
 
-// Initialize PeerJS
+// Initialize PeerJS (safe, single instance)
 function initializePeerJS(userId) {
+  // ✅ Prevent double initialization
+  if (peer && !peer.destroyed) {
+    console.log('⚠️ PeerJS already initialized with ID:', peer.id);
+    return;
+  }
+
   try {
-    // Create peer with user's UID as ID
-    peer = new Peer(userId, {
-      debug: 2, // Show debug logs
+    // If userId is not passed, generate random ID (guest)
+    const peerId = userId || undefined;
+
+    peer = new Peer(peerId, {
+      debug: 2,
       config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
@@ -1408,126 +1416,29 @@ function initializePeerJS(userId) {
         ]
       }
     });
-    
+
     peer.on('open', (id) => {
       console.log('✅ PeerJS connected with ID:', id);
     });
-    
+
     peer.on('error', (error) => {
       console.error('❗ PeerJS error:', error);
     });
-    
+
     // Listen for incoming calls
     peer.on('call', (incomingCall) => {
-      console.log('ðŸ“ž Incoming call from:', incomingCall.peer);
+      console.log('📞 Incoming call from:', incomingCall.peer);
       handleIncomingCall(incomingCall);
     });
-    
+
     console.log('✅ PeerJS initialized');
-    
+
   } catch (error) {
     console.error('❗ Failed to initialize PeerJS:', error);
   }
 }
 
-
 // ========== WEBRTC CALL FUNCTIONS ==========
-
-// Start voice call (Doctor initiates)
-// Start video call (Doctor initiates)
-async function startVideoCall() {
-    if (!window.activePatient || !window.activePatient.id) {
-        alert("❌ No active patient. Please select a patient first.");
-        return;
-    }
-    
-    const patientName = window.activePatient.patientName || "Patient";
-    
-    if (!confirm(`📹 Start video call with ${patientName}?`)) {
-        return;
-    }
-    
-    try {
-        console.log("Starting video call...");
-        
-        // ✅ Get patient's Peer ID from the request
-        const patientData = await getPatientFromRequest(window.activePatient.id);
-        
-        if (!patientData || !patientData.patientPeerId) {
-            alert("❌ Cannot start call: Patient's connection ID not found. Ask patient to reconnect.");
-            return;
-        }
-        
-        // Get local audio + video stream
-        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        
-        // Call the patient using their Peer ID
-        currentCall = window.peer.call(patientData.patientPeerId, localStream);
-        
-        // Handle incoming stream
-        currentCall.on('stream', (remoteStream) => {
-            handleRemoteStream(remoteStream, 'video');
-        });
-        
-        // Show "Calling..." UI
-        showCallingUI(patientName, 'video');
-        
-    } catch (error) {
-        console.error("Error starting video call:", error);
-        if (error.name === "NotAllowedError") {
-            alert("❌ Camera/Microphone access denied. Please allow access in your browser settings.");
-        } else {
-            alert("❌ Failed to start call: " + error.message);
-        }
-    }
-}
-
-// Start voice call (Doctor initiates)
-async function startVoiceCall() {
-    if (!window.activePatient || !window.activePatient.id) {
-        alert("❌ No active patient. Please select a patient first.");
-        return;
-    }
-    
-    const patientName = window.activePatient.patientName || "Patient";
-    
-    if (!confirm(`📞 Start voice call with ${patientName}?`)) {
-        return;
-    }
-    
-    try {
-        console.log("Starting voice call...");
-        
-        // ✅ Get patient's Peer ID
-        const patientData = await getPatientFromRequest(window.activePatient.id);
-        
-        if (!patientData || !patientData.patientPeerId) {
-            alert("❌ Cannot start call: Patient's connection ID not found.");
-            return;
-        }
-        
-        // Get local audio stream
-        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        
-        // Call the patient
-        currentCall = window.peer.call(patientData.patientPeerId, localStream);
-        
-        currentCall.on('stream', (remoteStream) => {
-            handleRemoteStream(remoteStream, 'voice');
-        });
-        
-        showCallingUI(patientName, 'voice');
-        
-    } catch (error) {
-        console.error("Error starting voice call:", error);
-        if (error.name === "NotAllowedError") {
-            alert("❌ Microphone access denied. Please allow microphone access in your browser settings.");
-        } else {
-            alert("❌ Failed to start call: " + error.message);
-        }
-    }
-}
-
 
 // Get patient data from request ID
 async function getPatientFromRequest(requestId) {
@@ -1548,33 +1459,123 @@ async function getPatientFromRequest(requestId) {
   }
 }
 
-// Send call invitation via Firebase
-async function sendCallInvitation(recipientUserId, callType, callerName) {
+// Start video call (Doctor initiates)
+async function startVideoCall() {
+  if (!window.activePatient || !window.activePatient.id) {
+    alert('❌ No active patient. Please select a patient first.');
+    return;
+  }
+  
+  const patientName = window.activePatient.patientName || 'Patient';
+  
+  if (!confirm(`📹 Start video call with ${patientName}?`)) {
+    return;
+  }
+  
   try {
-    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+    console.log('Starting video call...');
     
-    const currentUser = window.firebaseAuth.currentUser;
+    // ✅ Get patient's Peer ID from the request
+    const patientData = await getPatientFromRequest(window.activePatient.id);
     
-    if (!currentUser) {
-      throw new Error('You must be logged in to make calls');
+    if (!patientData || !patientData.patientPeerId) {
+      alert('❌ Cannot start call: Patient\'s connection ID not found. Ask patient to reconnect.');
+      return;
     }
     
-    const invitationData = {
-      callerId: currentUser.uid,
-      callerName: callerName,
-      recipientId: recipientUserId,
-      callType: callType, // 'voice' or 'video'
-      status: 'pending',
-      timestamp: serverTimestamp()
-    };
+    console.log('📞 Calling patient with Peer ID:', patientData.patientPeerId);
     
-    await addDoc(collection(window.firebaseDB, 'callInvitations'), invitationData);
+    // Get local audio + video stream
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
     
-    console.log('✅ Call invitation sent to:', recipientUserId);
+    // ✅ Use peer (not window.peer)
+    currentCall = peer.call(patientData.patientPeerId, localStream);
+    
+    // Handle incoming stream
+    currentCall.on('stream', (remoteStream) => {
+      handleRemoteStream(remoteStream, 'video');
+    });
+    
+    currentCall.on('close', () => {
+      console.log('📵 Call closed');
+      endCall();
+    });
+    
+    currentCall.on('error', (err) => {
+      console.error('❗ Call error:', err);
+      alert('❌ Call failed: ' + err.message);
+      endCall();
+    });
+    
+    // Show "Calling..." UI
+    showCallingUI(patientName, 'video');
     
   } catch (error) {
-    console.error('❗ Error sending call invitation:', error);
-    throw error;
+    console.error('Error starting video call:', error);
+    if (error.name === 'NotAllowedError') {
+      alert('❌ Camera/Microphone access denied. Please allow access in your browser settings.');
+    } else {
+      alert('❌ Failed to start call: ' + error.message);
+    }
+  }
+}
+
+// Start voice call (Doctor initiates)
+async function startVoiceCall() {
+  if (!window.activePatient || !window.activePatient.id) {
+    alert('❌ No active patient. Please select a patient first.');
+    return;
+  }
+  
+  const patientName = window.activePatient.patientName || 'Patient';
+  
+  if (!confirm(`📞 Start voice call with ${patientName}?`)) {
+    return;
+  }
+  
+  try {
+    console.log('Starting voice call...');
+    
+    // ✅ Get patient's Peer ID
+    const patientData = await getPatientFromRequest(window.activePatient.id);
+    
+    if (!patientData || !patientData.patientPeerId) {
+      alert('❌ Cannot start call: Patient\'s connection ID not found.');
+      return;
+    }
+    
+    console.log('📞 Calling patient with Peer ID:', patientData.patientPeerId);
+    
+    // Get local audio stream
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    
+    // ✅ Use peer (not window.peer)
+    currentCall = peer.call(patientData.patientPeerId, localStream);
+    
+    currentCall.on('stream', (remoteStream) => {
+      handleRemoteStream(remoteStream, 'voice');
+    });
+    
+    currentCall.on('close', () => {
+      console.log('📵 Call closed');
+      endCall();
+    });
+    
+    currentCall.on('error', (err) => {
+      console.error('❗ Call error:', err);
+      alert('❌ Call failed: ' + err.message);
+      endCall();
+    });
+    
+    showCallingUI(patientName, 'voice');
+    
+  } catch (error) {
+    console.error('Error starting voice call:', error);
+    if (error.name === 'NotAllowedError') {
+      alert('❌ Microphone access denied. Please allow microphone access in your browser settings.');
+    } else {
+      alert('❌ Failed to start call: ' + error.message);
+    }
   }
 }
 
@@ -1629,20 +1630,17 @@ function listenForCallInvitations() {
 
 // Show incoming call notification
 function showIncomingCallNotification(invitation) {
-  console.log('ðŸ“ž Incoming call from:', invitation.callerName);
+  console.log('📞 Incoming call from:', invitation.callerName);
   
   // Store invitation data
   window.currentCallInvitation = invitation;
   
   // Update modal
   document.getElementById('callerName').textContent = invitation.callerName;
-  document.getElementById('callType').textContent = invitation.callType === 'video' ? 'ðŸ“¹ Video Call' : 'ðŸ“ž Voice Call';
+  document.getElementById('callType').textContent = invitation.callType === 'video' ? '📹 Video Call' : '📞 Voice Call';
   
   // Show modal
   document.getElementById('callInvitationModal').style.display = 'flex';
-  
-  // Play ringtone (optional)
-  // playRingtone();
 }
 
 // Accept incoming call (Patient)
@@ -1691,16 +1689,14 @@ async function acceptCall() {
 }
 
 // Decline incoming call
-// Function called when Patient clicks "Later" or "Decline"
 async function declineCall() {
   const requestId = sessionStorage.getItem('activeRequestId');
   if (!requestId) return;
 
   try {
-    // Update Firebase to notify Doctor
     const { doc, updateDoc } = window.firestoreFunctions;
     await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
-      status: 'declined', // This triggers the doctor's listener
+      status: 'declined',
       declinedBy: 'patient'
     });
     
@@ -1712,19 +1708,32 @@ async function declineCall() {
   }
 }
 
-
-// Handle incoming call (Doctor side - when patient accepts)
+// Handle incoming call
 function handleIncomingCall(incomingCall) {
+  console.log('📞 Handling incoming call...');
+  
   currentCall = incomingCall;
   
-  // Answer with local stream
-  currentCall.answer(localStream);
-  
-  // Listen for remote stream
-  currentCall.on('stream', (remoteStream) => {
-    const callType = document.getElementById('videoBtn').style.display === 'none' ? 'voice' : 'video';
-    handleRemoteStream(remoteStream, callType);
-  });
+  if (localStream) {
+    currentCall.on('stream', (remoteStream) => {
+      const callType = document.getElementById('videoBtn')?.style.display === 'none' ? 'voice' : 'video';
+      handleRemoteStream(remoteStream, callType);
+    });
+  } else {
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then(stream => {
+        localStream = stream;
+        currentCall.answer(stream);
+        
+        currentCall.on('stream', (remoteStream) => {
+          handleRemoteStream(remoteStream, 'voice');
+        });
+      })
+      .catch(err => {
+        console.error('Failed to get media:', err);
+        alert('Cannot access microphone/camera');
+      });
+  }
 }
 
 // Handle remote stream
@@ -1738,15 +1747,12 @@ function handleRemoteStream(stream, callType) {
     document.getElementById('remoteVideo').style.display = 'block';
     document.getElementById('audioOnlyIndicator').style.display = 'none';
   } else {
-    // Audio only - just play audio, don't show video
     const audio = new Audio();
     audio.srcObject = stream;
     audio.play();
   }
   
-  // Start call timer
   startCallTimer();
-  
   callInProgress = true;
 }
 
@@ -1797,10 +1803,10 @@ function toggleMute() {
     
     const btn = document.getElementById('muteBtn');
     if (audioTrack.enabled) {
-      btn.textContent = 'ðŸŽ¤';
+      btn.textContent = '🎤';
       btn.style.background = '#6b7280';
     } else {
-      btn.textContent = 'ðŸ”‡';
+      btn.textContent = '🔇';
       btn.style.background = '#dc2626';
     }
   }
@@ -1817,10 +1823,10 @@ function toggleVideo() {
     
     const btn = document.getElementById('videoBtn');
     if (videoTrack.enabled) {
-      btn.textContent = 'ðŸ“¹';
+      btn.textContent = '📹';
       btn.style.background = '#6b7280';
     } else {
-      btn.textContent = 'ðŸ“µ';
+      btn.textContent = '📵';
       btn.style.background = '#dc2626';
     }
   }
@@ -1828,10 +1834,9 @@ function toggleVideo() {
 
 // End call
 async function endCall() {
-  if (!confirm('End this call?')) return;
+  if (callInProgress && !confirm('End this call?')) return;
   
   try {
-    // Stop all tracks
     if (localStream) {
       localStream.getTracks().forEach(track => track.stop());
       localStream = null;
@@ -1842,19 +1847,16 @@ async function endCall() {
       remoteStream = null;
     }
     
-    // Close PeerJS call
     if (currentCall) {
       currentCall.close();
       currentCall = null;
     }
     
-    // Stop timer
     if (callTimerInterval) {
       clearInterval(callTimerInterval);
       callTimerInterval = null;
     }
     
-    // Hide call UI
     document.getElementById('activeCallModal').style.display = 'none';
     
     callInProgress = false;
@@ -1865,8 +1867,6 @@ async function endCall() {
     console.error('❗ Error ending call:', error);
   }
 }
-
-// ========== UNIFIED LOGIN ENTRY POINT ==========
 
 // Show unified auth modal
 function showAuthModal() {
@@ -2365,59 +2365,71 @@ function getDoctorWarningMessage(status) {
 // CONFIRM CONNECTION AND SEND REQUEST
 // ============================================
 async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
-    closeDoctorConnectionModal();
-    
-    let patientName = "Type your name";
-    let patientAge = "Type your name";
-    const user = window.firebaseAuth.currentUser;
-    
-    // ✅ IMPORTANT: Get patient's PeerJS ID
-    const patientPeerId = window.peer?.id || null;
-    
-    if (!patientPeerId) {
-        alert("⚠️ Connection not ready. Please wait a moment and try again.");
-        return;
-    }
-    
-    if (user) {
-        // ... existing code to fetch patient data
-    } else {
-        // Guest user
-        patientName = prompt("Please enter your name:", "Guest");
-        if (!patientName) return;
-        patientAge = prompt("Please enter your age:", "25");
-        if (!patientAge) return;
-    }
-    
+  closeDoctorConnectionModal();
+
+  // PeerJS must be ready
+  if (!peer || !peer.id) {
+    alert("⚠ Connection starting... Please wait a moment and try again.");
+    return;
+  }
+
+  let patientName = "Anonymous Patient";
+  let patientAge = 25;
+  const user = window.firebaseAuth.currentUser;
+
+  if (user) {
     try {
-        const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
-        const requestData = {
-            patientName: patientName,
-            age: parseInt(patientAge),
-            doctorId: doctorId,
-            doctorName: doctorName,
-            doctorSpecialty: doctorSpecialty,
-            status: "pending",
-            timestamp: serverTimestamp(),
-            message: `Patient ${patientName} (${patientAge}) wants to consult.`,
-            patientPeerId: patientPeerId  // ✅ ADD THIS LINE
-        };
-        
-        if (user) {
-            requestData.userId = user.uid;
-            requestData.userEmail = user.email;
-        }
-        
-        const docRef = await addDoc(collection(window.firebaseDB, "patientRequests"), requestData);
-        
-        sessionStorage.setItem("activeRequestId", docRef.id);
-        alert(`✅ Request sent to Dr. ${doctorName}! Please wait for acceptance.`);
-        startListeningForDoctorAcceptance(docRef.id, doctorName);
-        
-    } catch (error) {
-        console.error("Error sending request:", error);
-        alert("❌ Failed to send request.");
+      const { collection, query, where, getDocs } = window.firestoreFunctions;
+      const q = query(collection(window.firebaseDB, "patients"), where("userId", "==", user.uid));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const data = snapshot.docs[0].data();
+        patientName = data.name;
+        patientAge = data.age;
+      } else {
+        patientName = user.email.split("@")[0];
+      }
+    } catch (e) {
+      console.error("Error fetching patient details:", e);
     }
+  } else {
+    patientName = prompt("Please enter your name:", "Guest");
+    if (!patientName) return;
+    patientAge = prompt("Please enter your age:", "25");
+    if (!patientAge) return;
+  }
+
+  try {
+    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+
+    const requestData = {
+      patientName,
+      age: parseInt(patientAge),
+      doctorId,
+      doctorName,
+      doctorSpecialty,
+      status: "pending",
+      timestamp: serverTimestamp(),
+      message: `Patient ${patientName} (${patientAge}) wants to consult.`,
+      patientPeerId: peer.id   // ✅ IMPORTANT
+    };
+
+    if (user) {
+      requestData.userId = user.uid;
+      requestData.userEmail = user.email;
+    }
+
+    console.log("📤 Sending request with Peer ID:", peer.id);
+
+    const docRef = await addDoc(collection(window.firebaseDB, "patientRequests"), requestData);
+    sessionStorage.setItem("activeRequestId", docRef.id);
+    alert(`✅ Request sent to Dr. ${doctorName}! Please wait for acceptance.`);
+    startListeningForDoctorAcceptance(docRef.id, doctorName);
+
+  } catch (error) {
+    console.error("Error sending request:", error);
+    alert("❌ Failed to send request.");
+  }
 }
 
 
