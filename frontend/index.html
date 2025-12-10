@@ -7672,27 +7672,34 @@ async function logoutUser() {
 // usually at the very bottom of your script
 // ✅ NO IMPORT STATEMENT HERE!
 
-// Use the global wrapper you created earlier
-window.authFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
-  const profileBtn = document.getElementById('myProfileBtn');
-  const authBtn = document.getElementById('authBtn');
-  
-  if (user) {
-    // User Logged In
-    if (profileBtn) profileBtn.style.display = 'block'; // SHOW PROFILE BUTTON
-    if (authBtn) {
-      authBtn.innerHTML = '🚪 Logout';
-      authBtn.style.color = '#dc2626';
-    }
-  } else {
-    // Guest
-    if (profileBtn) profileBtn.style.display = 'none';
-    if (authBtn) {
-      authBtn.innerHTML = '🔐 Login';
-      authBtn.style.color = '#333';
-    }
+// ✅ SAFE AUTH LISTENER (Waits for Firebase to load)
+const authCheckInterval = setInterval(() => {
+  if (window.authFunctions && window.authFunctions.onAuthStateChanged) {
+    clearInterval(authCheckInterval); // Stop checking
+    
+    // Now it is safe to call
+    window.authFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
+      const profileBtn = document.getElementById('myProfileBtn');
+      const authBtn = document.getElementById('authBtn');
+      
+      if (user) {
+        // Logged In
+        if (profileBtn) profileBtn.style.display = 'block'; 
+        if (authBtn) {
+          authBtn.innerHTML = '🚪 Logout';
+          authBtn.style.color = '#dc2626';
+        }
+      } else {
+        // Guest
+        if (profileBtn) profileBtn.style.display = 'none';
+        if (authBtn) {
+          authBtn.innerHTML = '🔐 Login';
+          authBtn.style.color = '#333';
+        }
+      }
+    });
   }
-});
+}, 100); // Check every 100ms
 
 
 // Show About Modal
@@ -7796,27 +7803,6 @@ async function setupPatientProfile(uid) {
   document.getElementById('doctorFields').style.display = 'none';
   document.getElementById('patientFields').style.display = 'block';
 }
-
-// Function to toggle the patient list visibility for doctors
-function togglePatientList() {
-  const container = document.getElementById('doctorListContainer');
-  const btnText = document.getElementById('patientBtnText'); // or the connect button text
-  
-  if (container) {
-    if (container.classList.contains('expanded')) {
-      container.classList.remove('expanded');
-      container.style.maxHeight = '0';
-      if (btnText) btnText.textContent = 'Show Waiting Patients';
-    } else {
-      container.classList.add('expanded');
-      container.style.maxHeight = '500px'; // Adjust height as needed
-      if (btnText) btnText.textContent = 'Hide Patients';
-    }
-  }
-}
-
-
-
 
 </script>
 </body>
