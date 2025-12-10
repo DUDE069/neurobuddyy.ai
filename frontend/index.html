@@ -3241,14 +3241,14 @@ function convertPatientToConsultationMode(doctorName, requestId, patientData) {
         class="btn mic"
         style="padding: 10px 15px;"
       >
-        ðŸ“ž Voice Call
+        📞 Voice Call
       </button>
       <button 
         onclick="startVideoCall()" 
         class="btn upload"
         style="padding: 10px 15px; background: #10b981;"
       >
-        ðŸ“¹ Video Call
+        📹 Video Call
       </button>
     </div>
   `;
@@ -5342,7 +5342,7 @@ async function requestResetCode() {
     let html = `
       <div style="background: white; padding: 15px; border-radius: 10px; border: 2px solid #e5e7eb; margin-bottom: 15px;">
         <p style="font-weight: bold; margin-bottom: 15px; color: #2563eb; font-size: 1rem;">
-          ðŸ¥â€¹ Your Nearest Hospitals (${hospitals.length})
+          🏥 Your Nearest Hospitals (${hospitals.length})
         </p>
     `;
     
@@ -5373,7 +5373,7 @@ async function requestResetCode() {
                 â•${hospital.phone}
               </p>
               <p style="font-size: 0.85rem; color: #10b981; margin: 3px 0;">
-                ðŸš© ${hospital.distance}
+                🚑 ${hospital.distance}
               </p>
               ${hospital.coordinates ? `
                 <a href="${mapsLink}" target="_blank" style="
@@ -5388,7 +5388,7 @@ async function requestResetCode() {
                   font-weight: bold;
                   transition: 0.2s;
                 " onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-                   ðŸ“ View on Map
+                  📍 View on Map
                 </a>
               ` : ''}
             </div>
@@ -5413,7 +5413,7 @@ async function requestResetCode() {
               margin-top: 8px; 
               font-style: italic;
             ">
-              â—Emergency alerts will be sent here
+              ❗Emergency alerts will be sent here
             </p>
           ` : ''}
         </div>
@@ -5435,7 +5435,7 @@ async function requestResetCode() {
         font-weight: bold;
         transition: 0.2s;
       " onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-       ❌ï¸Edit Location
+       ✍️Edit Location
       </button>
     `;
     
@@ -5468,7 +5468,7 @@ async function requestResetCode() {
   const hospital = JSON.parse(savedHospital);
   
   // Show sending modal
-  showEmergencyModal('sending', 'ðŸš¨ Sending Emergency Alert...', 'Please wait while we contact the hospital.');
+  showEmergencyModal('sending', '🚨 Sending Emergency Alert...', 'Please wait while we contact the hospital.');
   
   try {
     const response = await fetch(`${BACKEND_URL}/api/emergency`, {
@@ -6576,13 +6576,6 @@ function startConversationPolling(patientId) {
   }, 3000);
 }
 
-function startVideoCall(patientId) {
-  alert('📹Video Call Feature\n\nVideo call functionality will be implemented in the next update.\n\nFor now, please use text chat to communicate with the patient.');
-}
-
-function startVoiceCall(patientId) {
-  alert('📞 Voice Call Feature\n\nVoice call functionality will be implemented in the next update.\n\nFor now, please use text chat to communicate with the patient.');
-}
 // Cancel patient consultation
 async function cancelPatient(patientId) {
   if (!confirm('❌ Cancel this patient consultation?\n\nThe patient will be notified.')) {
