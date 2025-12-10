@@ -1235,9 +1235,9 @@
 <!-- ✅ CALL INVITATION MODAL (For patient receiving call) -->
 <div id="callInvitationModal" class="modal-overlay" style="display: none;">
   <div class="modal-content" style="max-width: 450px; text-align: center;">
-    <h2 style="color: #2563eb; margin: 0 0 15px 0;">ðŸ“ž Incoming Call</h2>
+    <h2 style="color: #2563eb; margin: 0 0 15px 0;">📞 Incoming Call</h2>
     
-    <div style="font-size: 4rem; margin: 20px 0;">ðŸ‘¨â€âš•ï¸</div>
+    <div style="font-size: 4rem; margin: 20px 0;">👨‍⚕️</div>
     
     <p style="font-size: 1.2rem; font-weight: bold; margin: 10px 0;" id="callerName">
       Dr. John Doe
@@ -1271,7 +1271,7 @@
         <p style="color: #9ca3af; margin: 5px 0 0 0; font-size: 0.9rem;" id="callDuration">00:00</p>
       </div>
       <div style="background: #ef4444; padding: 8px 15px; border-radius: 20px;">
-        <span style="color: white; font-weight: bold;">â— LIVE</span>
+        <span style="color: white; font-weight: bold;">🟢 LIVE</span>
       </div>
     </div>
     
@@ -1621,27 +1621,27 @@ async function acceptCall() {
 }
 
 // Decline incoming call
+// Function called when Patient clicks "Later" or "Decline"
 async function declineCall() {
-  if (!window.currentCallInvitation) return;
-  
+  const requestId = sessionStorage.getItem('activeRequestId');
+  if (!requestId) return;
+
   try {
-    // Update invitation status
+    // Update Firebase to notify Doctor
     const { doc, updateDoc } = window.firestoreFunctions;
-    await updateDoc(doc(window.firebaseDB, 'callInvitations', window.currentCallInvitation.id), {
-      status: 'declined'
+    await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
+      status: 'declined', // This triggers the doctor's listener
+      declinedBy: 'patient'
     });
     
-    // Hide modal
+    alert("Consultation cancelled. You can request again later.");
     document.getElementById('callInvitationModal').style.display = 'none';
     
-    window.currentCallInvitation = null;
-    
-    console.log('❗ Call declined');
-    
-  } catch (error) {
-    console.error('❗ Error declining call:', error);
+  } catch (e) {
+    console.error("Error declining:", e);
   }
 }
+
 
 // Handle incoming call (Doctor side - when patient accepts)
 function handleIncomingCall(incomingCall) {
@@ -2083,7 +2083,7 @@ function showDoctorConnectionModal(doctor) {
         <button class="modal-close" onclick="closeDoctorConnectionModal()">❌•</button>
         
         <div style="text-align: center; padding: 20px 0;">
-          <div style="font-size: 4rem; margin-bottom: 15px;">ðŸ‘¨â€âš•ï¸</div>
+          <div style="font-size: 4rem; margin-bottom: 15px;">👨‍⚕️</div>
           <h2 style="color: #2563eb; margin: 0 0 10px 0;">Connect to Doctor?</h2>
         </div>
         
@@ -2152,7 +2152,7 @@ function getDoctorStatusBanner(status) {
                   display: flex; align-items: center; gap: 10px;">
         <div style="width: 14px; height: 14px; background: #10b981; border-radius: 50%; 
                     box-shadow: 0 0 10px #10b981; animation: pulse 2s infinite;"></div>
-        <span style="font-weight: bold; color: #065f46; font-size: 1rem;">ðŸŸ¢ Available Now</span>
+        <span style="font-weight: bold; color: #065f46; font-size: 1rem;">Available Now</span>
       </div>
     `;
   } else if (status === 'engaged') {
@@ -2220,79 +2220,74 @@ function getDoctorWarningMessage(status) {
 // ============================================
 async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   closeDoctorConnectionModal();
+
+  let patientName = "Anonymous Patient";
+  let patientAge = "25"; // Default
   
-  // ✅ Check if user is logged in
   const user = window.firebaseAuth.currentUser;
-  let patientName, patientAge;
   
   if (user) {
-    // Get patient data from Firebase
-    const patientData = await getPatientData(user.uid);
-    if (patientData) {
-      patientName = patientData.name;
-      patientAge = patientData.age;
-    } else {
-      // Fallback if data missing
-      patientName = prompt('Please enter your name:', 'Anonymous Patient');
-      patientAge = prompt('Please enter your age:', '');
+    // === LOGGED IN USER: FETCH DATA AUTOMATICALLY ===
+    try {
+      // Try to get data from Firestore
+      const { collection, query, where, getDocs } = window.firestoreFunctions;
+      const q = query(collection(window.firebaseDB, 'patients'), where('userId', '==', user.uid));
+      const snapshot = await getDocs(q);
+      
+      if (!snapshot.empty) {
+        const data = snapshot.docs[0].data();
+        patientName = data.name;
+        patientAge = data.age;
+        console.log("✅ Auto-filled patient data:", patientName);
+      } else {
+        // Fallback if data missing
+        patientName = user.email.split('@')[0]; 
+      }
+    } catch (e) {
+      console.error("Error fetching patient details:", e);
     }
   } else {
-    // Guest mode - ask for details
-    patientName = prompt('Please enter your name:', 'Anonymous Patient');
-    patientAge = prompt('Please enter your age:', '');
+    // === GUEST USER: ASK FOR DETAILS ===
+    patientName = prompt("Please enter your name:", "Guest");
+    if (!patientName) return; // Cancelled
+    
+    patientAge = prompt("Please enter your age:", "25");
+    if (!patientAge) return; // Cancelled
   }
-  
-  if (!patientName || patientName.trim() === '') {
-    alert('Name is required to connect with doctor');
-    return;
-  }
-  
-  if (!patientAge || isNaN(patientAge) || patientAge < 1) {
-    alert('Valid age is required');
-    return;
-  }
-  
+
+  // Proceed with request
   try {
-    if (!window.firebaseDB) {
-      alert('Firebase not initialized. Please refresh the page.');
-      return;
-    }
-    
     const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
-    
-    // ✅ Save request with userId (if logged in)
     const requestData = {
-      patientName: patientName.trim(),
+      patientName: patientName,
       age: parseInt(patientAge),
       doctorId: doctorId,
       doctorName: doctorName,
       doctorSpecialty: doctorSpecialty,
-      urgency: 'normal',
       status: 'pending',
       timestamp: serverTimestamp(),
-      message: `Patient ${patientName} (Age: ${patientAge}) wants to consult with you.`
+      message: `Patient ${patientName} (${patientAge}) wants to consult.`
     };
     
-    // ✅ Add userId if user is logged in
+    // Add User ID if logged in
     if (user) {
-      requestData.userId = user.uid;
-      requestData.userEmail = user.email;
+        requestData.userId = user.uid;
+        requestData.userEmail = user.email;
     }
-    
+
     const docRef = await addDoc(collection(window.firebaseDB, 'patientRequests'), requestData);
     
-    alert(`✅ Request Sent!\n\nYour consultation request has been sent to Dr. ${doctorName}.\n\nKeep this page open to receive updates.`);
+    sessionStorage.setItem('activeRequestId', docRef.id);
+    alert(`Request sent to Dr. ${doctorName}! Please wait for acceptance.`);
     
-    console.log('✅ Consultation request sent:', docRef.id);
-    
-    // Listen for doctor acceptance
     startListeningForDoctorAcceptance(docRef.id, doctorName);
-    
+
   } catch (error) {
-    console.error('❗ Error sending request:', error);
-    alert('Failed to send request. Please try again.');
+    console.error("Error sending request:", error);
+    alert("Failed to send request.");
   }
 }
+
 
 // ✅ GET PATIENT DATA BY USER ID
 async function getPatientData(userId) {
@@ -3768,10 +3763,10 @@ function showDoctorConnectionModal(doctor) {
   // Set innerHTML
   modalDiv.innerHTML = `
     <div class="modal-content" style="max-width: 450px;">
-      <button class="modal-close" id="closeConnModalBtn">❌•</button>
+      <button class="modal-close" id="closeConnModalBtn">❌</button>
       
       <div style="text-align: center; padding: 20px 0;">
-        <div style="font-size: 4rem; margin-bottom: 15px;">ðŸ‘¨â€âš•ï¸</div>
+        <div style="font-size: 4rem; margin-bottom: 15px;">👨‍⚕️</div>
         <h2 style="color: #2563eb; margin: 0 0 10px 0;">Connect to Doctor?</h2>
       </div>
       
@@ -3843,7 +3838,7 @@ function getDoctorStatusBanner(status) {
                   display: flex; align-items: center; gap: 10px;">
         <div style="width: 14px; height: 14px; background: #10b981; border-radius: 50%; 
                     box-shadow: 0 0 10px #10b981;"></div>
-        <span style="font-weight: bold; color: #065f46; font-size: 1rem;">ðŸŸ¢ Available Now</span>
+        <span style="font-weight: bold; color: #065f46; font-size: 1rem;"> Available Now</span>
       </div>
     `;
   } else if (status === 'engaged') {
@@ -3883,7 +3878,7 @@ function getDoctorWarningMessage(status) {
     return `
       <div style="background: #dbeafe; padding: 15px; border-radius: 8px; border-left: 4px solid #2563eb; margin-bottom: 20px;">
         <p style="margin: 0; color: #1e40af; font-size: 0.9rem;">
-          â„¹ï¸ <strong>Ready to connect!</strong> This doctor is available and can respond immediately.
+          ❗<strong>Ready to connect!</strong> This doctor is available and can respond immediately.
         </p>
       </div>
     `;
@@ -7676,27 +7671,29 @@ async function logoutUser() {
 // PUT THIS INSIDE YOUR EXISTING onAuthStateChanged BLOCK
 // usually at the very bottom of your script
 
-window.authFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+onAuthStateChanged(window.firebaseAuth, (user) => {
   const profileBtn = document.getElementById('myProfileBtn');
   const authBtn = document.getElementById('authBtn');
   
   if (user) {
-    // === USER IS LOGGED IN ===
-    if (profileBtn) profileBtn.style.display = 'block'; // Show Profile
+    // User Logged In
+    if (profileBtn) profileBtn.style.display = 'block'; // SHOW PROFILE BUTTON
     if (authBtn) {
       authBtn.innerHTML = '🚪 Logout';
-      authBtn.style.color = '#dc2626'; // Red
+      authBtn.style.color = '#dc2626';
     }
   } else {
-    // === USER IS GUEST ===
-    if (profileBtn) profileBtn.style.display = 'none'; // Hide Profile
+    // Guest
+    if (profileBtn) profileBtn.style.display = 'none';
     if (authBtn) {
       authBtn.innerHTML = '🔐 Login';
-      authBtn.style.color = '#333'; // Black
+      authBtn.style.color = '#333';
     }
   }
 });
+
 
 // Show About Modal
 function showAboutModal() {
@@ -7754,12 +7751,46 @@ function closeUserProfile() {
   if (modal) modal.style.display = 'none';
 }
 
-// Helpers for Profile Data
 async function setupDoctorProfile(uid) {
   document.getElementById('doctorFields').style.display = 'block';
   document.getElementById('patientFields').style.display = 'none';
-  // ... (rest of logic handles automatically if empty)
+  
+  try {
+    const { doc, getDoc } = window.firestoreFunctions;
+    const docSnap = await getDoc(doc(window.firebaseDB, 'doctors', uid));
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      document.getElementById('profileName').textContent = data.name;
+      document.getElementById('profileExperience').textContent = (data.experience || '--') + ' Years';
+      
+      // SPECIALTY EDITING FEATURE
+      const specialtyContainer = document.getElementById('profileSpecialty');
+      specialtyContainer.innerHTML = `
+        <input type="text" id="editSpecialtyInput" value="${data.specialty}" 
+         style="border: 1px solid #ccc; padding: 5px; width: 120px; border-radius: 5px;">
+        <button onclick="saveSpecialty('${uid}')" style="background:#2563eb; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">💾 Save</button>
+      `;
+      
+      document.getElementById('doctorStatusSelect').value = data.status || 'available';
+    }
+  } catch (e) { console.error(e); }
 }
+
+// Function to Save New Specialty
+async function saveSpecialty(uid) {
+    const newSpec = document.getElementById('editSpecialtyInput').value;
+    try {
+        const { doc, updateDoc } = window.firestoreFunctions;
+        await updateDoc(doc(window.firebaseDB, 'doctors', uid), {
+            specialty: newSpec
+        });
+        alert("Specialty Updated!");
+    } catch(e) {
+        alert("Update failed");
+    }
+}
+
 
 async function setupPatientProfile(uid) {
   document.getElementById('doctorFields').style.display = 'none';
