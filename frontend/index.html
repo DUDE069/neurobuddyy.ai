@@ -1460,6 +1460,7 @@ async function getPatientFromRequest(requestId) {
 }
 
 // Start video call (Doctor initiates)
+// Start video call (Doctor initiates)
 async function startVideoCall() {
   if (!window.activePatient || !window.activePatient.id) {
     alert('❌ No active patient. Please select a patient first.');
@@ -1474,9 +1475,13 @@ async function startVideoCall() {
   
   try {
     console.log('Starting video call...');
+    console.log('🔍 Patient request ID:', window.activePatient.id); // DEBUG
     
     // ✅ Get patient's Peer ID from the request
     const patientData = await getPatientFromRequest(window.activePatient.id);
+    
+    console.log('📦 Patient data from Firebase:', patientData); // DEBUG
+    console.log('🆔 Patient Peer ID:', patientData?.patientPeerId); // DEBUG
     
     if (!patientData || !patientData.patientPeerId) {
       alert('❌ Cannot start call: Patient\'s connection ID not found. Ask patient to reconnect.');
@@ -1511,7 +1516,7 @@ async function startVideoCall() {
     showCallingUI(patientName, 'video');
     
   } catch (error) {
-    console.error('Error starting video call:', error);
+    console.error('❌ Error starting video call:', error);
     if (error.name === 'NotAllowedError') {
       alert('❌ Camera/Microphone access denied. Please allow access in your browser settings.');
     } else {
@@ -1535,9 +1540,13 @@ async function startVoiceCall() {
   
   try {
     console.log('Starting voice call...');
+    console.log('🔍 Patient request ID:', window.activePatient.id); // DEBUG
     
     // ✅ Get patient's Peer ID
     const patientData = await getPatientFromRequest(window.activePatient.id);
+    
+    console.log('📦 Patient data from Firebase:', patientData); // DEBUG
+    console.log('🆔 Patient Peer ID:', patientData?.patientPeerId); // DEBUG
     
     if (!patientData || !patientData.patientPeerId) {
       alert('❌ Cannot start call: Patient\'s connection ID not found.');
@@ -1570,7 +1579,7 @@ async function startVoiceCall() {
     showCallingUI(patientName, 'voice');
     
   } catch (error) {
-    console.error('Error starting voice call:', error);
+    console.error('❌ Error starting voice call:', error);
     if (error.name === 'NotAllowedError') {
       alert('❌ Microphone access denied. Please allow microphone access in your browser settings.');
     } else {
@@ -1578,6 +1587,7 @@ async function startVoiceCall() {
     }
   }
 }
+
 
 // Show "Calling..." UI
 function showCallingUI(recipientName, callType) {
