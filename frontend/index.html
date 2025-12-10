@@ -1319,6 +1319,68 @@
   </div>
 </div>
 
+<!-- ✅ ENHANCED PROFILE MODAL (Replace existing userProfileModal) -->
+<div id="userProfileModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content doctor-dashboard">
+    <button class="modal-close" onclick="closeUserProfile()">×</button>
+    
+    <div class="doctor-profile">
+      <div class="profile-header">
+        <div class="profile-avatar">👤</div>
+        <div class="profile-info">
+          <h3 id="profileName">Loading...</h3>
+          <p id="profileEmail">loading@example.com</p>
+          <span id="profileRoleBadge" style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold;">
+            User
+          </span>
+        </div>
+      </div>
+
+      <!-- ⬇️ NEW: DOCTOR SPECIFIC DETAILS SECTION ⬇️ -->
+      <div id="doctorProfileDetails" style="display: none; margin-bottom: 20px; text-align: left; background: #f9fafb; padding: 15px; border-radius: 8px;">
+        
+        <div class="form-group">
+          <label style="font-size:0.85rem; color:#666;">🆔 Doctor ID (Unique)</label>
+          <input type="text" id="profileDocId" readonly style="background:#e5e7eb; cursor:not-allowed;">
+        </div>
+
+        <div class="form-group">
+          <label style="font-size:0.85rem; color:#666;">📱 Phone Number</label>
+          <input type="text" id="profilePhone" readonly style="background:#e5e7eb; cursor:not-allowed;">
+        </div>
+
+        <div class="form-group">
+          <label style="font-size:0.85rem; color:#666;">🩺 Specialty (Editable)</label>
+          <select id="profileSpecialty" onchange="updateDoctorSpecialty()">
+            <option value="Neurologist">Neurologist</option>
+            <option value="Psychiatrist">Psychiatrist</option>
+            <option value="Neurosurgeon">Neurosurgeon</option>
+            <option value="Neurophysiologist">Neurophysiologist</option>
+            <option value="Neuroradiologist">Neuroradiologist</option>
+            <option value="General">General Physician</option>
+          </select>
+        </div>
+
+        <div class="status-selector">
+          <label>🟢 Current Status</label>
+          <select id="doctorStatusSelect" onchange="updateDoctorStatus(this.value)">
+            <option value="available">✅ Available</option>
+            <option value="busy">🔴 Busy / Engaged</option>
+            <option value="offline">⚫ Offline</option>
+          </select>
+        </div>
+      </div>
+      <!-- ⬆️ END DOCTOR DETAILS ⬆️ -->
+
+      <div class="dashboard-actions">
+        <button class="btn-logout" onclick="logoutUser()">
+          🚪 Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 
@@ -1803,6 +1865,82 @@ function showAuthModal() {
   document.getElementById('roleModal').style.display = 'flex';
 }
 
+// ============================================
+// ✅ MISSING FUNCTIONS FOR PATIENT-INITIATED CALLS
+// ============================================
+
+// 1. Patient starts VIDEO call
+async function patientStartVideoCall() {
+  const requestData = JSON.parse(localStorage.getItem('activePatientRequest'));
+  
+  if (!requestData || !requestData.doctorId) {
+      alert("❌ Error: No doctor found for this consultation.");
+      return;
+  }
+
+  try {
+    console.log('🟢 Patient starting video call with Doctor:', requestData.doctorId);
+    
+    // Check if PeerJS is ready
+    if (!window.peer || !window.peer.id) {
+        alert("⏳ Connection establishing... please try again in a moment.");
+        return;
+    }
+    
+    // Get local stream (Video + Audio)
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    
+    // Call the doctor directly via PeerJS
+    const call = window.peer.call(requestData.doctorId, localStream);
+    
+    // Handle the outgoing call UI
+    handleOutgoingCall(call, 'video', requestData.doctorName || "Doctor");
+    
+  } catch (err) {
+    console.error("Call failed:", err);
+    alert("Call failed: " + err.message);
+  }
+}
+
+// 2. Patient starts VOICE call
+async function patientStartVoiceCall() {
+  const requestData = JSON.parse(localStorage.getItem('activePatientRequest'));
+  if (!requestData || !requestData.doctorId) return;
+
+  try {
+    console.log('🟢 Patient starting voice call...');
+    
+    // Check PeerJS
+    if (!window.peer || !window.peer.id) {
+        alert("⏳ Connection establishing... please try again.");
+        return;
+    }
+
+    // Get local stream (Audio Only)
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    
+    const call = window.peer.call(requestData.doctorId, localStream);
+    handleOutgoingCall(call, 'voice', requestData.doctorName || "Doctor");
+  } catch (err) {
+    alert("Call failed: " + err.message);
+  }
+}
+
+// 3. Helper to handle UI when YOU start a call
+function handleOutgoingCall(call, type, name) {
+    currentCall = call;
+    showCallingUI(name, type); // Reuses your existing UI function
+    
+    call.on('stream', (remoteStream) => {
+        handleRemoteStream(remoteStream, type); // Reuses your existing stream handler
+    });
+    
+    call.on('close', () => endCall());
+    call.on('error', (err) => {
+        console.error("PeerJS Call Error:", err);
+        endCall();
+    });
+}
 
 
 
@@ -7490,45 +7628,92 @@ function openDoctorDashboard() {
 function closeDoctorDashboard() {
   document.getElementById('doctorDashboard').style.display = 'none';
 }
+async function updateDoctorSpecialty() {
+  const newSpecialty = document.getElementById('profileSpecialty').value;
+  
+  if (!window.currentDoctor || !window.currentDoctor.id) return;
 
-// Update doctor status in Firebase
-async function updateDoctorStatus() {
-  if (!currentDoctor) {
-    alert('❗ No active session');
-    return;
+  if(!confirm(`Change specialty to ${newSpecialty}?`)) {
+      // Revert if cancelled
+      document.getElementById('profileSpecialty').value = window.currentDoctor.specialty;
+      return;
   }
-  
-  const newStatus = document.getElementById('doctorStatusSelect').value;
-  
+
   try {
-    if (!window.firebaseDB) {
-      throw new Error('Firebase not initialized');
-    }
-    
     const { doc, updateDoc } = window.firestoreFunctions;
-    const doctorRef = doc(window.firebaseDB, 'doctors', currentDoctor.id);
+    const doctorRef = doc(window.firebaseDB, "doctors", window.currentDoctor.id);
+
+    await updateDoc(doctorRef, { specialty: newSpecialty });
+
+    // Update local data
+    window.currentDoctor.specialty = newSpecialty;
+    localStorage.setItem('activeDoctorSession', JSON.stringify(window.currentDoctor));
     
-    await updateDoc(doctorRef, {
-      status: newStatus
-    });
-    
-    // Update local session
-    currentDoctor.status = newStatus;
-    sessionStorage.setItem('doctorSession', JSON.stringify(currentDoctor));
-    
-    console.log('✅ Status updated to:', newStatus);
-    alert('✅ Status updated to: ' + newStatus.toUpperCase());
-    
-    // Reload doctors list
-    if (doctorListVisible) {
-      loadRealDoctors();
-    }
-    
+    alert("Specialty updated successfully!");
   } catch (error) {
-    console.error('❗ Status update error:', error);
-    alert('❗ Failed to update status: ' + error.message);
+    console.error("Error:", error);
+    alert("Failed to update specialty.");
   }
 }
+
+
+
+// Update doctor status in Firebase
+// ✅ Corrected: Update Doctor Status (Fixes the "reverting" bug)
+async function updateDoctorStatus(newStatus) {
+  // If no status passed, try to get it from the dropdown
+  if (!newStatus) {
+      newStatus = document.getElementById('doctorStatusSelect').value;
+  }
+
+  // Check for doctor session (supports both global var and localStorage)
+  let docData = window.currentDoctor;
+  if (!docData) {
+      try {
+          docData = JSON.parse(localStorage.getItem('activeDoctorSession'));
+      } catch(e) {}
+  }
+
+  if (!docData || !docData.id) {
+    alert('❗ Error: Doctor session not active. Please login again.');
+    return;
+  }
+
+  try {
+    const { doc, updateDoc } = window.firestoreFunctions;
+    const doctorRef = doc(window.firebaseDB, 'doctors', docData.id);
+    // 1. Update in Firebase
+    await updateDoc(doctorRef, { 
+      status: newStatus 
+    });
+
+    // 2. Update Global Variable
+    if (window.currentDoctor) {
+        window.currentDoctor.status = newStatus;
+    }
+
+    // 3. Update LocalStorage (Crucial! This saves it for page reloads)
+    // We update 'docData' with the new status and save it back
+    docData.status = newStatus;
+    localStorage.setItem('activeDoctorSession', JSON.stringify(docData));
+    
+    // 4. Also update sessionStorage just in case legacy code uses it
+    sessionStorage.setItem('doctorSession', JSON.stringify(docData));
+
+    console.log(`✅ Status successfully changed to: ${newStatus}`);
+    
+    // Optional: Only show alert if it's an error, otherwise just let it change smoothly
+    // alert('Status updated!'); 
+
+  } catch (error) {
+    console.error("❗ Status update failed:", error);
+    alert("Failed to update status. Please check your internet connection.");
+    
+    // If it failed, revert the dropdown to the old status
+    document.getElementById('doctorStatusSelect').value = docData.status;
+  }
+}
+
 
 
 // Update toggleDoctorList to use real doctors
@@ -7723,40 +7908,80 @@ function closeAbout() {
 
 
 
-// Function to Open Profile Modal
-function openUserProfile() {
-  console.log("Opening profile..."); // Debug check
-  
-  const user = window.firebaseAuth.currentUser;
-  if (!user) {
-    alert("Please login first!");
-    return;
-  }
-  
+// ✅ CORRECTED: Open Profile Modal Function
+async function openUserProfile() {
   const modal = document.getElementById('userProfileModal');
-  if (modal) {
-    modal.style.display = 'flex'; // Show the modal
-    
-    // Fill basic data
-    const emailField = document.getElementById('profileEmail');
-    const avatarField = document.getElementById('profileAvatar');
-    if (emailField) emailField.textContent = user.email;
-    if (avatarField) avatarField.textContent = user.email.charAt(0).toUpperCase();
-
-    // Decide which profile to load
-    const role = localStorage.getItem('userMode');
-    if (role === 'doctor') {
-        setupDoctorProfile(user.uid);
-    } else {
-        setupPatientProfile(user.uid);
-    }
-  } else {
-    console.error("❌ Error: 'userProfileModal' not found in HTML!");
-    alert("Profile modal is missing from the page code.");
+  
+  // 1. Safety Check: Does the modal exist in HTML?
+  if (!modal) {
+      console.error("❌ Error: 'userProfileModal' not found in HTML!");
+      alert("Profile modal is missing from the page code. Please check index.html");
+      return;
   }
+
+  const userMode = localStorage.getItem('userMode');
+  const user = window.firebaseAuth.currentUser;
+  
+  // 2. Get UI Elements
+  const nameEl = document.getElementById('profileName');
+  const emailEl = document.getElementById('profileEmail');
+  const roleEl = document.getElementById('profileRoleBadge');
+  const docDetails = document.getElementById('doctorProfileDetails'); // This is the new section
+
+  // 3. Logic for PATIENTS / GUESTS
+  if (userMode === 'patient' || userMode === 'guest') {
+    if (nameEl) nameEl.textContent = user ? (user.displayName || "Patient") : "Guest User";
+    if (emailEl) emailEl.textContent = user ? user.email : "Not logged in";
+    if (roleEl) roleEl.textContent = "Patient";
+    
+    // Hide doctor-specific fields
+    if (docDetails) docDetails.style.display = 'none';
+  } 
+  
+  // 4. Logic for DOCTORS
+  else if (userMode === 'doctor') {
+    // Get latest doctor data
+    let docData = window.currentDoctor;
+    
+    // Fallback: Try to get from storage if global var is empty
+    if (!docData) {
+        try {
+            docData = JSON.parse(localStorage.getItem('activeDoctorSession'));
+        } catch(e) {
+            console.log("No doctor session found in storage");
+        }
+    }
+
+    if (docData) {
+      if (nameEl) nameEl.textContent = docData.name;
+      if (emailEl) emailEl.textContent = docData.email;
+      if (roleEl) roleEl.textContent = "Doctor";
+      
+      // SHOW DOCTOR FIELDS (ID, Phone, Specialty)
+      if (docDetails) {
+          docDetails.style.display = 'block';
+          
+          // Fill the inputs safely
+          if(document.getElementById('profileDocId')) 
+             document.getElementById('profileDocId').value = docData.id || "N/A";
+             
+          if(document.getElementById('profilePhone')) 
+             document.getElementById('profilePhone').value = docData.phone || "N/A";
+             
+          if(document.getElementById('profileSpecialty')) 
+             document.getElementById('profileSpecialty').value = docData.specialty || "General";
+             
+          if(document.getElementById('doctorStatusSelect')) 
+             document.getElementById('doctorStatusSelect').value = docData.status || "available";
+      }
+    }
+  }
+
+  // 5. Finally, show the modal
+  modal.style.display = 'flex';
 }
 
-// Function to Close Profile
+// ✅ Close Function (Keep this separate)
 function closeUserProfile() {
   const modal = document.getElementById('userProfileModal');
   if (modal) modal.style.display = 'none';
@@ -7849,79 +8074,5 @@ async function setupPatientProfile(uid) {
 
 
 </script>
-
-<!-- USER PROFILE MODAL -->
-<div id="userProfileModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content doctor-dashboard"> <!-- Using same style as dashboard -->
-    <button class="modal-close" onclick="closeUserProfile()">❌</button>
-    
-    <h2>👤 My Profile</h2>
-    
-    <div class="doctor-profile">
-      <div class="profile-header">
-        <div id="profileAvatar" class="profile-avatar" style="background: #2563eb; color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto;">?</div>
-        <div class="profile-info" style="text-align: center; margin-top: 15px;">
-          <h3 id="profileName">Loading...</h3>
-          <p id="profileRole" style="color: #666; font-weight: bold;">User</p>
-          <p id="profileEmail" style="color: #888;">email@example.com</p>
-        </div>
-      </div>
-
-      <!-- PATIENT SPECIFIC FIELDS -->
-      <div id="patientFields" style="display: none; margin-top: 20px; background: #f0f9ff; padding: 15px; border-radius: 10px;">
-         <p><strong>Age:</strong> <span id="profileAge">--</span></p>
-      </div>
-
-      <!-- DOCTOR SPECIFIC FIELDS -->
-      <div id="doctorFields" style="display: none; margin-top: 20px; background: #f0f9ff; padding: 15px; border-radius: 10px;">
-         <p><strong>Experience:</strong> <span id="profileExperience">--</span></p>
-         <p><strong>Specialty:</strong> <span id="profileSpecialty">--</span></p>
-         <p style="margin-top:10px;"><strong>Status:</strong></p>
-         <select id="doctorStatusSelect" onchange="updateDoctorStatus()" style="width: 100%; padding: 8px;">
-            <option value="available">🟢 Available</option>
-            <option value="engaged">🔴 Engaged</option>
-            <option value="offline">🔘 Offline</option>
-         </select>
-      </div>
-
-      <div class="dashboard-actions" style="margin-top: 20px;">
-        <button class="btn-logout" onclick="logoutUser()" style="width: 100%; padding: 12px; background: #dc2626; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">🚪 Logout</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="userProfileModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content doctor-dashboard">
-    <button class="modal-close" onclick="closeUserProfile()">×</button>
-    
-    <div class="doctor-profile">
-      <div class="profile-header">
-        <div class="profile-avatar">👤</div>
-        <div class="profile-info">
-          <h3 id="profileName">Loading...</h3>
-          <p id="profileEmail">loading@example.com</p>
-          <span id="profileRoleBadge" style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold;">
-            User
-          </span>
-        </div>
-      </div>
-
-      <div class="dashboard-actions">
-        <!-- Edit Profile Button -->
-        <button onclick="editProfile()" style="width: 100%; padding: 12px; margin-bottom: 10px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-          ✏️ Edit Profile
-        </button>
-
-        <!-- Logout Button -->
-        <button class="btn-logout" onclick="logoutUser()">
-          🚪 Logout
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 </body>
 </html>
