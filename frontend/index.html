@@ -7800,9 +7800,45 @@ async function saveSpecialty(uid) {
 
 
 async function setupPatientProfile(uid) {
+  // Show Patient Fields, Hide Doctor Fields
   document.getElementById('doctorFields').style.display = 'none';
   document.getElementById('patientFields').style.display = 'block';
+  
+  // Set Role Badge
+  const roleLabel = document.getElementById('profileRole');
+  if (roleLabel) roleLabel.textContent = 'Patient';
+
+  try {
+    const { collection, query, where, getDocs } = window.firestoreFunctions;
+    
+    // Query the 'patients' collection for this user ID
+    const q = query(collection(window.firebaseDB, 'patients'), where('userId', '==', uid));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const data = querySnapshot.docs[0].data();
+      
+      // Fill the HTML fields
+      const nameEl = document.getElementById('profileName');
+      const ageEl = document.getElementById('profileAge'); // Ensure you have this ID in your HTML
+      
+      if (nameEl) nameEl.textContent = data.name || 'Anonymous';
+      if (ageEl) ageEl.textContent = (data.age || '--') + ' Years Old';
+      
+    } else {
+      console.log("No patient profile found in Firestore.");
+      // Fallback: Use Email nickname
+      const user = window.firebaseAuth.currentUser;
+      if (user) {
+         document.getElementById('profileName').textContent = user.email.split('@')[0];
+      }
+    }
+  } catch (error) {
+    console.error("Error loading patient profile:", error);
+    document.getElementById('profileName').textContent = "Error loading data";
+  }
 }
+
 
 </script>
 </body>
