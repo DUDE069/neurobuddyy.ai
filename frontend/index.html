@@ -7670,10 +7670,10 @@ async function logoutUser() {
 
 // PUT THIS INSIDE YOUR EXISTING onAuthStateChanged BLOCK
 // usually at the very bottom of your script
+// ✅ NO IMPORT STATEMENT HERE!
 
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-onAuthStateChanged(window.firebaseAuth, (user) => {
+// Use the global wrapper you created earlier
+window.authFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
   const profileBtn = document.getElementById('myProfileBtn');
   const authBtn = document.getElementById('authBtn');
   
@@ -7796,6 +7796,25 @@ async function setupPatientProfile(uid) {
   document.getElementById('doctorFields').style.display = 'none';
   document.getElementById('patientFields').style.display = 'block';
 }
+
+// Function to toggle the patient list visibility for doctors
+function togglePatientList() {
+  const container = document.getElementById('doctorListContainer');
+  const btnText = document.getElementById('patientBtnText'); // or the connect button text
+  
+  if (container) {
+    if (container.classList.contains('expanded')) {
+      container.classList.remove('expanded');
+      container.style.maxHeight = '0';
+      if (btnText) btnText.textContent = 'Show Waiting Patients';
+    } else {
+      container.classList.add('expanded');
+      container.style.maxHeight = '500px'; // Adjust height as needed
+      if (btnText) btnText.textContent = 'Hide Patients';
+    }
+  }
+}
+
 
 
 
