@@ -6900,13 +6900,83 @@ function cancelPatientRequest() {
   location.reload();
 }
 
-function patientStartVideoCall() {
-  alert('ðŸ“¹ Video Call Feature\n\nVideo call functionality will be implemented soon.\n\nFor now, please use text chat.');
+// ============================================
+// ✅ FIXED PATIENT CALL FUNCTIONS (Replace old versions)
+// ============================================
+
+// 1. Patient starts VIDEO call
+async function patientStartVideoCall() {
+  const requestData = JSON.parse(localStorage.getItem('activePatientRequest'));
+  
+  if (!requestData || !requestData.doctorId) {
+      alert("❌ Error: No doctor found for this consultation.");
+      return;
+  }
+
+  try {
+    console.log('🟢 Patient starting video call with Doctor:', requestData.doctorId);
+    
+    // Check if PeerJS is ready
+    if (!window.peer || !window.peer.id) {
+        alert("⏳ Connection establishing... please try again in a moment.");
+        return;
+    }
+    
+    // Get local stream (Video + Audio)
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    
+    // Call the doctor directly via PeerJS
+    const call = window.peer.call(requestData.doctorId, localStream);
+    
+    // Handle the outgoing call UI
+    handleOutgoingCall(call, 'video', requestData.doctorName || "Doctor");
+    
+  } catch (err) {
+    console.error("Call failed:", err);
+    alert("Call failed: " + err.message);
+  }
 }
 
-function patientStartVoiceCall() {
-  alert('ðŸ“ž Voice Call Feature\n\nVoice call functionality will be implemented soon.\n\nFor now, please use text chat.');
+// 2. Patient starts VOICE call
+async function patientStartVoiceCall() {
+  const requestData = JSON.parse(localStorage.getItem('activePatientRequest'));
+  if (!requestData || !requestData.doctorId) return;
+
+  try {
+    console.log('🟢 Patient starting voice call...');
+    
+    // Check PeerJS
+    if (!window.peer || !window.peer.id) {
+        alert("⏳ Connection establishing... please try again.");
+        return;
+    }
+
+    // Get local stream (Audio Only)
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    
+    const call = window.peer.call(requestData.doctorId, localStream);
+    handleOutgoingCall(call, 'voice', requestData.doctorName || "Doctor");
+  } catch (err) {
+    alert("Call failed: " + err.message);
+  }
 }
+
+// 3. Helper to handle UI when YOU start a call
+function handleOutgoingCall(call, type, name) {
+    currentCall = call;
+    showCallingUI(name, type); // Reuses your existing UI function
+    
+    call.on('stream', (remoteStream) => {
+        handleRemoteStream(remoteStream, type); // Reuses your existing stream handler
+    });
+    
+    call.on('close', () => endCall());
+    call.on('error', (err) => {
+        console.error("PeerJS Call Error:", err);
+        endCall();
+    });
+}
+
 
 // ========== END PHASE 4 ==========
 
