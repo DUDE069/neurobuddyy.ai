@@ -1307,13 +1307,13 @@
       <!-- Toggle Video Button (only for video calls) -->
       <button id="videoBtn" onclick="toggleVideo()" 
         style="display: none; padding: 15px 20px; background: #6b7280; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; font-size: 1.5rem;">
-        ðŸ“¹
+       📹
       </button>
       
       <!-- End Call Button -->
       <button onclick="endCall()" 
         style="padding: 15px 20px; background: #dc2626; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; font-size: 1.5rem;">
-        ðŸ“ž
+       📞
       </button>
     </div>
   </div>
@@ -2120,7 +2120,7 @@ function showDoctorConnectionModal(doctor) {
           </button>
           <button onclick="confirmDoctorConnection('${doctor.id}', '${doctor.name}', '${doctor.specialty}')" 
                   style="flex: 1; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-            ❌“ Connect Now
+            ❌ Connect Now
           </button>
         </div>
       </div>
@@ -2192,7 +2192,7 @@ function getDoctorWarningMessage(status) {
     return `
       <div style="background: #dbeafe; padding: 15px; border-radius: 8px; border-left: 4px solid #2563eb; margin-bottom: 20px;">
         <p style="margin: 0; color: #1e40af; font-size: 0.9rem;">
-          â„¹ï¸ <strong>Ready to connect!</strong> This doctor is available and can respond immediately.
+          🌬️ <strong>Ready to connect!</strong> This doctor is available and can respond immediately.
         </p>
       </div>
     `;
@@ -2200,7 +2200,7 @@ function getDoctorWarningMessage(status) {
     return `
       <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 20px;">
         <p style="margin: 0; color: #92400e; font-size: 0.9rem;">
-          âš ï¸ <strong>Doctor is busy</strong> with another patient. Your request will be queued and the doctor will respond when available.
+         🔴 <strong>Doctor is busy</strong> with another patient. Your request will be queued and the doctor will respond when available.
         </p>
       </div>
     `;
@@ -2388,7 +2388,7 @@ function updateDoctorBanner(patientCount) {
     firstMessage.innerHTML = `
       <strong>🤝 Welcome, Dr. ${currentDoctor?.name || 'Doctor'}!</strong><br>
       Ready to help patients today.<br>
-      <span style="font-size: 1.1rem; font-weight: bold;">ðŸ“‹ ${patientCount} patient(s) waiting</span>
+      <span style="font-size: 1.1rem; font-weight: bold;">📫 ${patientCount} patient(s) waiting</span>
     `;
   }
 }
@@ -2919,7 +2919,7 @@ function startListeningForDoctorAcceptance(requestId, doctorName) {
   
   // ✅ Prevent duplicate listeners
   if (window.acceptanceListener) {
-    console.log('âš ï¸ Already listening, cleaning up old listener...');
+    console.log('❗ Already listening, cleaning up old listener...');
     window.acceptanceListener();
   }
   
@@ -2963,7 +2963,7 @@ function showDoctorAcceptanceNotification(doctorName, requestId, patientData) {
   const modalHTML = `
     <div id="acceptanceNotification" class="modal-overlay" style="display: flex;">
       <div class="modal-content" style="max-width: 450px; text-align: center;">
-        <div style="font-size: 4rem; margin-bottom: 15px;">ðŸŽ‰</div>
+        <div style="font-size: 4rem; margin-bottom: 15px;">✅</div>
         <h2 style="color: #10b981; margin: 0 0 15px 0;">Request Accepted!</h2>
         <p style="font-size: 1.1rem; color: #333; margin-bottom: 20px;">
           <strong>Dr. ${doctorName}</strong> has accepted your consultation request and is ready to talk with you.
@@ -3367,7 +3367,7 @@ async function startConsultation(doctorName, requestId) {
     if (modal) modal.remove();
     
     // ✅ SHOW SUCCESS MESSAGE
-    alert(`ðŸŽ‰ Consultation Started!\n\nYou are now connected with Dr. ${doctorName}.`);
+    alert(`🟢 Consultation Started!\n\nYou are now connected with Dr. ${doctorName}.`);
     
     // ✅ CONVERT CHAT INTERFACE TO CONSULTATION MODE
     convertToConsultationMode(doctorName);
@@ -3645,7 +3645,7 @@ function showSymptomDetails(symptomId) {
   // Show modal
   document.getElementById('symptomModal').style.display = 'flex';
   
-  console.log('ðŸ“‹ Showing symptom details:', symptom.name);
+  console.log('✅ Showing symptom details:', symptom.name);
 }
 
 // Close symptom modal
@@ -3792,7 +3792,7 @@ function showDoctorConnectionModal(doctor) {
         </div>
         
         <div>
-          <p style="font-size: 0.85rem; color: #666; margin: 0 0 5px 0;">â° Estimated Wait Time</p>
+          <p style="font-size: 0.85rem; color: #666; margin: 0 0 5px 0;">❗ Estimated Wait Time</p>
           <p style="font-size: 1rem; font-weight: 600; color: #2563eb; margin: 0;">
             ${getEstimatedWaitTime(doctor.status)}
           </p>
@@ -3808,7 +3808,7 @@ function showDoctorConnectionModal(doctor) {
         </button>
         <button id="confirmConnBtn" 
                 style="flex: 1; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-          ❌“ Connect Now
+          ❌ Connect Now
         </button>
       </div>
     </div>
@@ -3891,7 +3891,7 @@ function getDoctorWarningMessage(status) {
     return `
       <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 20px;">
         <p style="margin: 0; color: #92400e; font-size: 0.9rem;">
-          âš ï¸ <strong>Doctor is busy</strong> with another patient. Your request will be queued.
+          🔴 <strong>Doctor is busy</strong> with another patient. Your request will be queued.
         </p>
       </div>
     `;
@@ -4136,7 +4136,7 @@ async function loadRealDoctors() {
   
   try {
     if (!window.firebaseDB) {
-      doctorList.innerHTML = '<p class="loading-doctors">âš ï¸ Firebase not initialized</p>';
+      doctorList.innerHTML = '<p class="loading-doctors">❗ Firebase not initialized</p>';
       window.isLoadingDoctors = false;
       return;
     }
@@ -4146,7 +4146,7 @@ async function loadRealDoctors() {
     const querySnapshot = await getDocs(doctorsRef);
     
     if (querySnapshot.empty) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">ðŸ“­ No doctors registered yet.</p>';
+      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">❗­ No doctors registered yet.</p>';
       window.isLoadingDoctors = false;
       return;
     }
@@ -4270,34 +4270,39 @@ async function requestResetCode() {
    <aside class="leftbar" id="sidebar">
 <!-- INSIDE <div class="leftbar"> -->
 
-<ul class="menu">
-  <!-- Existing Items -->
+<ul class="menu" style="display: flex; flex-direction: column; height: 100%;">
+  
+  <!-- TOP ITEMS -->
   <li onclick="toggleChatHistory()">🕒 Search History</li>
   <li onclick="toggleGallery()">🖼️ Symptoms Gallery</li>
   
-  <!-- SETTINGS GROUP -->
-  <li onclick="toggleSettingsMenu()" style="background: #eef2ff; font-weight: bold; margin-top: 10px;">
+  <!-- SPACER (This pushes everything below it to the bottom) -->
+  <div style="flex-grow: 1;"></div>
+  
+  <!-- SETTINGS GROUP (Now at the bottom!) -->
+  <li onclick="toggleSettingsMenu()" style="background: #eef2ff; font-weight: bold; margin-top: auto;">
     ⚙️ Settings ▼
   </li>
   
   <!-- HIDDEN SETTINGS SUB-MENU -->
-  <div id="settingsSubMenu" style="display: none; padding-left: 10px;">
+  <div id="settingsSubMenu" style="display: none; padding-left: 10px; padding-bottom: 20px;">
     
-    <!-- 1. ABOUT (Always Visible) -->
+    <!-- 1. ABOUT -->
     <li onclick="showAboutModal()" style="font-size: 0.9rem;">ℹ️ About</li>
     
-    <!-- 2. MY PROFILE (Hidden by default, shown when logged in) -->
+    <!-- 2. MY PROFILE -->
     <li id="myProfileBtn" onclick="openUserProfile()" style="display: none; font-size: 0.9rem; color: #2563eb; font-weight: bold;">
       👤 My Profile
     </li>
     
-    <!-- 3. LOGIN / LOGOUT (Changes dynamically) -->
+    <!-- 3. LOGIN / LOGOUT -->
     <li id="authBtn" onclick="handleAuthClick()" style="font-size: 0.9rem;">
       🔐 Login
     </li>
     
   </div>
 </ul>
+
     </aside>
 
    <!-- CHAT HISTORY PANEL -->
@@ -4553,7 +4558,7 @@ async function requestResetCode() {
             <li style="margin: 10px 0;"><strong>Browse Gallery:</strong> Click "ðŸ§  Brain Health Gallery" to view visual guides of neurological symptoms.</li>
             <li style="margin: 10px 0;"><strong>Set Location:</strong> Configure your nearest hospital in the right sidebar for emergency alerts.</li>
             <li style="margin: 10px 0;"><strong>Connect to Doctors:</strong> Click "👨‍⚕️ Connect to Doctors" to see available professionals. Click any doctor to initiate consultation.</li>
-            <li style="margin: 10px 0;"><strong>Emergency:</strong> Press the red "âš ï¸ Emergency" button to send instant SOS to your configured hospital.</li>
+            <li style="margin: 10px 0;"><strong>Emergency:</strong> Press the red "🚨 Emergency" button to send instant SOS to your configured hospital.</li>
           </ol>
           
           <h3 style="color: #374151; margin-top: 25px; font-size: 1.1rem;">For Doctors:</h3>
@@ -5348,7 +5353,7 @@ async function requestResetCode() {
   const savedHospital = localStorage.getItem('nearestHospital');
   
   if (!savedLocation || !savedHospital) {
-    showEmergencyModal('error', 'âš ï¸ Location Not Set', 'Please set your nearest hospital in the right sidebar before using the Emergency button.');
+    showEmergencyModal('error', '❌ Location Not Set', 'Please set your nearest hospital in the right sidebar before using the Emergency button.');
     return;
   }
   
@@ -5382,6 +5387,27 @@ async function requestResetCode() {
     showEmergencyModal('error', '❗ Connection Failed', 'Unable to reach emergency services. Please call 108 immediately for assistance.');
   }
 }
+
+// Function to Open the About Modal
+function showAboutModal() {
+  const modal = document.getElementById('aboutModal');
+  if (modal) {
+    modal.style.display = 'block'; // Or 'flex' if you prefer centering
+  } else {
+    console.error("Error: aboutModal not found in HTML");
+  }
+}
+
+// Function to Close the About Modal
+function closeAbout() {
+  const modal = document.getElementById('aboutModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+
+
 
 // Custom Emergency Modal System
 function showEmergencyModal(type, title, message) {
@@ -5516,7 +5542,7 @@ function showEmergencyModal(type, title, message) {
       console.log('✅ Chat history synced to Firebase');
     }
   } catch (error) {
-    console.error('âš ï¸ Failed to sync chat history:', error);
+    console.error('❗ Failed to sync chat history:', error);
     // Continue anyway - localStorage backup exists
   }
 }
@@ -5887,7 +5913,7 @@ async function loadRealDoctors() {
   
   try {
     if (!window.firebaseDB) {
-      doctorList.innerHTML = '<p class="loading-doctors">âš ï¸ Firebase not initialized</p>';
+      doctorList.innerHTML = '<p class="loading-doctors">❗ Firebase not initialized</p>';
       return;
     }
     
@@ -5973,7 +5999,7 @@ function showUrgencySelectionModal(doctorId, doctorData) {
     <div style="background: white; padding: 0; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: modalSlideUp 0.4s ease-out; overflow: hidden;">
       
       <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 30px; text-align: center;">
-        <div style="font-size: 3rem; margin-bottom: 10px;">ðŸ‘¨â€âš•ï¸</div>
+        <div style="font-size: 3rem; margin-bottom: 10px;">👨‍⚕️</div>
         <h2 style="color: white; margin: 0; font-size: 1.5rem;">Request Consultation</h2>
         <p style="color: #e0f2fe; margin: 10px 0 0 0; font-size: 0.95rem;">Dr. ${doctorData.name} - ${doctorData.specialty}</p>
       </div>
@@ -6002,7 +6028,7 @@ function showUrgencySelectionModal(doctorId, doctorData) {
           </button>
           
           <button onclick="validateAndSubmit('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'blue')" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(59,130,246,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-            ðŸ“‹ Priority - First Available Slot
+           📫 Priority - First Available Slot
           </button>
           
           <button onclick="validateAndSubmit('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'green')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(16,185,129,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
@@ -6041,7 +6067,7 @@ function validateAndSubmit(doctorId, doctorData, urgency) {
   
   // ✅ VALIDATE NAME
   if (!patientName) {
-    alert('âš ï¸ Please enter your name');
+    alert('❗ Please enter your name');
     nameInput.focus();
     nameInput.style.border = '2px solid #ef4444';
     return;
@@ -6049,7 +6075,7 @@ function validateAndSubmit(doctorId, doctorData, urgency) {
   
   // ✅ VALIDATE AGE
   if (!patientAge) {
-    alert('âš ï¸ Please enter your age');
+    alert('❗ Please enter your age');
     ageInput.focus();
     ageInput.style.border = '2px solid #ef4444';
     return;
@@ -6057,7 +6083,7 @@ function validateAndSubmit(doctorId, doctorData, urgency) {
   
   const age = parseInt(patientAge);
   if (age < 1 || age > 120) {
-    alert('âš ï¸ Please enter a valid age (1-120)');
+    alert('❗ Please enter a valid age (10-90)');
     ageInput.focus();
     ageInput.style.border = '2px solid #ef4444';
     return;
@@ -6207,7 +6233,7 @@ async function initializeDoctorMode() {
         console.log('ðŸ”„ Auto-refreshing patient list...');
         loadPatientList();
       } else {
-        console.warn('âš ï¸ doctorList not found, skipping auto-refresh');
+        console.warn('❌ doctorList not found, skipping auto-refresh');
       }
     }
   }, 5000); // 5 seconds for faster updates
@@ -6318,14 +6344,14 @@ function activateConversationArea(patientId, patientData) {
 
   // Determine urgency display and color
   let urgencyColor = '#10b981'; // Green default
-  let urgencyLabel = 'ðŸŸ¢ Routine';
+  let urgencyLabel = '🟢 Routine';
 
   if (patientData.urgency === 'red') {
     urgencyColor = '#ef4444';
-    urgencyLabel = 'ðŸ”´ Critical';
+    urgencyLabel = '🔴 Critical';
   } else if (patientData.urgency === 'blue') {
     urgencyColor = '#3b82f6';
-    urgencyLabel = 'ðŸ”µ Priority';
+    urgencyLabel = '🔵 Priority';
   }
 
   chatWindow.innerHTML = `
@@ -6484,7 +6510,7 @@ function updatePatientCountBadge(count) {
   
   // ✅ CHECK IF ELEMENTS EXIST
   if (!badge || !btnText) {
-    console.warn('âš ï¸ Badge elements not found');
+    console.warn('❌ Badge elements not found');
     return;
   }
   
@@ -6495,12 +6521,12 @@ function updatePatientCountBadge(count) {
     
     // ✅ UPDATE TEXT ONLY IF LIST IS CLOSED
     if (!doctorListVisible) {
-      btnText.textContent = `ðŸ“‹ ${count} Patient${count > 1 ? 's' : ''} Waiting`;
+      btnText.textContent = `📫 ${count} Patient${count > 1 ? 's' : ''} Waiting`;
     }
   } else {
     badge.style.display = 'none';
     if (!doctorListVisible) {
-      btnText.textContent = 'ðŸ“‹ Patient List';
+      btnText.textContent = '👤 Patient List';
     }
   }
 }
@@ -7243,11 +7269,11 @@ function togglePatientList() {
 
 // Load Patient List (Doctor Mode)
 async function loadPatientList() {
-  console.log('ðŸ“‹ Loading patient list...');
+  console.log('⌛ Loading patient list...');
   
   // ✅ PREVENT MULTIPLE SIMULTANEOUS LOADS
   if (window.isLoadingPatients) {
-    console.log('â³ Already loading patients, skipping...');
+    console.log('🟢Already loading patients, skipping...');
     return;
   }
   
@@ -7350,11 +7376,11 @@ function toggleDoctorList() {
 
 // Load Patient List (Doctor Mode)
 async function loadPatientList() {
-  console.log('ðŸ“‹ Loading patient list...');
+  console.log('⌛ Loading patient list...');
   
   // Prevent multiple loads
   if (window.isLoadingPatients) {
-    console.log('â³ Already loading patients, skipping...');
+    console.log('🟢 Already loading patients, skipping...');
     return;
   }
   
@@ -7372,13 +7398,13 @@ async function loadPatientList() {
   
   try {
     if (!window.firebaseDB) {
-      doctorList.innerHTML = '<p class="loading-doctors">âš ï¸ Firebase not initialized</p>';
+      doctorList.innerHTML = '<p class="loading-doctors">❗ Firebase not initialized</p>';
       window.isLoadingPatients = false;
       return;
     }
     
     if (!currentDoctor || !currentDoctor.id) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">âš ï¸ Doctor session not found</p>';
+      doctorList.innerHTML = '<p style="text-align: center; color: #dc2626;">❗ Doctor session not found</p>';
       window.isLoadingPatients = false;
       return;
     }
@@ -7394,7 +7420,7 @@ async function loadPatientList() {
     const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {
-      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">ðŸ“­ No patients waiting</p>';
+      doctorList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">📪­ No patients waiting</p>';
       window.isLoadingPatients = false;
       return;
     }
@@ -7671,6 +7697,27 @@ window.authFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
     }
   }
 });
+
+// Show About Modal
+function showAboutModal() {
+  const modal = document.getElementById('aboutModal');
+  if (modal) {
+    modal.style.display = 'block';
+  } else {
+    console.error("About Modal not found!");
+  }
+}
+
+// Close About Modal
+function closeAbout() {
+  const modal = document.getElementById('aboutModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+
+
 
 // Open User Profile Modal
 function openUserProfile() {
