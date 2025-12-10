@@ -7723,40 +7723,45 @@ function closeAbout() {
 
 
 
-// Open User Profile Modal
+// Function to Open Profile Modal
 function openUserProfile() {
-  const user = window.firebaseAuth.currentUser;
+  console.log("Opening profile..."); // Debug check
   
+  const user = window.firebaseAuth.currentUser;
   if (!user) {
     alert("Please login first!");
     return;
   }
   
-  // Show the modal
   const modal = document.getElementById('userProfileModal');
   if (modal) {
-    modal.style.display = 'flex';
+    modal.style.display = 'flex'; // Show the modal
     
-    // Fill basic info
-    document.getElementById('profileEmail').textContent = user.email;
-    document.getElementById('profileAvatar').textContent = user.email.charAt(0).toUpperCase();
+    // Fill basic data
+    const emailField = document.getElementById('profileEmail');
+    const avatarField = document.getElementById('profileAvatar');
+    if (emailField) emailField.textContent = user.email;
+    if (avatarField) avatarField.textContent = user.email.charAt(0).toUpperCase();
 
-    // Determine Role & Fill Details
-    const role = localStorage.getItem('userMode'); // 'doctor' or 'patient'
-    
+    // Decide which profile to load
+    const role = localStorage.getItem('userMode');
     if (role === 'doctor') {
         setupDoctorProfile(user.uid);
     } else {
         setupPatientProfile(user.uid);
     }
+  } else {
+    console.error("❌ Error: 'userProfileModal' not found in HTML!");
+    alert("Profile modal is missing from the page code.");
   }
 }
 
-// Close Profile Modal
+// Function to Close Profile
 function closeUserProfile() {
   const modal = document.getElementById('userProfileModal');
   if (modal) modal.style.display = 'none';
 }
+
 
 async function setupDoctorProfile(uid) {
   document.getElementById('doctorFields').style.display = 'block';
