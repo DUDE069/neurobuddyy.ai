@@ -2960,32 +2960,6 @@ async function sendDoctorMessage() {
   }
 }
 
-// ✅ START VOICE CALL - PLACEHOLDER
-function startVoiceCall() {
-  const patientName = window.activePatient?.patientName || 'the patient';
-  
-  if (confirm(`Start voice call with ${patientName}?`)) {
-    alert('ðŸ“ž Voice Call Feature\n\nThis feature will be implemented in the next update using WebRTC technology.');
-    
-    // TODO: Implement WebRTC voice call
-    console.log('ðŸŽ¤ Voice call initiated with:', patientName);
-  }
-}
-
-
-// ✅ START VIDEO CALL - PLACEHOLDER
-function startVideoCall() {
-  const patientName = window.activePatient?.patientName || 'the patient';
-  
-  if (confirm(`Start video call with ${patientName}?`)) {
-    alert('ðŸ“¹ Video Call Feature\n\nThis feature will be implemented in the next update using WebRTC technology.');
-    
-    // TODO: Implement WebRTC video call
-    console.log('ðŸ“¹ Video call initiated with:', patientName);
-  }
-}
-
-
 async function endConsultation() {
   const confirmed = confirm('Are you sure you want to end this consultation?');
   
