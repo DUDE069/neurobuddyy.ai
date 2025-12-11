@@ -2298,15 +2298,28 @@ function getDoctorWarningMessage(status) {
 async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
   closeDoctorConnectionModal();
 
-  // ✅ Better check - wait and retry if needed
+  // ✅ CRITICAL: Wait for PeerJS to be ready
   if (!peer || !peer.id) {
     alert("⚠️ Establishing connection... Please wait 3 seconds and try again.");
     console.error("❌ PeerJS not ready. peer:", peer, "peer.id:", peer?.id);
-    return;
+    
+    // Give user option to wait
+    if (confirm("Connection is still establishing. Click OK to wait 2 seconds and try again.")) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Check again
+      if (!peer || !peer.id) {
+        alert("❌ Connection failed. Please refresh the page and try again.");
+        return;
+      }
+    } else {
+      return;
+    }
   }
 
-  console.log("✅ PeerJS is ready with ID:", peer.id); // Confirm it's ready
+  console.log("✅ PeerJS is ready with ID:", peer.id);
 
+  // ... rest of your existing code stays the same
   let patientName = "Anonymous Patient";
   let patientAge = 25;
   const user = window.firebaseAuth.currentUser;
@@ -2345,7 +2358,7 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
       status: "pending",
       timestamp: serverTimestamp(),
       message: `Patient ${patientName} (${patientAge}) wants to consult.`,
-      patientPeerId: peer.id   // ✅ This will now be valid
+      patientPeerId: peer.id   // ✅ Now guaranteed to be valid
     };
 
     if (user) {
@@ -2365,6 +2378,7 @@ async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
     alert("❌ Failed to send request.");
   }
 }
+
 
 
 
