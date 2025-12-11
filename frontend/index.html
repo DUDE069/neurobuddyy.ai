@@ -3960,73 +3960,11 @@ function getDoctorWarningMessage(status) {
 }
 
 // ============================================
-// CONFIRM CONNECTION
-// ============================================
-// CONFIRM CONNECTION AND SEND REQUEST (Patient Mode)
-async function confirmDoctorConnection(doctorId, doctorName, doctorSpecialty) {
-  closeDoctorConnectionModal();
-  
-  // ✅ ASK FOR NAME
-  const patientName = prompt('Please enter your name:', 'Anonymous Patient');
-  if (!patientName || patientName.trim() === '') {
-    alert('🔴 Name is required to connect with doctor');
-    return;
-  }
-  
-  // ✅ ASK FOR AGE
-  const patientAge = prompt('Please enter your age:', '');
-  if (!patientAge || isNaN(patientAge) || patientAge < 1) {
-    alert('🔴 Valid age is required');
-    return;
-  }
-  
-  try {
-    if (!window.firebaseDB) {
-      alert('❌ Firebase not initialized. Please refresh the page.');
-      return;
-    }
-    
-    const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
-    
-    // ✅ SAVE REQUEST WITH NAME, AGE, AND STATUS
-    const requestData = {
-      patientName: patientName.trim(),
-      age: parseInt(patientAge), // ✅ Save age as number
-      doctorId: doctorId,
-      doctorName: doctorName,
-      doctorSpecialty: doctorSpecialty,
-      urgency: 'normal',
-      status: 'pending', // ✅ Status: pending (waiting for doctor)
-      timestamp: serverTimestamp(),
-      message: `Patient ${patientName} (Age: ${patientAge}) wants to consult with you.`,
-      notified: false // ✅ Track if patient was notified
-    };
-    
-    const docRef = await addDoc(collection(window.firebaseDB, 'patientRequests'), requestData);
-    
-    // ✅ SAVE REQUEST ID FOR TRACKING
-    sessionStorage.setItem('activeRequestId', docRef.id);
-    
-    alert(`✅ Request Sent!\n\nYour consultation request has been sent to Dr. ${doctorName}.\n\nPlease keep this page open and wait for the doctor to accept your request.`);
-    
-    console.log('✅ Consultation request sent:', requestData);
-    
-    // ✅ START LISTENING FOR DOCTOR ACCEPTANCE
-    startListeningForDoctorAcceptance(docRef.id, doctorName);
-    
-  } catch (error) {
-    console.error(' 🔴 Error sending request:', error);
-    alert('❌ Failed to send request. Please try again.');
-  }
-}
-
-
-// ============================================
 // 5. SEND CONSULTATION REQUEST
 // ============================================
 async function sendConsultationRequest(doctor) {
   try {
-    const patientName = prompt('ðŸ‘¤ Please enter your name:', '') || 'Anonymous Patient';
+    const patientName = prompt(' Please enter your name:', '') || 'Anonymous Patient';
     
     if (!window.firebaseDB) {
       alert('❗ Firebase not initialized. Please refresh the page.');
