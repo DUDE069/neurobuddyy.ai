@@ -1463,7 +1463,6 @@ async function getPatientFromRequest(requestId) {
 }
 
 // Start video call (Doctor initiates)
-// Start video call (Doctor initiates)
 async function startVideoCall() {
   if (!window.activePatient || !window.activePatient.id) {
     alert('❌ No active patient. Please select a patient first.');
@@ -1478,31 +1477,49 @@ async function startVideoCall() {
   
   try {
     console.log('Starting video call...');
-    console.log('🔍 Patient request ID:', window.activePatient.id); // DEBUG
+    console.log('🔍 Patient request ID:', window.activePatient.id);
     
-    // ✅ Get patient's Peer ID from the request
+    // Get patient's Peer ID from the request
     const patientData = await getPatientFromRequest(window.activePatient.id);
     
-    console.log('📦 Patient data from Firebase:', patientData); // DEBUG
-    console.log('🆔 Patient Peer ID:', patientData?.patientPeerId); // DEBUG
+    console.log('📦 Patient data from Firebase:', patientData);
+    console.log('🆔 Patient Peer ID:', patientData?.patientPeerId);
     
     if (!patientData || !patientData.patientPeerId) {
       alert('❌ Cannot start call: Patient\'s connection ID not found. Ask patient to reconnect.');
       return;
     }
     
+    // ✅ CHECK IF PEER IS ONLINE FIRST
+    console.log('🔍 Checking if patient is online...');
+    const isOnline = await checkPeerConnection(patientData.patientPeerId);
+    
+    if (!isOnline) {
+      alert('❌ Cannot reach patient!\n\nThe patient may have:\n• Refreshed the page\n• Lost connection\n• Closed the browser\n\nAsk them to reconnect and try again.');
+      return;
+    }
+    
+    console.log('✅ Patient is online! Starting call...');
     console.log('📞 Calling patient with Peer ID:', patientData.patientPeerId);
     
     // Get local audio + video stream
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
     
+    // Call with metadata
     currentCall = peer.call(patientData.patientPeerId, localStream, {
-  metadata: { callType: 'video' }
-});
-
+      metadata: { callType: 'video' }
+    });
     
     // Handle incoming stream
     currentCall.on('stream', (remoteStream) => {
+      console.log("✅ Call connected! Remote stream received");
+      
+      // Update UI to show connected status
+      const callTitle = document.getElementById('activeCallTitle');
+      if (callTitle) {
+        callTitle.textContent = patientName;
+      }
+      
       handleRemoteStream(remoteStream, 'video');
     });
     
@@ -1529,6 +1546,7 @@ async function startVideoCall() {
     }
   }
 }
+
 
 // Start voice call (Doctor initiates)
 async function startVoiceCall() {
@@ -2886,7 +2904,6 @@ function listenForPatientAcceptance(patient) {
   window.patientAcceptanceListener = unsubscribe;
 }
 
-// Show consultation controls for doctor
 function showDoctorConsultationControls(patient) {
   const chatSection = document.querySelector('.chat-section');
   if (!chatSection) return;
@@ -2897,47 +2914,22 @@ function showDoctorConsultationControls(patient) {
   
   // Create consultation bar
   const consultationHTML = `
-    <div id="doctorConsultationControls" style="
-      flex: 0 0 70px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      border-top: 3px solid #2563eb;
-      background: white;
-      padding: 12px 16px;
-    ">
-      <input 
-        type="text" 
-        id="doctorConsultationInput" 
-        placeholder="Type your response to ${patient.patientName}..."
-        style="
-          flex: 1;
-          border: 2px solid #9fbff0c1;
-          border-radius: 8px;
-          padding: 10px 12px;
-          font-size: 0.95rem;
-          outline: none;
-        "
-      />
-      <button onclick="sendDoctorMessage()" class="btn send" style="padding: 10px 15px;">
-        Send
-      </button>
-      <button onclick="startVoiceCall()" class="btn mic" style="padding: 10px 15px;">
-        📞 Voice Call
-      </button>
-      <button onclick="startVideoCall()" class="btn upload" style="padding: 10px 15px; background: #10b981;">
-        📹 Video Call
-      </button>
-      <button onclick="endConsultation()" class="btn" style="padding: 10px 15px; background: #dc2626;">
-        End
-      </button>
+    <div id="doctorConsultationControls" style="flex: 0 0 70px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 3px solid #2563eb; background: white; padding: 12px 16px;">
+      <input type="text" id="doctorConsultationInput" placeholder="Type your response to ${patient.patientName}..." style="flex: 1; border: 2px solid #9fbff0c1; border-radius: 8px; padding: 10px 12px; font-size: 0.95rem; outline: none;">
+      <button onclick="sendDoctorMessage()" class="btn send" style="padding: 10px 15px;">Send</button>
+      <button onclick="startVoiceCall()" class="btn mic" style="padding: 10px 15px;">📞 Voice</button>
+      <button onclick="startVideoCall()" class="btn upload" style="padding: 10px 15px; background: #10b981;">📹 Video</button>
+      <button onclick="endConsultation()" class="btn" style="padding: 10px 15px; background: #dc2626;">End</button>
+    </div>
+    <div id="connectionWarning" style="display: none; background: #fef3c7; color: #92400e; padding: 10px; text-align: center; font-size: 0.85rem; border-top: 2px solid #f59e0b;">
+      ⚠️ Patient may be offline. Calls might not connect.
     </div>
   `;
   
   chatSection.insertAdjacentHTML('beforeend', consultationHTML);
   console.log('✅ Doctor consultation controls shown');
 }
+
 
 
 // Patient declines consultation
@@ -3251,39 +3243,73 @@ function showDoctorAcceptanceNotification(doctorName, requestId, patientData) {
   document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
-// ✅ PATIENT ACCEPTS TO START CONSULTATION - NEW
+// ============================================
+// PATIENT ACCEPTS TO START CONSULTATION - UPDATED
+// ============================================
 async function startPatientConsultation(doctorName, requestId, patientData) {
-  console.log('ðŸ¤ Patient accepted consultation');
+  console.log("🤝 Patient accepted consultation");
   
   try {
-    // ✅ MARK AS NOTIFIED IN FIREBASE
+    // ✅ MARK AS NOTIFIED IN FIREBASE + UPDATE PEER ID
     if (window.firebaseDB) {
       const { doc, updateDoc } = window.firestoreFunctions;
       
       await updateDoc(doc(window.firebaseDB, 'patientRequests', requestId), {
         notified: true,
         consultationStarted: true,
-        startedAt: new Date().toISOString()
+        startedAt: new Date().toISOString(),
+        patientPeerId: peer.id  // ✅ UPDATE PEER ID (in case it changed)
       });
     }
     
-    // ✅ CLOSE NOTIFICATION
+    // CLOSE NOTIFICATION
     const modal = document.getElementById('acceptanceNotification');
     if (modal) modal.remove();
     
-    // ✅ SHOW SUCCESS MESSAGE
-    alert(`Consultation Started! You are now connected with Dr. ${doctorName}.`);
+    // SHOW SUCCESS MESSAGE
+    alert(`✅ Consultation Started! You are now connected with Dr. ${doctorName}.`);
     
-    // ✅ CONVERT CHAT INTERFACE TO CONSULTATION MODE
-     // Convert chat interface to consultation mode
-  convertPatientToConsultationMode(doctorName, requestId, patientData);  // ✅ Add requestId
-
+    // CONVERT CHAT INTERFACE TO CONSULTATION MODE
+    convertPatientToConsultationMode(doctorName, requestId, patientData);
     
   } catch (error) {
-    console.error('❗ Error starting consultation:', error);
-    alert('Failed to start consultation. Please try again.');
+    console.error('❌ Error starting consultation:', error);
+    alert('❌ Failed to start consultation. Please try again.');
   }
 }
+
+
+// ============================================
+// CHECK IF PEER IS ONLINE
+// ============================================
+async function checkPeerConnection(peerId) {
+  return new Promise((resolve) => {
+    // Try to establish a data connection (lightweight check)
+    try {
+      const testConn = peer.connect(peerId);
+      
+      const timeout = setTimeout(() => {
+        testConn.close();
+        resolve(false); // Timeout = peer not reachable
+      }, 5000); // 5 second timeout
+      
+      testConn.on('open', () => {
+        clearTimeout(timeout);
+        testConn.close();
+        resolve(true); // Peer is online
+      });
+      
+      testConn.on('error', () => {
+        clearTimeout(timeout);
+        resolve(false); // Connection failed
+      });
+      
+    } catch (error) {
+      resolve(false);
+    }
+  });
+}
+
 
 
 // ✅ CONVERT PATIENT CHAT TO CONSULTATION MODE - COMPLETE VERSION
