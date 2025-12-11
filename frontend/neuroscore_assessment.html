@@ -592,6 +592,8 @@
 });
 
 
+
+
   // Slider display updates
   document.getElementById('sleep_hours').addEventListener('input', (e) => {
     document.getElementById('sleep_hours_display').textContent = `${e.target.value} hours`;
@@ -662,7 +664,8 @@
       document.getElementById('submitBtn').textContent = 'Calculating...';
       document.getElementById('submitBtn').disabled = true;
 
-      const response = await fetch('https://your-backend-url.onrender.com/api/neuroscore/submit', {
+      const response = await fetch('https://neurobuddyy-backend.onrender.com/api/neuroscore/submit', {
+
 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
