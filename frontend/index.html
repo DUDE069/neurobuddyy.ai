@@ -1225,7 +1225,7 @@
       <div class="form-buttons">
         <button type="submit" class="btn-submit">
           <span id="loginBtnText">Login</span>
-          <span id="loginBtnLoader" style="display: none;">â³ Logging in...</span>
+          <span id="loginBtnLoader" style="display: none;">🌬️ Logging in...</span>
         </button>
         <button type="button" class="btn-cancel" onclick="closeDoctorLogin()">Cancel</button>
       </div>
@@ -4004,7 +4004,7 @@ function renderSymptomCards() {
     card.className = 'symptom-card';
     card.dataset.key = key;
 
-    card.innerHTML = `
+    card.innerHTML = `  
       <img src="${s.image}" alt="${s.name}" class="symptom-img">
       <p class="symptom-name">${s.name}</p>
       <span class="symptom-tag">${s.category}</span>
@@ -4016,74 +4016,54 @@ function renderSymptomCards() {
 
 renderSymptomCards();
 
-// ========== SYMPTOM MODAL LOGIC ==========
-const symptomModal = document.getElementById('symptomModal');
-const symptomModalImg = document.getElementById('symptomModalImg');
-const symptomModalTitle = document.getElementById('symptomModalTitle');
-const symptomModalText = document.getElementById('symptomModalText');
-const symptomModalAdvice = document.getElementById('symptomModalAdvice');
-const symptomMoreBtn = document.getElementById('symptomMoreBtn');
-
-document.addEventListener('click', (e) => {
-  const card = e.target.closest('.symptom-card');
-  if (!card) return;
-
-  const key = card.dataset.key;
-  const s = symptomDatabase[key];
-  if (!s) return;
-
-  symptomModalImg.src = s.image;
-  symptomModalImg.alt = s.name;
-  symptomModalTitle.textContent = s.name;
-  symptomModalText.textContent = s.description;
-  symptomModalAdvice.textContent = s.advice;
-
-  symptomModal.classList.add('open');
-});
-
-document.querySelector('.symptom-modal-close').onclick = () => {
-  symptomModal.classList.remove('open');
-};
-
-symptomModal.addEventListener('click', (e) => {
-  if (e.target === symptomModal) symptomModal.classList.remove('open');
-});
-
-symptomMoreBtn.onclick = () => {
-  alert('If symptoms are sudden, severe, or getting worse, please contact emergency services or a doctor immediately.');
-};
-
-
-// ========== SYMPTOM MODAL FUNCTIONS ==========
 
 // Open symptom modal with details
 function showSymptomDetails(symptomId) {
   const symptom = symptomDatabase[symptomId];
-  
   if (!symptom) {
     alert('Symptom information not available');
     return;
   }
-  
-  // Update modal content
+
   document.getElementById('symptomImage').src = symptom.image;
   document.getElementById('symptomImage').alt = symptom.name;
   document.getElementById('symptomTitle').textContent = symptom.name;
   document.getElementById('symptomCategory').textContent = symptom.category;
   document.getElementById('symptomDescription').textContent = symptom.description;
   document.getElementById('symptomAdvice').textContent = symptom.advice;
-  
-  // Show modal
+
   document.getElementById('symptomModal').style.display = 'flex';
-  
-  console.log('✅ Showing symptom details:', symptom.name);
 }
 
-// Close symptom modal
 function closeSymptomModal() {
   document.getElementById('symptomModal').style.display = 'none';
 }
 
+// Used when clicking the small image cards
+function showImageInfo(title, description) {
+  const symptomMap = {
+    'Headache': 'headache',
+    'Dizziness': 'dizziness',
+    'Numbness': 'numbness',
+    'Seizure': 'seizure',
+    'Memory Loss': 'memory-loss',
+    'Persistent Cough': 'cough',
+    'Shortness of Breath': 'shortness-breath',
+    'Chest Pain': 'chest-pain',
+    'Back Pain': 'back-pain',
+    'Joint Pain': 'joint-pain',
+    'Nausea': 'nausea',
+    'Abdominal Pain': 'abdominal-pain'
+  };
+
+  const symptomId = symptomMap[title];
+
+  if (symptomId && symptomDatabase[symptomId]) {
+    showSymptomDetails(symptomId);
+  } else {
+    alert(`❗ ${title}\n\n${description}`);
+  }
+}
 
 
 // ============================================
@@ -4098,7 +4078,6 @@ function toggleGallery() {
     panel.style.width = '0';
     content.style.display = 'none';
   } else {
-    // Close other panels
     closeChatHistory();
     document.getElementById('sidebar').classList.remove('open');
     
@@ -4116,8 +4095,8 @@ function closeGallery() {
   content.style.display = 'none';
 }
 
+// updated showImageInfo uses new modal directly
 function showImageInfo(title, description) {
-  // Map title to symptom ID
   const symptomMap = {
     'Headache': 'headache',
     'Dizziness': 'dizziness',
@@ -4132,22 +4111,26 @@ function showImageInfo(title, description) {
     'Nausea': 'nausea',
     'Abdominal Pain': 'abdominal-pain'
   };
-  
-  const symptomId = symptomMap[title];
-  
-  if (symptomId && symptomDatabase[symptomId]) {
-    // Show enhanced modal
-    showSymptomDetails(symptomId);
+
+  const id = symptomMap[title];
+  const s = id ? symptomDatabase[id] : null;
+
+  if (s) {
+    symptomModalImg.src = s.image;
+    symptomModalImg.alt = s.name;
+    symptomModalTitle.textContent = s.name;
+    symptomModalText.textContent = s.description;
+    symptomModalAdvice.textContent = s.advice;
+    symptomModal.classList.add('open');
   } else {
-    // Fallback to simple alert if symptom not in database
     alert(`❗ ${title}\n\n${description}`);
   }
 }
 
-
 function showUploadMessage() {
   alert('❗ Upload Feature\n\nImage upload functionality will be available in the next update. For now, please describe your symptoms in the chat.');
 }
+
 
 // ============================================
 // 2. DOCTOR PORTAL FUNCTION
@@ -4789,7 +4772,10 @@ async function requestResetCode() {
       <!-- Gallery Grid -->
       <div id="galleryGrid" class="gallery-grid"
      style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+</div> 
+
 </div>
+</aside>
 
 
     <main class="chat-section">
@@ -8182,66 +8168,6 @@ function toggleDoctorList() {
     doctorListVisible = false;
   }
 }
-
-
-
-// ========== BRAIN HEALTH GALLERY FEATURE ==========
-
-function toggleGallery() {
-  const panel = document.getElementById('galleryPanel');
-  const sidebar = document.getElementById('sidebar');
-  const historyPanel = document.getElementById('chatHistoryPanel');
-  
-  if (panel.classList.contains('open')) {
-    panel.classList.remove('open');
-  } else {
-    panel.classList.add('open');
-    sidebar.classList.remove('open');
-    historyPanel.classList.remove('open');
-  }
-}
-
-function closeGallery() {
-  const panel = document.getElementById('galleryPanel');
-  panel.classList.remove('open');
-}
-
-function showImageInfo(title, description) {
-  const overlay = document.createElement('div');
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    backdrop-filter: blur(5px);
-  `;
-
-  overlay.innerHTML = `
-    <div style=" background : white ; padding : 30px ; border-radius : 15px ; max-width : 500px ; box-shadow : 0 10px 40px rgba(0,0,0,0.3) ; " >
-      <h3 style=" color : #2563eb ; margin-bottom : 15px ; font-size : 1.3rem ; " >${title}</h3>
-      <p style=" color : #666 ; font-size : 1rem ; line-height : 1.6 ; margin-bottom : 20px ; ">${description}</p>
-      <button onclick=" this.parentElement.parentElement.remove ()"
-              style="background: #2563eb; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">
-        Close
-      </button>
-    </div>
-  `; 
-
-  document.body.appendChild(overlay);
-
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) {
-      overlay.remove();
-    }
-  });
-}
-
 
 // Update toggleMenu to also close gallery
 function toggleMenu() {
