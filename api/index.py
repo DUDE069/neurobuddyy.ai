@@ -11,8 +11,11 @@ import os
 import hashlib
 import uuid
 
+from flask_cors import CORS
+
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": ["https://neurobuddyy-ai.onrender.com"]}})
+
 
 GMAIL_SENDER = "ariyanabedin00."
 GMAIL_APP_PASSWORD = "lfii ikdv hchI frmb"
