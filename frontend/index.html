@@ -8525,14 +8525,24 @@ async function setupPatientProfile(uid) {
 }
 
 function openNeuroScore() {
-  // Read role the same way the rest of app does
-  const storedRole = localStorage.getItem('userRole') || 'guest';
+  // Read stored values
+  const storedRole = localStorage.getItem('userRole');
+  const userMode = localStorage.getItem('userMode');   // 'patient' / 'doctor' / 'guest' / null
+  const isLoggedIn = !!(window.firebaseAuth && window.firebaseAuth.currentUser);
 
-  // Check Firebase auth (user really logged in)
-  const isLoggedIn = window.firebaseAuth && window.firebaseAuth.currentUser;
-  const role = storedRole || 'guest';
+  // Decide effective role
+  let role = storedRole || userMode || 'guest';
+  if (role !== 'patient' && role !== 'doctor') {
+    role = 'guest';
+  }
 
-  console.log('🧠 NeuroScore clicked. role =', role, 'loggedIn =', !!isLoggedIn);
+  console.log('🧠 NeuroScore clicked:', {
+    storedRole,
+    userMode,
+    effectiveRole: role,
+    isLoggedIn,
+    firebaseUser: window.firebaseAuth && window.firebaseAuth.currentUser
+  });
 
   // Guest: must register first
   if (!isLoggedIn || role === 'guest') {
@@ -8540,12 +8550,12 @@ function openNeuroScore() {
     return;
   }
 
-  // Logged‑in patient or doctor: allowed, but premium later
+  // Logged‑in patient or doctor: allowed, with future premium notice
   showAppNotification('🧠 NeuroScore will be a paid premium feature in a future version. For now, access is free for registered users.');
 
-  // Open NeuroScore page (or section)
   window.location.href = 'neuroscore_assessment.html';
 }
+
 
 
 
