@@ -17,6 +17,7 @@ app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app, resources={r"/api/*": {"origins": ["https://neurobuddyy-ai.onrender.com"]}})
 
 
+
 GMAIL_SENDER = "ariyanabedin00."
 GMAIL_APP_PASSWORD = "lfii ikdv hchI frmb"
 FAST2SMS_API_KEY = "YOUR_API_KEY_HERE"
@@ -1388,8 +1389,10 @@ def calculate_neuroscore(responses):
     }
 
 # API endpoint to submit NeuroScore assessment
-@app.route('/api/neuroscore/submit', methods=['POST'])
+@app.route('/api/neuroscore/submit', methods=['POST', 'OPTIONS'])
 def submit_neuroscore():
+    ...
+
     """Submit daily NeuroScore assessment"""
     try:
         data = request.json
