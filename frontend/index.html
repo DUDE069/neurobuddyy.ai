@@ -1718,72 +1718,187 @@ async function declineCall() {
   }
 }
 
-// Handle incoming call
+// ============================================
+// HANDLE INCOMING CALL - COMPLETE FIX
+// ============================================
 function handleIncomingCall(incomingCall) {
-  console.log('📞 Handling incoming call...');
+  console.log("📞 Handling incoming call...");
   
   currentCall = incomingCall;
   
-  if (localStream) {
+  // Determine call type
+  const callType = incomingCall.metadata?.callType || 'voice';
+  
+  // Get doctor name from active consultation
+  const doctorName = window.activeConsultation?.doctorName || "Doctor";
+  
+  // Request user media FIRST
+  navigator.mediaDevices.getUserMedia({ 
+    audio: true, 
+    video: callType === 'video' 
+  })
+  .then(stream => {
+    localStream = stream;
+    
+    // Answer the call with local stream
+    currentCall.answer(stream);
+    
+    // ✅ SHOW THE CALL UI IMMEDIATELY
+    showActiveCallUI(doctorName, callType);
+    
+    // Display local video if video call
+    if (callType === 'video') {
+      const localVideo = document.getElementById('localVideo');
+      if (localVideo) {
+        localVideo.srcObject = stream;
+        localVideo.style.display = 'block';
+      }
+    }
+    
+    // Listen for remote stream
     currentCall.on('stream', (remoteStream) => {
-      const callType = document.getElementById('videoBtn')?.style.display === 'none' ? 'voice' : 'video';
+      console.log("✅ Received remote stream");
       handleRemoteStream(remoteStream, callType);
     });
-  } else {
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      .then(stream => {
-        localStream = stream;
-        currentCall.answer(stream);
-        
-        currentCall.on('stream', (remoteStream) => {
-          handleRemoteStream(remoteStream, 'voice');
-        });
-      })
-      .catch(err => {
-        console.error('Failed to get media:', err);
-        alert('Cannot access microphone/camera');
-      });
-  }
+    
+    // Handle call close
+    currentCall.on('close', () => {
+      console.log("📵 Call closed");
+      endCall();
+    });
+    
+    // Handle errors
+    currentCall.on('error', (err) => {
+      console.error("❌ Call error:", err);
+      alert("Call failed: " + err.message);
+      endCall();
+    });
+    
+  })
+  .catch(err => {
+    console.error("❌ Failed to get media:", err);
+    
+    if (err.name === 'NotAllowedError') {
+      alert("⚠️ Camera/Microphone access denied!\n\nPlease allow access in your browser settings and try again.");
+    } else {
+      alert("Cannot access microphone/camera: " + err.message);
+    }
+    
+    // Reject the call
+    if (currentCall) {
+      currentCall.close();
+    }
+  });
 }
 
-// Handle remote stream
+
+// ============================================
+// HANDLE REMOTE STREAM
+// ============================================
 function handleRemoteStream(stream, callType) {
   remoteStream = stream;
-  
-  console.log('✅ Received remote stream');
+  console.log("🎥 Displaying remote stream");
   
   if (callType === 'video') {
-    document.getElementById('remoteVideo').srcObject = stream;
-    document.getElementById('remoteVideo').style.display = 'block';
-    document.getElementById('audioOnlyIndicator').style.display = 'none';
+    const remoteVideo = document.getElementById('remoteVideo');
+    if (remoteVideo) {
+      remoteVideo.srcObject = stream;
+      remoteVideo.style.display = 'block';
+    }
   } else {
+    // For voice call, play audio
     const audio = new Audio();
     audio.srcObject = stream;
-    audio.play();
+    audio.play().catch(e => console.error("Audio play failed:", e));
   }
   
-  startCallTimer();
+  // Start timer if not already started
+  if (!callStartTime) {
+    startCallTimer();
+  }
+  
   callInProgress = true;
 }
 
-// Show active call UI
+// ============================================
+// SHOW ACTIVE CALL UI - PATIENT SIDE
+// ============================================
 function showActiveCallUI(personName, callType) {
-  document.getElementById('activeCallModal').style.display = 'flex';
-  document.getElementById('activeCallTitle').textContent = personName;
+  console.log("🎬 Showing call UI for patient:", personName, callType);
+  
+  // Get or create modal
+  let modal = document.getElementById('activeCallModal');
+  
+  if (!modal) {
+    // Create modal if it doesn't exist
+    const modalHTML = `
+      <div id="activeCallModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 600px; background: #1f2937; color: white;">
+          <div style="text-align: center; padding: 20px;">
+            <h2 id="activeCallTitle" style="margin: 0 0 10px 0;">Call with ${personName}</h2>
+            <div id="callDuration" style="font-size: 1.5rem; color: #10b981; margin-bottom: 20px;">00:00</div>
+            
+            <!-- Video Elements -->
+            <div style="position: relative; width: 100%; margin-bottom: 20px;">
+              <video id="remoteVideo" autoplay playsinline style="width: 100%; border-radius: 10px; background: #000; display: none;"></video>
+              <video id="localVideo" autoplay playsinline muted style="position: absolute; bottom: 10px; right: 10px; width: 150px; border-radius: 8px; border: 2px solid white; display: none;"></video>
+              <div id="audioOnlyIndicator" style="display: none; padding: 60px; background: #374151; border-radius: 10px; text-align: center;">
+                <div style="font-size: 4rem; margin-bottom: 10px;">🎤</div>
+                <div style="font-size: 1.2rem;">Voice Call Active</div>
+              </div>
+            </div>
+            
+            <!-- Call Controls -->
+            <div style="display: flex; gap: 15px; justify-content: center;">
+              <button id="muteBtn" onclick="toggleMute()" style="padding: 15px 20px; background: #6b7280; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.2rem;">
+                🔊
+              </button>
+              <button id="videoBtn" onclick="toggleVideo()" style="padding: 15px 20px; background: #6b7280; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: none;">
+                📹
+              </button>
+              <button onclick="endCall()" style="padding: 15px 30px; background: #dc2626; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; font-size: 1rem;">
+                ❌ End Call
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    modal = document.getElementById('activeCallModal');
+  }
+  
+  // Show modal
+  modal.style.display = 'flex';
+  
+  // Update title
+  const title = document.getElementById('activeCallTitle');
+  if (title) title.textContent = `Call with ${personName}`;
+  
+  // Configure for voice or video
+  const remoteVideo = document.getElementById('remoteVideo');
+  const localVideo = document.getElementById('localVideo');
+  const audioIndicator = document.getElementById('audioOnlyIndicator');
+  const videoBtn = document.getElementById('videoBtn');
   
   if (callType === 'voice') {
-    document.getElementById('remoteVideo').style.display = 'none';
-    document.getElementById('localVideo').style.display = 'none';
-    document.getElementById('audioOnlyIndicator').style.display = 'block';
-    document.getElementById('videoBtn').style.display = 'none';
+    if (remoteVideo) remoteVideo.style.display = 'none';
+    if (localVideo) localVideo.style.display = 'none';
+    if (audioIndicator) audioIndicator.style.display = 'block';
+    if (videoBtn) videoBtn.style.display = 'none';
   } else {
-    document.getElementById('remoteVideo').style.display = 'block';
-    document.getElementById('localVideo').style.display = 'block';
-    document.getElementById('localVideo').srcObject = localStream;
-    document.getElementById('audioOnlyIndicator').style.display = 'none';
-    document.getElementById('videoBtn').style.display = 'inline-block';
+    if (remoteVideo) remoteVideo.style.display = 'block';
+    if (localVideo) localVideo.style.display = 'block';
+    if (audioIndicator) audioIndicator.style.display = 'none';
+    if (videoBtn) videoBtn.style.display = 'inline-block';
   }
+  
+  // Start call timer
+  startCallTimer();
+  
+  callInProgress = true;
 }
+
 
 // Call timer
 let callStartTime = null;
@@ -1842,11 +1957,18 @@ function toggleVideo() {
   }
 }
 
-// End call
+// ============================================
+// END CALL - COMPLETE VERSION
+// ============================================
 async function endCall() {
-  if (callInProgress && !confirm('End this call?')) return;
+  if (callInProgress) {
+    if (!confirm("End this call?")) return;
+  }
+  
+  console.log("📵 Ending call...");
   
   try {
+    // Stop all tracks
     if (localStream) {
       localStream.getTracks().forEach(track => track.stop());
       localStream = null;
@@ -1857,24 +1979,30 @@ async function endCall() {
       remoteStream = null;
     }
     
+    // Close peer connection
     if (currentCall) {
       currentCall.close();
       currentCall = null;
     }
     
+    // Stop timer
     if (callTimerInterval) {
       clearInterval(callTimerInterval);
       callTimerInterval = null;
     }
     
-    document.getElementById('activeCallModal').style.display = 'none';
+    // Hide modal
+    const modal = document.getElementById('activeCallModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
     
     callInProgress = false;
     
-    console.log('✅ Call ended');
+    console.log("✅ Call ended");
     
   } catch (error) {
-    console.error('❗ Error ending call:', error);
+    console.error("❌ Error ending call:", error);
   }
 }
 
