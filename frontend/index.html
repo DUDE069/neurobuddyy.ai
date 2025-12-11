@@ -1137,7 +1137,7 @@
         <p style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
           <a href="#" onclick="showPasswordReset(); event.preventDefault();" 
              style="color: #2563eb; font-size: 0.9rem; text-decoration: none; font-weight: 600;">
-            ðŸ”‘ Forgot Password?
+           🔴 Forgot Password?
           </a>
         </p>
       </div>
@@ -1220,7 +1220,7 @@
     
     <!-- Additional Info -->
     <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #2563eb;">
-      <strong style="color: #1e40af;">ðŸ’¡ When to Seek Help:</strong>
+      <strong style="color: #1e40af;"> When to Seek Help:</strong>
       <p id="symptomAdvice" style="margin: 10px 0 0 0; color: #1e40af; font-size: 0.95rem;">
         Advice will appear here...
       </p>
@@ -1290,7 +1290,7 @@
       
       <!-- Audio Only Indicator -->
       <div id="audioOnlyIndicator" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-        <div style="font-size: 6rem;">ðŸŽ¤</div>
+        <div style="font-size: 6rem;">☎️</div>
         <p style="color: white; font-size: 1.5rem; margin-top: 20px;">Audio Call</p>
       </div>
     </div>
@@ -1301,7 +1301,7 @@
       <!-- Mute Audio Button -->
       <button id="muteBtn" onclick="toggleMute()" 
         style="padding: 15px 20px; background: #6b7280; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; font-size: 1.5rem;">
-        ðŸŽ¤
+       🔇
       </button>
       
       <!-- Toggle Video Button (only for video calls) -->
@@ -1493,8 +1493,10 @@ async function startVideoCall() {
     // Get local audio + video stream
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
     
-    // ✅ Use peer (not window.peer)
-    currentCall = peer.call(patientData.patientPeerId, localStream);
+    currentCall = peer.call(patientData.patientPeerId, localStream, {
+  metadata: { callType: 'video' }
+});
+
     
     // Handle incoming stream
     currentCall.on('stream', (remoteStream) => {
@@ -1558,8 +1560,10 @@ async function startVoiceCall() {
     // Get local audio stream
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     
-    // ✅ Use peer (not window.peer)
-    currentCall = peer.call(patientData.patientPeerId, localStream);
+    currentCall = peer.call(patientData.patientPeerId, localStream, {
+  metadata: { callType: 'voice' }
+});
+
     
     currentCall.on('stream', (remoteStream) => {
       handleRemoteStream(remoteStream, 'voice');
@@ -2367,7 +2371,7 @@ function getDoctorStatusBanner(status) {
                   display: flex; align-items: center; gap: 10px;">
         <div style="width: 14px; height: 14px; background: #ef4444; border-radius: 50%; 
                     box-shadow: 0 0 10px #ef4444;"></div>
-        <span style="font-weight: bold; color: #991b1b; font-size: 1rem;">ðŸ”´ Currently Engaged</span>
+        <span style="font-weight: bold; color: #991b1b; font-size: 1rem;">❗ Currently Engaged</span>
       </div>
     `;
   } else {
@@ -2376,7 +2380,7 @@ function getDoctorStatusBanner(status) {
                   padding: 12px; border-radius: 8px; border: 2px solid #9ca3af;
                   display: flex; align-items: center; gap: 10px;">
         <div style="width: 14px; height: 14px; background: #9ca3af; border-radius: 50%;"></div>
-        <span style="font-weight: bold; color: #4b5563; font-size: 1rem;">âš« Offline</span>
+        <span style="font-weight: bold; color: #4b5563; font-size: 1rem;">🔘 Offline</span>
       </div>
     `;
   }
@@ -3643,17 +3647,17 @@ function convertToConsultationMode(doctorName) {
       
       <button onclick="sendConsultationMessage()" class="btn send" 
               style="padding: 10px 15px;">
-        ðŸ“¤ Send
+         Send
       </button>
       
       <button onclick="startVoiceCall()" class="btn mic" 
               style="padding: 10px 15px;">
-        ðŸ“ž Voice Call
+         Voice Call
       </button>
       
       <button onclick="startVideoCall()" class="btn upload" 
               style="padding: 10px 15px; background: #10b981;">
-        ðŸ“¹ Video Call
+         Video Call
       </button>
     </div>
   `;
@@ -3890,13 +3894,13 @@ function showImageInfo(title, description) {
     showSymptomDetails(symptomId);
   } else {
     // Fallback to simple alert if symptom not in database
-    alert(`ðŸ“Œ ${title}\n\n${description}`);
+    alert(`❗ ${title}\n\n${description}`);
   }
 }
 
 
 function showUploadMessage() {
-  alert('ðŸ“¤ Upload Feature\n\nImage upload functionality will be available in the next update. For now, please describe your symptoms in the chat.');
+  alert('❗ Upload Feature\n\nImage upload functionality will be available in the next update. For now, please describe your symptoms in the chat.');
 }
 
 // ============================================
@@ -4034,7 +4038,7 @@ function getDoctorStatusBanner(status) {
                   display: flex; align-items: center; gap: 10px;">
         <div style="width: 14px; height: 14px; background: #ef4444; border-radius: 50%; 
                     box-shadow: 0 0 10px #ef4444;"></div>
-        <span style="font-weight: bold; color: #991b1b; font-size: 1rem;">ðŸ”´ Currently Engaged</span>
+        <span style="font-weight: bold; color: #991b1b; font-size: 1rem;"> Currently Engaged</span>
       </div>
     `;
   } else {
@@ -4043,7 +4047,7 @@ function getDoctorStatusBanner(status) {
                   padding: 12px; border-radius: 8px; border: 2px solid #9ca3af;
                   display: flex; align-items: center; gap: 10px;">
         <div style="width: 14px; height: 14px; background: #9ca3af; border-radius: 50%;"></div>
-        <span style="font-weight: bold; color: #4b5563; font-size: 1rem;">âš« Offline</span>
+        <span style="font-weight: bold; color: #4b5563; font-size: 1rem;">Offline</span>
       </div>
     `;
   }
@@ -4673,8 +4677,8 @@ async function requestResetCode() {
           <h3 style="color: #374151; margin-top: 0; font-size: 1.1rem;">For Patients:</h3>
           <ol style="color: #4b5563; line-height: 1.8; padding-left: 20px;">
             <li style="margin: 10px 0;"><strong>Ask Questions:</strong> Type your health query in the chat box. <strong style="color: #dc2626;">IMPORTANT: Always select your question from the suggestion box that appears. Manually typed questions without selection may cause errors.</strong></li>
-            <li style="margin: 10px 0;"><strong>View History:</strong> Click "ðŸ”Ž Search" in the left menu to access your previous conversations.</li>
-            <li style="margin: 10px 0;"><strong>Browse Gallery:</strong> Click "ðŸ§  Brain Health Gallery" to view visual guides of neurological symptoms.</li>
+            <li style="margin: 10px 0;"><strong>View History:</strong> Click " 🔎Search" in the left menu to access your previous conversations.</li>
+            <li style="margin: 10px 0;"><strong>Browse Gallery:</strong> Click "🪦 Brain Health Gallery" to view visual guides of neurological symptoms.</li>
             <li style="margin: 10px 0;"><strong>Set Location:</strong> Configure your nearest hospital in the right sidebar for emergency alerts.</li>
             <li style="margin: 10px 0;"><strong>Connect to Doctors:</strong> Click "👨‍⚕️ Connect to Doctors" to see available professionals. Click any doctor to initiate consultation.</li>
             <li style="margin: 10px 0;"><strong>Emergency:</strong> Press the red "🚨 Emergency" button to send instant SOS to your configured hospital.</li>
@@ -6177,7 +6181,7 @@ function showUrgencySelectionModal(doctorId, doctorData) {
         <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
           
           <button onclick="validateAndSubmit('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'red')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(239,68,68,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-            ðŸš¨ Emergency - Urgent Response Needed
+            ❗ Emergency - Urgent Response Needed
           </button>
           
           <button onclick="validateAndSubmit('${doctorId}', ${JSON.stringify(doctorData).replace(/"/g, '&quot;')}, 'blue')" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(59,130,246,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
@@ -6514,7 +6518,7 @@ function activateConversationArea(patientId, patientData) {
                 margin-bottom: 20px;
                 border-left: 5px solid ${urgencyColor}">
       <div style="text-align: center; margin-bottom: 15px;">
-        <div style="font-size: 3rem;">ðŸ‘¤</div>
+        <div style="font-size: 3rem;">❗</div>
       </div>
       <div style="text-align: center;">
         <h3 style="margin: 0 0 10px 0; color: #111827; font-size: 1.3rem; font-weight: bold;">
@@ -7383,7 +7387,7 @@ function switchToDoctorMode(doctorData) {
   // Change "Connect to Doctors" to "Patient List"
   const connectBtn = document.getElementById('connectDoctorBtn');
   if (connectBtn) {
-    connectBtn.textContent = 'ðŸ‘¥ Patient List';
+    connectBtn.textContent = '👤 Patient List';
     connectBtn.onclick = togglePatientList; // New function
   }
   
