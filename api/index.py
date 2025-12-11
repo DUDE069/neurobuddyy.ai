@@ -11,9 +11,17 @@ import os
 import hashlib
 import uuid
 
-from flask_cors import CORS
-
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
+
+ # ✅ Add this RIGHT AFTER app = Flask(...)
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'https://neurobuddyy-ai.onrender.com')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response
+
+
 # Fix CORS - allow your frontend domain specifically
 CORS(app, resources={
     r"/api/*": {
@@ -1055,7 +1063,6 @@ def get_answer():
 
 
 
-
 @app.route('/api/save-user-location', methods=['POST'])
 def save_user_location():
     try:
@@ -1401,6 +1408,8 @@ def calculate_neuroscore(responses):
 # API endpoint to submit NeuroScore assessment
 @app.route('/api/neuroscore/submit', methods=['POST', 'OPTIONS'])
 def submit_neuroscore():
+    if request.method == 'OPTIONS':  # ✅ Handle preflight
+        return Response('', status=200)
     ...
 
     """Submit daily NeuroScore assessment"""
