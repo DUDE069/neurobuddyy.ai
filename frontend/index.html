@@ -987,6 +987,43 @@
   font-weight: 600;
   cursor: pointer;
 }
+/* Symptom gallery cards */
+.symptom-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.symptom-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+}
+
+.symptom-img {
+  width: 100%;
+  height: 90px;          /* make thumbs small */
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.symptom-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.symptom-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+}
 
 
 
@@ -1270,45 +1307,31 @@
   </div>
 </div>
 
-<!-- ✅ ENHANCED SYMPTOM DETAILS MODAL -->
-<div id="symptomModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content" style="max-width: 600px;">
-    <button class="modal-close" onclick="closeSymptomModal()">✖️</button>
-    
-    <!-- Image Section -->
-    <div style="text-align: center; margin-bottom: 20px;">
-      <img id="symptomImage" src="" alt="Symptom" 
-        style="width: 100%; max-width: 400px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-    </div>
-    
-    <!-- Title -->
-    <h2 id="symptomTitle" style="color: #2563eb; margin: 0 0 15px 0;">Symptom Name</h2>
-    
-    <!-- Category Badge -->
-    <div style="margin-bottom: 15px;">
-      <span id="symptomCategory" 
-        style="background: #dbeafe; color: #1e40af; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
-        Category
-      </span>
-    </div>
-    
-    <!-- Description -->
-    <div id="symptomDescription" 
-      style="color: #374151; line-height: 1.8; font-size: 1rem; margin-bottom: 20px;">
-      Description will appear here...
-    </div>
-    
-    <!-- Additional Info -->
-    <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #2563eb;">
-      <strong style="color: #1e40af;"> When to Seek Help:</strong>
-      <p id="symptomAdvice" style="margin: 10px 0 0 0; color: #1e40af; font-size: 0.95rem;">
-        Advice will appear here...
-      </p>
-    </div>
-    
-    <div style="margin-top: 20px; text-align: center;">
-      <button class="btn-submit" onclick="closeSymptomModal()">Close</button>
-    </div>
+<div id="appNotification" style="
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e40af;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  display: none;
+  z-index: 12000;
+"></div>
+
+
+<!-- ✅ ENHANCED SYMPTOM DETAILS MODAL (NEW) -->
+<div id="symptomModal" class="symptom-modal">
+  <div class="symptom-modal-content">
+    <span class="symptom-modal-close">&times;</span>
+    <img id="symptomModalImg" src="" alt="">
+    <h3 id="symptomModalTitle"></h3>
+    <p id="symptomModalText"></p>
+    <div id="symptomModalAdvice" class="symptom-advice"></div>
+    <button id="symptomMoreBtn">General safety advice</button>
   </div>
 </div>
 
@@ -3993,18 +4016,24 @@ const symptomDatabase = {
 // ========== RENDER SYMPTOM CARDS FROM DATABASE ==========
 function renderSymptomCards() {
   const container = document.getElementById('galleryGrid');
-  if (!container) return;
+  if (!container) {
+    console.error('❌ galleryGrid not found');
+    return;
+  }
 
   container.innerHTML = '';
 
-  Object.keys(symptomDatabase).forEach(key => {
+  const keys = Object.keys(symptomDatabase);
+  console.log('🧠 Rendering symptom cards for keys:', keys);
+
+  keys.forEach(key => {
     const s = symptomDatabase[key];
 
     const card = document.createElement('div');
     card.className = 'symptom-card';
     card.dataset.key = key;
 
-    card.innerHTML = `  
+    card.innerHTML = `
       <img src="${s.image}" alt="${s.name}" class="symptom-img">
       <p class="symptom-name">${s.name}</p>
       <span class="symptom-tag">${s.category}</span>
@@ -4012,57 +4041,85 @@ function renderSymptomCards() {
 
     container.appendChild(card);
   });
+
+  console.log('✅ renderSymptomCards complete. Card count:', container.children.length);
 }
 
-renderSymptomCards();
+// ❌ remove this:
+// renderSymptomCards();
+
+// ✅ add this instead:
+window.addEventListener('load', () => {
+  console.log('🌐 Window load → rendering symptom cards');
+  renderSymptomCards();
+});
 
 
-// Open symptom modal with details
-function showSymptomDetails(symptomId) {
-  const symptom = symptomDatabase[symptomId];
-  if (!symptom) {
-    alert('Symptom information not available');
+// ===== SYMPTOM MODAL WIRING =====
+const symptomModal = document.getElementById('symptomModal');
+const symptomModalImg = document.getElementById('symptomModalImg');
+const symptomModalTitle = document.getElementById('symptomModalTitle');
+const symptomModalText = document.getElementById('symptomModalText');
+const symptomModalAdvice = document.getElementById('symptomModalAdvice');
+const symptomMoreBtn = document.getElementById('symptomMoreBtn');
+
+console.log('🔍 Modal elements found:', {
+  symptomModal,
+  symptomModalImg,
+  symptomModalTitle,
+  symptomModalText,
+  symptomModalAdvice,
+  symptomMoreBtn
+});
+
+// Click on any symptom card → open popup
+document.addEventListener('click', (e) => {
+  const card = e.target.closest('.symptom-card');
+  if (!card || !symptomModal) return;
+
+  const key = card.dataset.key;
+  const s = symptomDatabase[key];
+  console.log('🖼️ Card clicked:', key, s);
+  if (!s) {
+    console.error('❌ No symptom data for key:', key);
     return;
   }
 
-  document.getElementById('symptomImage').src = symptom.image;
-  document.getElementById('symptomImage').alt = symptom.name;
-  document.getElementById('symptomTitle').textContent = symptom.name;
-  document.getElementById('symptomCategory').textContent = symptom.category;
-  document.getElementById('symptomDescription').textContent = symptom.description;
-  document.getElementById('symptomAdvice').textContent = symptom.advice;
-
-  document.getElementById('symptomModal').style.display = 'flex';
-}
-
-function closeSymptomModal() {
-  document.getElementById('symptomModal').style.display = 'none';
-}
-
-// Used when clicking the small image cards
-function showImageInfo(title, description) {
-  const symptomMap = {
-    'Headache': 'headache',
-    'Dizziness': 'dizziness',
-    'Numbness': 'numbness',
-    'Seizure': 'seizure',
-    'Memory Loss': 'memory-loss',
-    'Persistent Cough': 'cough',
-    'Shortness of Breath': 'shortness-breath',
-    'Chest Pain': 'chest-pain',
-    'Back Pain': 'back-pain',
-    'Joint Pain': 'joint-pain',
-    'Nausea': 'nausea',
-    'Abdominal Pain': 'abdominal-pain'
-  };
-
-  const symptomId = symptomMap[title];
-
-  if (symptomId && symptomDatabase[symptomId]) {
-    showSymptomDetails(symptomId);
-  } else {
-    alert(`❗ ${title}\n\n${description}`);
+  if (!symptomModalImg) {
+    console.error('❌ symptomModalImg element not found');
+    return;
   }
+
+  symptomModalImg.src = s.image;
+  symptomModalImg.alt = s.name;
+  symptomModalTitle.textContent = s.name;
+  symptomModalText.textContent = s.description;
+  symptomModalAdvice.textContent = s.advice;
+
+  symptomModal.classList.add('open');
+  console.log('✅ Modal opened for:', s.name);
+});
+
+
+
+// Close button (×)
+const closeEl = document.querySelector('.symptom-modal-close');
+if (closeEl && symptomModal) {
+  closeEl.onclick = () => symptomModal.classList.remove('open');
+}
+
+// Click outside to close
+if (symptomModal) {
+  symptomModal.addEventListener('click', (e) => {
+    if (e.target === symptomModal) symptomModal.classList.remove('open');
+  });
+}
+
+// Extra help button
+if (symptomMoreBtn) {
+  symptomMoreBtn.onclick = () => {
+    alert('If symptoms are severe, sudden, or getting worse, call your local emergency number (for example 108 in India) or go to the nearest emergency department.');
+  };
 }
 
 
@@ -4072,20 +4129,27 @@ function showImageInfo(title, description) {
 function toggleGallery() {
   const panel = document.getElementById('galleryPanel');
   const content = document.getElementById('galleryContent');
-  
+  console.log('🧩 toggleGallery called', { panelFound: !!panel, contentFound: !!content });
+
+  if (!panel || !content) return;
+
   if (panel.classList.contains('open')) {
+    console.log('📕 Closing gallery panel');
     panel.classList.remove('open');
     panel.style.width = '0';
     content.style.display = 'none';
   } else {
-    closeChatHistory();
-    document.getElementById('sidebar').classList.remove('open');
-    
+    console.log('📗 Opening gallery panel');
+    if (typeof closeChatHistory === 'function') closeChatHistory();
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('open');
+
     panel.classList.add('open');
     panel.style.width = '350px';
     content.style.display = 'block';
   }
 }
+
 
 function closeGallery() {
   const panel = document.getElementById('galleryPanel');
@@ -6550,6 +6614,21 @@ function showUrgencySelectionModal(doctorId, doctorData) {
 }
 
 
+
+function showAppNotification(message) {
+  const bar = document.getElementById('appNotification');
+  if (!bar) return;
+
+  bar.textContent = message;
+  bar.style.display = 'block';
+
+  setTimeout(() => {
+    bar.style.display = 'none';
+  }, 3000);
+}
+
+
+
 // ✅ VALIDATION FUNCTION (SEPARATE - NOT INSIDE submitPatientRequest)
 function validateAndSubmit(doctorId, doctorData, urgency) {
   // Get inputs
@@ -8446,18 +8525,29 @@ async function setupPatientProfile(uid) {
 }
 
 function openNeuroScore() {
-  // Check if user is logged in
-  const userRole = localStorage.getItem('userRole') || 'guest';
-  
-  if (userRole === 'guest') {
-    alert('⚠️ NeuroScore feature is only available for registered Doctors and Patients.\n\nPlease login to access this premium feature.');
+  console.log('🧠 NeuroScore clicked. userRole =', window.currentUserRole, 'authUser =', window.auth && window.auth.currentUser);
+
+  // If not logged in at all → guest
+  const isLoggedIn = window.firebaseAuth && window.firebaseAuth.currentUser;
+  const role = window.currentUserRole || 'guest';
+
+  // Guest: must register first
+  if (!isLoggedIn || role === 'guest') {
+    showAppNotification('🧠 NeuroScore is a premium feature. Please login as a patient or doctor to access it.');
     return;
   }
-  
-  // Open NeuroScore page
-  window.location.href = 'neuroscore_assessment.html';
-}
 
+  // Logged‑in patient or doctor: allowed, but premium notice
+  showAppNotification('🧠 NeuroScore premium will be paid in a future version. For now, access is free for registered users.');
+
+  // TODO: open the actual NeuroScore UI when it is ready
+  const neuroScoreSection = document.getElementById('neuroScoreSection');
+  if (neuroScoreSection) {
+    neuroScoreSection.style.display = 'block';
+    // scrollIntoView or open modal, etc.
+    neuroScoreSection.scrollIntoView({ behavior: 'smooth' });
+  }
+}
 
 
 
