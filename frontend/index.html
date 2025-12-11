@@ -1,11 +1,16 @@
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>NEUROBUDDYY.ai</title>
+  
+    <!-- ✅ FAVICON (Browser Tab Logo) -->
+  <link rel="icon" type="image/png" href="images/neurobuddyy-logo.png">
+  <link rel="shortcut icon" type="image/png" href="images/neurobuddyy-logo.png">
+  <link rel="apple-touch-icon" href="images/neurobuddyy-logo.png">
+
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   
   <!-- ========== FIREBASE INTEGRATION ========== -->
@@ -326,6 +331,34 @@
       border: none;
     }
     .emergency:hover { background: #b91c1c; }
+
+
+/* Emergency Confirmation Modal Styles */
+#emergencyConfirmModal .modal-content {
+  animation: emergencyPulse 0.4s ease-out;
+  border: 3px solid #dc2626;
+}
+
+@keyframes emergencyPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+#emergencyConfirmModal button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+
 
     .connect-doctor {
       background: #2563eb;
@@ -909,6 +942,53 @@
 }
 
 
+.symptom-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+.symptom-modal.open { display: flex; }
+
+.symptom-modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+.symptom-modal-content img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.symptom-modal-close {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+}
+.symptom-advice {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #b91c1c;
+}
+#symptomMoreBtn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
 
 
 
@@ -1381,6 +1461,46 @@
   </div>
 </div>
 
+<!-- ✅ EMERGENCY CONFIRMATION MODAL - ADD THIS -->
+<div id="emergencyConfirmModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content" style="max-width: 500px; text-align: center;">
+    <div style="font-size: 4rem; margin-bottom: 20px;">🚨</div>
+    <h2 style="color: #dc2626; margin-bottom: 15px;">Confirm Emergency Alert</h2>
+    
+    <p style="font-size: 1.1rem; color: #374151; line-height: 1.6; margin-bottom: 25px;">
+      You are about to send an <strong>emergency SOS alert</strong> to the nearest hospital.
+      <br><br>
+      <strong style="color: #dc2626;">Only use this for real medical emergencies!</strong>
+    </p>
+    
+    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 25px; text-align: left;">
+      <strong style="color: #92400e;">⚠️ What happens next:</strong>
+      <ul style="margin: 10px 0 0 20px; color: #78350f;">
+        <li>Nearest hospital will be notified immediately</li>
+        <li>Your location will be shared with emergency services</li>
+        <li>Medical team will be dispatched</li>
+      </ul>
+    </div>
+    
+    <div style="display: flex; gap: 15px; margin-top: 30px;">
+      <button 
+        onclick="cancelEmergency()" 
+        style="flex: 1; padding: 15px; background: #6b7280; color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s;">
+        ✖️ Cancel
+      </button>
+      
+      <button 
+        onclick="confirmEmergency()" 
+        style="flex: 1; padding: 15px; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);">
+        🚨 Confirm Emergency
+      </button>
+    </div>
+    
+    <p style="margin-top: 20px; font-size: 0.9rem; color: #6b7280;">
+      Click "Cancel" if this was a mistake
+    </p>
+  </div>
+</div>
 
 
 
@@ -3870,6 +3990,70 @@ const symptomDatabase = {
   }
 };
 
+// ========== RENDER SYMPTOM CARDS FROM DATABASE ==========
+function renderSymptomCards() {
+  const container = document.getElementById('galleryGrid');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  Object.keys(symptomDatabase).forEach(key => {
+    const s = symptomDatabase[key];
+
+    const card = document.createElement('div');
+    card.className = 'symptom-card';
+    card.dataset.key = key;
+
+    card.innerHTML = `
+      <img src="${s.image}" alt="${s.name}" class="symptom-img">
+      <p class="symptom-name">${s.name}</p>
+      <span class="symptom-tag">${s.category}</span>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+renderSymptomCards();
+
+// ========== SYMPTOM MODAL LOGIC ==========
+const symptomModal = document.getElementById('symptomModal');
+const symptomModalImg = document.getElementById('symptomModalImg');
+const symptomModalTitle = document.getElementById('symptomModalTitle');
+const symptomModalText = document.getElementById('symptomModalText');
+const symptomModalAdvice = document.getElementById('symptomModalAdvice');
+const symptomMoreBtn = document.getElementById('symptomMoreBtn');
+
+document.addEventListener('click', (e) => {
+  const card = e.target.closest('.symptom-card');
+  if (!card) return;
+
+  const key = card.dataset.key;
+  const s = symptomDatabase[key];
+  if (!s) return;
+
+  symptomModalImg.src = s.image;
+  symptomModalImg.alt = s.name;
+  symptomModalTitle.textContent = s.name;
+  symptomModalText.textContent = s.description;
+  symptomModalAdvice.textContent = s.advice;
+
+  symptomModal.classList.add('open');
+});
+
+document.querySelector('.symptom-modal-close').onclick = () => {
+  symptomModal.classList.remove('open');
+};
+
+symptomModal.addEventListener('click', (e) => {
+  if (e.target === symptomModal) symptomModal.classList.remove('open');
+});
+
+symptomMoreBtn.onclick = () => {
+  alert('If symptoms are sudden, severe, or getting worse, please contact emergency services or a doctor immediately.');
+};
+
+
 // ========== SYMPTOM MODAL FUNCTIONS ==========
 
 // Open symptom modal with details
@@ -4543,6 +4727,9 @@ async function requestResetCode() {
   <!-- TOP ITEMS -->
   <li onclick="toggleChatHistory()">🕒 Search History</li>
   <li onclick="toggleGallery()">🖼️ Symptoms Gallery</li>
+  <!-- Inside .menu list -->
+<li onclick="openNeuroScore()">🧠 NeuroScore Assessment</li>
+
   
   <!-- SPACER (This pushes everything below it to the bottom) -->
   <div style="flex-grow: 1;"></div>
@@ -4600,66 +4787,9 @@ async function requestResetCode() {
       </button>
       
       <!-- Gallery Grid -->
-      <div id="galleryGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-        
-        <!-- Image 1: Brain Anatomy -->
-        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Brain Anatomy', 'Understanding the structure of the human brain and its key regions.')">
-          <img src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Brain Anatomy">
-          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Brain Anatomy</p>
-        </div>
-        
-        <!-- Image 2: MRI Scan -->
-        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('MRI Brain Scan', 'Medical imaging used to detect neurological conditions.')">
-          <img src="https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="MRI Scan">
-          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">MRI Brain Scan</p>
-        </div>
-        
-        <!-- Image 3: Migraine Symptoms -->
-        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Migraine Symptoms', 'Visual representation of common migraine patterns and triggers.')">
-          <img src="https://images.unsplash.com/photo-1578496781379-7dcfb995293d?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Migraine">
-          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Migraine Symptoms</p>
-        </div>
-        
-        <!-- Image 4: Stroke Warning Signs -->
-        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Stroke Warning', 'Recognizing early signs of stroke - FAST method.')">
-          <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Stroke">
-          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Stroke Warning</p>
-        </div>
-        
-        <!-- Image 5: Alzheimer's Brain -->
-        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Alzheimer Disease', 'Brain changes associated with Alzheimer disease.')">
-          <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Alzheimer">
-          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Alzheimer's Disease</p>
-        </div>
-        
-        <!-- Image 6: Seizure Patterns -->
-        <div class="gallery-item" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.2s;" onclick="showImageInfo('Seizure Types', 'Understanding different types of seizure patterns.')">
-          <img src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=400&h=300&fit=crop" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" alt="Seizure">
-          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #333;">Seizure Patterns</p>
-        </div>
-        
-      </div>
-    </div>
-  </div>
-</aside>
-
-<style>
-  #galleryPanel.open {
-    width: 350px !important;
-    padding: 0 !important;
-  }
-  
-  #galleryPanel.open #galleryContent {
-    display: block !important;
-  }
-  
-  .gallery-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border-color: #2563eb !important;
-  }
-</style>
-
+      <div id="galleryGrid" class="gallery-grid"
+     style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+</div>
 
 
     <main class="chat-section">
@@ -4698,7 +4828,8 @@ async function requestResetCode() {
     </main>
 
     <aside class="rightbar">
-      <button class="emergency" onclick="triggerEmergency()">🚨 Emergency</button>
+     <button class="emergency" onclick="showEmergencyConfirmation()">🚨 Emergency</button>
+
       
       <button class="connect-doctor" onclick="togglePatientList()" id="connectDoctorBtn" style="position: relative;">
   <span id="patientBtnText">👤 Patient List</span>
@@ -4887,6 +5018,18 @@ async function requestResetCode() {
       </div>
       
     </div>
+  </div>
+</div>
+
+<!-- Symptom detail popup -->
+<div id="symptomModal" class="symptom-modal">
+  <div class="symptom-modal-content">
+    <span class="symptom-modal-close">&times;</span>
+    <img id="symptomModalImg" src="" alt="">
+    <h3 id="symptomModalTitle"></h3>
+    <p id="symptomModalText"></p>
+    <div id="symptomModalAdvice" class="symptom-advice"></div>
+    <button id="symptomMoreBtn">General safety advice</button>
   </div>
 </div>
 
@@ -5483,7 +5626,7 @@ async function requestResetCode() {
       
     } catch (error) {
       console.error('Error:', error);
-      alert("Ã¢ÂÅ’ Server error. Please check if backend is running.");
+      alert(" Server error. Please check if backend is running.");
     }
   }
 
@@ -5531,7 +5674,7 @@ async function requestResetCode() {
                 ${index + 1}. ${hospital.hospital}
               </p>
               <p style="font-size: 0.85rem; color: #666; margin: 3px 0;">
-                â•${hospital.phone}
+                ☎️${hospital.phone}
               </p>
               <p style="font-size: 0.85rem; color: #10b981; margin: 3px 0;">
                 🚑 ${hospital.distance}
@@ -5655,6 +5798,69 @@ async function requestResetCode() {
     showEmergencyModal('error', '❗ Connection Failed', 'Unable to reach emergency services. Please call 108 immediately for assistance.');
   }
 }
+
+// ========== ADD THESE 3 NEW FUNCTIONS BELOW triggerEmergency() ==========
+
+/**
+ * STEP 1: Show confirmation when emergency button is clicked
+ */
+function showEmergencyConfirmation() {
+  console.log('🚨 Emergency button clicked - showing confirmation');
+  
+  const confirmModal = document.getElementById('emergencyConfirmModal');
+  if (confirmModal) {
+    confirmModal.style.display = 'flex';
+  } else {
+    console.error('❌ Emergency confirmation modal not found - check if modal HTML is added');
+    // Fallback: if modal doesn't exist, trigger emergency directly
+    alert('⚠️ Are you sure you want to send an emergency alert?');
+    if (confirm('Click OK to confirm emergency, Cancel to abort')) {
+      triggerEmergency();
+    }
+  }
+}
+
+/**
+ * STEP 2: User clicked "Cancel" button
+ */
+function cancelEmergency() {
+  console.log('✅ User cancelled emergency');
+  
+  // Hide confirmation modal
+  const confirmModal = document.getElementById('emergencyConfirmModal');
+  if (confirmModal) {
+    confirmModal.style.display = 'none';
+  }
+  
+  // Optional: Show brief cancellation message
+  showEmergencyModal('info', '✅ Cancelled', 'Emergency alert was not sent.');
+  
+  // Auto-close message after 2 seconds
+  setTimeout(() => {
+    const modal = document.getElementById('emergencyModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }, 2000);
+}
+
+/**
+ * STEP 3: User clicked "Confirm Emergency" button
+ */
+function confirmEmergency() {
+  console.log('🚨 User CONFIRMED emergency - proceeding with alert');
+  
+  // Hide confirmation modal
+  const confirmModal = document.getElementById('emergencyConfirmModal');
+  if (confirmModal) {
+    confirmModal.style.display = 'none';
+  }
+  
+  // Now call the original emergency function
+  triggerEmergency();
+}
+
+
 
 // Function to Open the About Modal
 function showAboutModal() {
@@ -8311,6 +8517,19 @@ async function setupPatientProfile(uid) {
     console.error("Error loading patient profile:", error);
     document.getElementById('profileName').textContent = "Error loading data";
   }
+}
+
+function openNeuroScore() {
+  // Check if user is logged in
+  const userRole = localStorage.getItem('userRole') || 'guest';
+  
+  if (userRole === 'guest') {
+    alert('⚠️ NeuroScore feature is only available for registered Doctors and Patients.\n\nPlease login to access this premium feature.');
+    return;
+  }
+  
+  // Open NeuroScore page
+  window.location.href = 'neuroscore_assessment.html';
 }
 
 

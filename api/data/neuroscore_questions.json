@@ -1,0 +1,119 @@
+{
+  "questions": {
+    "sleep": [
+      {
+        "id": "sleep_1",
+        "question": "How many hours did you sleep last night?",
+        "type": "slider",
+        "min": 0,
+        "max": 12,
+        "step": 0.5,
+        "unit": "hours"
+      },
+      {
+        "id": "sleep_2",
+        "question": "How refreshed do you feel right now?",
+        "type": "rating",
+        "options": ["😴 Exhausted", "😐 Tired", "🙂 Okay", "😊 Good", "⚡ Energized"]
+      },
+      {
+        "id": "sleep_3",
+        "question": "Did you experience any sleep disturbances? (nightmares, waking up frequently, etc.)",
+        "type": "textarea",
+        "optional": true
+      }
+    ],
+    "stress": [
+      {
+        "id": "stress_1",
+        "question": "How stressed do you feel today?",
+        "type": "rating",
+        "options": ["😌 Very Calm", "🙂 Calm", "😐 Neutral", "😰 Stressed", "😫 Very Stressed"]
+      },
+      {
+        "id": "stress_2",
+        "question": "Did you take relaxation breaks today?",
+        "type": "yesno"
+      },
+      {
+        "id": "stress_3",
+        "question": "What caused stress today? (optional)",
+        "type": "textarea",
+        "optional": true
+      },
+      {
+        "id": "stress_4",
+        "question": "Did you meditate or practice mindfulness today?",
+        "type": "yesno"
+      }
+    ],
+    "focus": [
+      {
+        "id": "focus_1",
+        "question": "How well could you concentrate today?",
+        "type": "slider",
+        "min": 1,
+        "max": 5,
+        "labels": ["Very Poor", "Poor", "Average", "Good", "Excellent"]
+      },
+      {
+        "id": "focus_2",
+        "question": "Did you experience brain fog or mental confusion?",
+        "type": "yesno"
+      },
+      {
+        "id": "focus_3",
+        "question": "Did you have any memory difficulties today?",
+        "type": "yesno"
+      }
+    ],
+    "lifestyle": [
+      {
+        "id": "lifestyle_1",
+        "question": "Did you exercise today?",
+        "type": "yesno"
+      },
+      {
+        "id": "lifestyle_2",
+        "question": "If yes, for how many minutes?",
+        "type": "number",
+        "min": 0,
+        "max": 300,
+        "unit": "minutes",
+        "conditional": "lifestyle_1 == true"
+      },
+      {
+        "id": "lifestyle_3",
+        "question": "How many meals did you eat today?",
+        "type": "select",
+        "options": ["0", "1", "2", "3 or more"]
+      },
+      {
+        "id": "lifestyle_4",
+        "question": "How many glasses of water did you drink?",
+        "type": "number",
+        "min": 0,
+        "max": 20,
+        "unit": "glasses"
+      },
+      {
+        "id": "lifestyle_5",
+        "question": "Did you use screens (phone/laptop) within 1 hour before bed?",
+        "type": "yesno"
+      }
+    ],
+    "mental": [
+      {
+        "id": "mental_1",
+        "question": "How would you rate your mood today?",
+        "type": "rating",
+        "options": ["😢 Very Low", "😔 Low", "😐 Neutral", "🙂 Good", "😄 Very Good"]
+      },
+      {
+        "id": "mental_2",
+        "question": "Did you interact with friends or family today?",
+        "type": "yesno"
+      }
+    ]
+  }
+}

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroScore Assessment - NEUROBUDDYY.AI</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      max-width: 700px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #667eea;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+    }
+
+    .access-warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .access-warning.show {
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 10px;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      color: #374151;
+      margin-bottom: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .question {
+      margin-bottom: 20px;
+    }
+
+    .question-label {
+      display: block;
+      margin-bottom: 10px;
+      color: #4b5563;
+      font-weight: 500;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: #d1d5db;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+    }
+
+    .slider-value {
+      display: block;
+      text-align: center;
+      margin-top: 5px;
+      font-weight: bold;
+      color: #667eea;
+      font-size: 1.1rem;
+    }
+
+    .rating-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .rating-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .rating-btn:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    .rating-btn.selected {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .yesno-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .yesno-btn {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .yesno-btn.yes:hover, .yesno-btn.yes.selected {
+      background: #10b981;
+      color: white;
+      border-color: #10b981;
+    }
+
+    .yesno-btn.no:hover, .yesno-btn.no.selected {
+      background: #ef4444;
+      color: white;
+      border-color: #ef4444;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    select, input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Result Modal */
+    .result-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .result-modal.show {
+      display: flex;
+    }
+
+    .result-content {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .score-circle {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .score-number {
+      font-size: 5rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .score-category {
+      font-size: 1.5rem;
+      color: #6b7280;
+      margin-top: 10px;
+    }
+
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #f9fafb;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 5px;
+      margin: 0 15px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 5px;
+      transition: width 1s ease;
+    }
+
+    .insight-item {
+      padding: 10px;
+      margin: 5px 0;
+      background: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 5px;
+    }
+
+    .recommendation-item {
+      padding: 15px;
+      margin: 10px 0;
+      background: #f0fdf4;
+      border-left: 4px solid #10b981;
+      border-radius: 8px;
+    }
+
+    .close-btn {
+      width: 100%;
+      padding: 15px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🧠 Brain Health Assessment</h1>
+  <p class="subtitle">Daily NeuroScore Check-in (5 minutes)</p>
+
+  <!-- Access Warning -->
+  <div id="accessWarning" class="access-warning">
+    <strong>⚠️ Access Restricted:</strong> This feature is only available for registered Doctors and Patients. Please <a href="index.html">login</a> to continue.
+  </div>
+
+  <form id="neuroForm">
+    <!-- SLEEP SECTION -->
+    <div class="section">
+      <div class="section-title">
+        <span>💤</span> Sleep Quality
+      </div>
+
+      <div class="question">
+        <label class="question-label">How many hours did you sleep last night?</label>
+        <input type="range" id="sleep_hours" min="0" max="12" step="0.5" value="7">
+        <span class="slider-value" id="sleep_hours_display">7 hours</span>
+      </div>
+
+      <div class="question">
+        <label class="question-label">How refreshed do you feel?</label>
+        <div class="rating-buttons">
+          <button type="button" class="rating-btn" data-name="sleep_quality" data-value="1">😴 Exhausted</button>
+          <button type="button" class="rating-btn" data-name="sleep_quality" data-value="2">😐 Tired</button>
+          <button type="button" class="rating-btn" data-name="sleep_quality" data-value="3">🙂 Okay</button>
+          <button type="button" class="rating-btn" data-name="sleep_quality" data-value="4">😊 Good</button>
+          <button type="button" class="rating-btn" data-name="sleep_quality" data-value="5">⚡ Energized</button>
+        </div>
+      </div>
+
+      <div class="question">
+        <label class="question-label">Any sleep issues? (optional)</label>
+        <textarea id="sleep_issues" placeholder="e.g., nightmares, woke up frequently..."></textarea>
+      </div>
+    </div>
+
+    <!-- STRESS SECTION -->
+    <div class="section">
+      <div class="section-title">
+        <span>🧘</span> Stress & Mental State
+      </div>
+
+      <div class="question">
+        <label class="question-label">How stressed are you today?</label>
+        <div class="rating-buttons">
+          <button type="button" class="rating-btn" data-name="stress_level" data-value="1">😌 Very Calm</button>
+          <button type="button" class="rating-btn" data-name="stress_level" data-value="2">🙂 Calm</button>
+          <button type="button" class="rating-btn" data-name="stress_level" data-value="3">😐 Neutral</button>
+          <button type="button" class="rating-btn" data-name="stress_level" data-value="4">😰 Stressed</button>
+          <button type="button" class="rating-btn" data-name="stress_level" data-value="5">😫 Very Stressed</button>
+        </div>
+      </div>
+
+      <div class="question">
+        <label class="question-label">Did you take relaxation breaks today?</label>
+        <div class="yesno-buttons">
+          <button type="button" class="yesno-btn yes" data-name="took_breaks" data-value="true">✅ Yes</button>
+          <button type="button" class="yesno-btn no" data-name="took_breaks" data-value="false">❌ No</button>
+        </div>
+      </div>
+
+      <div class="question">
+        <label class="question-label">Did you meditate today?</label>
+        <div class="yesno-buttons">
+          <button type="button" class="yesno-btn yes" data-name="meditation_done" data-value="true">✅ Yes</button>
+          <button type="button" class="yesno-btn no" data-name="meditation_done" data-value="false">❌ No</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOCUS SECTION -->
+    <div class="section">
+      <div class="section-title">
+        <span>🎯</span> Cognitive Focus
+      </div>
+
+      <div class="question">
+        <label class="question-label">Concentration level today:</label>
+        <input type="range" id="concentration" min="1" max="5" value="3">
+        <span class="slider-value" id="concentration_display">3 - Average</span>
+      </div>
+
+      <div class="question">
+        <label class="question-label">Did you experience brain fog?</label>
+        <div class="yesno-buttons">
+          <button type="button" class="yesno-btn yes" data-name="brain_fog" data-value="true">Yes</button>
+          <button type="button" class="yesno-btn no" data-name="brain_fog" data-value="false">No</button>
+        </div>
+      </div>
+
+      <div class="question">
+        <label class="question-label">Any memory difficulties?</label>
+        <div class="yesno-buttons">
+          <button type="button" class="yesno-btn yes" data-name="memory_issues" data-value="true">Yes</button>
+          <button type="button" class="yesno-btn no" data-name="memory_issues" data-value="false">No</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIFESTYLE SECTION -->
+    <div class="section">
+      <div class="section-title">
+        <span>🏃</span> Lifestyle Habits
+      </div>
+
+      <div class="question">
+        <label class="question-label">Did you exercise today?</label>
+        <div class="yesno-buttons">
+          <button type="button" class="yesno-btn yes" data-name="exercised" data-value="true">✅ Yes</button>
+          <button type="button" class="yesno-btn no" data-name="exercised" data-value="false">❌ No</button>
+        </div>
+      </div>
+
+      <div class="question" id="exercise_duration_q" style="display:none;">
+        <label class="question-label">Exercise duration (minutes):</label>
+        <input type="number" id="exercise_duration" min="0" max="300" value="0">
+      </div>
+
+      <div class="question">
+        <label class="question-label">Meals eaten today:</label>
+        <select id="meals_count">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3 or more</option>
+        </select>
+      </div>
+
+      <div class="question">
+        <label class="question-label">Water intake (glasses):</label>
+        <input type="number" id="water_intake" min="0" max="20" value="4">
+      </div>
+
+      <div class="question">
+        <label class="question-label">Screen time before bed?</label>
+        <div class="yesno-buttons">
+          <button type="button" class="yesno-btn yes" data-name="screen_before_bed" data-value="true">Yes</button>
+          <button type="button" class="yesno-btn no" data-name="screen_before_bed" data-value="false">No</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENTAL WELLNESS SECTION -->
+    <div class="section">
+      <div class="section-title">
+        <span>💚</span> Mental Wellness
+      </div>
+
+      <div class="question">
+        <label class="question-label">How is your mood today?</label>
+        <div class="rating-buttons">
+          <button type="button" class="rating-btn" data-name="mood_rating" data-value="1">😢 Very Low</button>
+          <button type="button" class="rating-btn" data-name="mood_rating" data-value="2">😔 Low</button>
+          <button type="button" class="rating-btn" data-name="mood_rating" data-value="3">😐 Neutral</button>
+          <button type="button" class="rating-btn" data-name="mood_rating" data-value="4">🙂 Good</button>
+          <button type="button" class="rating-btn" data-name="mood_rating" data-value="5">😄 Very Good</button>
+        </div>
+      </div>
+
+      <div class="question">
+        <label class="question-label">Did you interact with friends/family?</label>
+        <div class="yesno-buttons">
+          <button type="button" class="yesno-btn yes" data-name="social_interaction" data-value="true">✅ Yes</button>
+          <button type="button" class="yesno-btn no" data-name="social_interaction" data-value="false">❌ No</button>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">
+      Calculate My NeuroScore
+    </button>
+  </form>
+
+  <a href="index.html" class="back-link">← Back to Home</a>
+</div>
+
+<!-- Result Modal -->
+<div id="resultModal" class="result-modal">
+  <div class="result-content">
+    <h2 style="text-align: center; color: #667eea;">Your NeuroScore Today</h2>
+    
+    <div class="score-circle">
+      <div class="score-number" id="totalScore">0</div>
+      <div class="score-category" id="scoreCategory">Calculating...</div>
+    </div>
+
+    <h3 style="margin: 20px 0 10px 0;">Score Breakdown</h3>
+    <div id="breakdownContainer"></div>
+
+    <h3 style="margin: 20px 0 10px 0;">Insights</h3>
+    <div id="insightsContainer"></div>
+
+    <h3 style="margin: 20px 0 10px 0;">Recommendations</h3>
+    <div id="recommendationsContainer"></div>
+
+    <button class="close-btn" onclick="closeResultModal()">Close & Save</button>
+  </div>
+</div>
+
+<script type="module">
+  // Import Firebase (use your existing Firebase config from index.html)
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+  import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+  // Initialize Firebase (use your config)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDnsuheauVnhqUcIhCyEXCNSNBdS1PQkII",
+    authDomain: "neurobuddyy-ai-7f500.firebaseapp.com",
+    projectId: "neurobuddyy-ai-7f500",
+    storageBucket: "neurobuddyy-ai-7f500.firebasestorage.app",
+    messagingSenderId: "965241116528",
+    appId: "1:965241116528:web:ce58e789433a5a5d3b61b5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let currentUser = null;
+  let currentUserRole = null;
+
+  // Check authentication
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      // Get user role from localStorage or Firestore
+      currentUserRole = localStorage.getItem('userRole') || 'guest';
+      
+      if (currentUserRole === 'guest') {
+        document.getElementById('accessWarning').classList.add('show');
+        document.getElementById('submitBtn').disabled = true;
+      }
+    } else {
+      document.getElementById('accessWarning').classList.add('show');
+      document.getElementById('submitBtn').disabled = true;
+    }
+  });
+
+  // Slider display updates
+  document.getElementById('sleep_hours').addEventListener('input', (e) => {
+    document.getElementById('sleep_hours_display').textContent = `${e.target.value} hours`;
+  });
+
+  const concentrationLabels = ['Very Poor', 'Poor', 'Average', 'Good', 'Excellent'];
+  document.getElementById('concentration').addEventListener('input', (e) => {
+    document.getElementById('concentration_display').textContent = `${e.target.value} - ${concentrationLabels[e.target.value - 1]}`;
+  });
+
+  // Rating buttons
+  document.querySelectorAll('.rating-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const name = this.dataset.name;
+      document.querySelectorAll(`[data-name="${name}"]`).forEach(b => b.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+
+  // Yes/No buttons
+  document.querySelectorAll('.yesno-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const name = this.dataset.name;
+      document.querySelectorAll(`[data-name="${name}"]`).forEach(b => b.classList.remove('selected'));
+      this.classList.add('selected');
+      
+      // Show exercise duration if exercised = yes
+      if (name === 'exercised' && this.dataset.value === 'true') {
+        document.getElementById('exercise_duration_q').style.display = 'block';
+      } else if (name === 'exercised') {
+        document.getElementById('exercise_duration_q').style.display = 'none';
+      }
+    });
+  });
+
+  // Form submission
+  document.getElementById('neuroForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!currentUser || currentUserRole === 'guest') {
+      alert('⚠️ Please login as a Doctor or Patient to use this feature');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    // Collect responses
+    const responses = {
+      sleep_hours: document.getElementById('sleep_hours').value,
+      sleep_quality: document.querySelector('[data-name="sleep_quality"].selected')?.dataset.value || 3,
+      sleep_issues: document.getElementById('sleep_issues').value,
+      stress_level: document.querySelector('[data-name="stress_level"].selected')?.dataset.value || 3,
+      took_breaks: document.querySelector('[data-name="took_breaks"].selected')?.dataset.value === 'true',
+      meditation_done: document.querySelector('[data-name="meditation_done"].selected')?.dataset.value === 'true',
+      concentration: document.getElementById('concentration').value,
+      brain_fog: document.querySelector('[data-name="brain_fog"].selected')?.dataset.value === 'true',
+      memory_issues: document.querySelector('[data-name="memory_issues"].selected')?.dataset.value === 'true',
+      exercised: document.querySelector('[data-name="exercised"].selected')?.dataset.value === 'true',
+      exercise_duration: document.getElementById('exercise_duration').value,
+      meals_count: document.getElementById('meals_count').value,
+      water_intake: document.getElementById('water_intake').value,
+      screen_before_bed: document.querySelector('[data-name="screen_before_bed"].selected')?.dataset.value === 'true',
+      mood_rating: document.querySelector('[data-name="mood_rating"].selected')?.dataset.value || 3,
+      social_interaction: document.querySelector('[data-name="social_interaction"].selected')?.dataset.value === 'true'
+    };
+
+    // Send to Flask backend
+    try {
+      document.getElementById('submitBtn').textContent = 'Calculating...';
+      document.getElementById('submitBtn').disabled = true;
+
+      const response = await fetch('https://your-backend-url.onrender.com/api/neuroscore/submit', {
+
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: currentUser.uid,
+          user_role: currentUserRole,
+          responses: responses
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Save to Firebase Firestore
+        await addDoc(collection(db, 'neuroscores'), {
+          userId: currentUser.uid,
+          userEmail: currentUser.email,
+          userRole: currentUserRole,
+          score: result.total_score,
+          category: result.category,
+          breakdown: result.breakdown,
+          insights: result.insights,
+          risk_flags: result.risk_flags,
+          recommendations: result.recommendations,
+          timestamp: serverTimestamp()
+        });
+
+        // Display results
+        displayResults(result);
+      } else {
+        alert('Error: ' + result.message);
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to calculate NeuroScore. Please try again.');
+    } finally {
+      document.getElementById('submitBtn').textContent = 'Calculate My NeuroScore';
+      document.getElementById('submitBtn').disabled = false;
+    }
+  });
+
+  function displayResults(result) {
+    document.getElementById('totalScore').textContent = result.total_score;
+    document.getElementById('scoreCategory').textContent = result.category;
+
+    // Breakdown
+    const breakdownHTML = Object.entries(result.breakdown).map(([key, value]) => `
+      <div class="breakdown-item">
+        <span style="text-transform: capitalize; font-weight: 600;">${key.replace('_', ' ')}</span>
+        <div class="bar-container">
+          <div class="bar-fill" style="width: ${(value / 20) * 100}%"></div>
+        </div>
+        <span style="font-weight: bold;">${value}/20</span>
+      </div>
+    `).join('');
+    document.getElementById('breakdownContainer').innerHTML = breakdownHTML;
+
+    // Insights
+    const insightsHTML = result.insights.map(insight => `
+      <div class="insight-item">${insight}</div>
+    `).join('');
+    document.getElementById('insightsContainer').innerHTML = insightsHTML;
+
+    // Recommendations
+    const recommendationsHTML = result.recommendations.map(rec => `
+      <div class="recommendation-item">
+        <strong>${rec.area}:</strong> ${rec.tip}
+      </div>
+    `).join('');
+    document.getElementById('recommendationsContainer').innerHTML = recommendationsHTML;
+
+    // Show modal
+    document.getElementById('resultModal').classList.add('show');
+  }
+
+  window.closeResultModal = function() {
+    document.getElementById('resultModal').classList.remove('show');
+    window.location.href = 'index.html';
+  };
+</script>
+
+</body>
+</html>
