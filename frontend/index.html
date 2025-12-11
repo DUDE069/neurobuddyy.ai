@@ -1394,6 +1394,9 @@ let currentCall = null;
 let localStream = null;
 let remoteStream = null;
 let callInProgress = false;
+let currentCamera = 'user'; // 'user' = front, 'environment' = back
+let availableCameras = [];
+
 
 // Initialize PeerJS (safe, single instance)
 function initializePeerJS(userId) {
@@ -1593,11 +1596,13 @@ async function startVoiceCall() {
 }
 
 
-// Show "Calling..." UI
+// ============================================
+// SHOW CALLING UI (DOCTOR SIDE)
+// ============================================
 function showCallingUI(recipientName, callType) {
   document.getElementById('activeCallModal').style.display = 'flex';
   document.getElementById('activeCallTitle').textContent = `Calling ${recipientName}...`;
-  document.getElementById('callDuration').textContent = 'Connecting...';
+  document.getElementById('callDuration').textContent = '00:00'; // ✅ Changed from "Connecting..."
   
   // Show appropriate UI
   if (callType === 'voice') {
@@ -1605,11 +1610,20 @@ function showCallingUI(recipientName, callType) {
     document.getElementById('localVideo').style.display = 'none';
     document.getElementById('audioOnlyIndicator').style.display = 'block';
     document.getElementById('videoBtn').style.display = 'none';
+    
+    // ✅ Hide switch camera button for voice calls
+    const switchCameraBtn = document.getElementById('switchCameraBtn');
+    if (switchCameraBtn) switchCameraBtn.style.display = 'none';
+    
   } else {
     document.getElementById('remoteVideo').style.display = 'block';
     document.getElementById('localVideo').style.display = 'block';
     document.getElementById('audioOnlyIndicator').style.display = 'none';
     document.getElementById('videoBtn').style.display = 'inline-block';
+    
+    // ✅ Show switch camera button for video calls
+    const switchCameraBtn = document.getElementById('switchCameraBtn');
+    if (switchCameraBtn) switchCameraBtn.style.display = 'inline-block';
     
     // Show local video preview
     document.getElementById('localVideo').srcObject = localStream;
@@ -1803,6 +1817,20 @@ function handleRemoteStream(stream, callType) {
   remoteStream = stream;
   console.log("🎥 Displaying remote stream");
   
+  // ✅ UPDATE CALL TITLE - REMOVE "CALLING..." / "CONNECTING..."
+  const callTitle = document.getElementById('activeCallTitle');
+  if (callTitle) {
+    // Remove any "Calling " prefix and "..." suffix
+    const personName = callTitle.textContent.replace('Calling ', '').replace('...', '');
+    callTitle.textContent = personName;
+  }
+  
+  // ✅ UPDATE DURATION - MAKE SURE IT'S NOT STUCK ON "CONNECTING..."
+  const callDuration = document.getElementById('callDuration');
+  if (callDuration && callDuration.textContent === 'Connecting...') {
+    callDuration.textContent = '00:00';
+  }
+  
   if (callType === 'video') {
     const remoteVideo = document.getElementById('remoteVideo');
     if (remoteVideo) {
@@ -1824,6 +1852,7 @@ function handleRemoteStream(stream, callType) {
   callInProgress = true;
 }
 
+
 // ============================================
 // SHOW ACTIVE CALL UI - PATIENT SIDE
 // ============================================
@@ -1834,7 +1863,6 @@ function showActiveCallUI(personName, callType) {
   let modal = document.getElementById('activeCallModal');
   
   if (!modal) {
-    // Create modal if it doesn't exist
     const modalHTML = `
       <div id="activeCallModal" class="modal-overlay" style="display: none;">
         <div class="modal-content" style="max-width: 600px; background: #1f2937; color: white;">
@@ -1860,6 +1888,9 @@ function showActiveCallUI(personName, callType) {
               <button id="videoBtn" onclick="toggleVideo()" style="padding: 15px 20px; background: #6b7280; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: none;">
                 📹
               </button>
+              <button id="switchCameraBtn" onclick="switchCamera()" style="padding: 15px 20px; background: #6b7280; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: none;" title="Switch Camera">
+                🔄
+              </button>
               <button onclick="endCall()" style="padding: 15px 30px; background: #dc2626; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; font-size: 1rem;">
                 ❌ End Call
               </button>
@@ -1871,6 +1902,7 @@ function showActiveCallUI(personName, callType) {
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     modal = document.getElementById('activeCallModal');
   }
+
   
   // Show modal
   modal.style.display = 'flex';
@@ -1885,18 +1917,22 @@ function showActiveCallUI(personName, callType) {
   const audioIndicator = document.getElementById('audioOnlyIndicator');
   const videoBtn = document.getElementById('videoBtn');
   
-  if (callType === 'voice') {
-    if (remoteVideo) remoteVideo.style.display = 'none';
-    if (localVideo) localVideo.style.display = 'none';
-    if (audioIndicator) audioIndicator.style.display = 'block';
-    if (videoBtn) videoBtn.style.display = 'none';
-  } else {
-    if (remoteVideo) remoteVideo.style.display = 'block';
-    if (localVideo) localVideo.style.display = 'block';
-    if (audioIndicator) audioIndicator.style.display = 'none';
-    if (videoBtn) videoBtn.style.display = 'inline-block';
-  }
-  
+  const switchCameraBtn = document.getElementById('switchCameraBtn');
+
+if (callType === 'voice') {
+  if (remoteVideo) remoteVideo.style.display = 'none';
+  if (localVideo) localVideo.style.display = 'none';
+  if (audioIndicator) audioIndicator.style.display = 'block';
+  if (videoBtn) videoBtn.style.display = 'none';
+  if (switchCameraBtn) switchCameraBtn.style.display = 'none';
+} else {
+  if (remoteVideo) remoteVideo.style.display = 'block';
+  if (localVideo) localVideo.style.display = 'block';
+  if (audioIndicator) audioIndicator.style.display = 'none';
+  if (videoBtn) videoBtn.style.display = 'inline-block';
+  if (switchCameraBtn) switchCameraBtn.style.display = 'inline-block';
+}
+
   // Start call timer
   startCallTimer();
   
@@ -4090,6 +4126,89 @@ function getDoctorWarningMessage(status) {
     `;
   }
 }
+
+// ============================================
+// GET AVAILABLE CAMERAS
+// ============================================
+async function getAvailableCameras() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    availableCameras = devices.filter(device => device.kind === 'videoinput');
+    console.log('📹 Available cameras:', availableCameras.length);
+    return availableCameras;
+  } catch (error) {
+    console.error('❌ Error getting cameras:', error);
+    return [];
+  }
+}
+
+// ============================================
+// SWITCH CAMERA (FRONT/BACK)
+// ============================================
+async function switchCamera() {
+  if (!localStream) {
+    alert('⚠️ No active video stream');
+    return;
+  }
+  
+  try {
+    console.log('🔄 Switching camera...');
+    
+    // Get available cameras
+    const cameras = await getAvailableCameras();
+    
+    if (cameras.length < 2) {
+      alert('⚠️ Only one camera detected on this device');
+      return;
+    }
+    
+    // Toggle between front and back
+    currentCamera = currentCamera === 'user' ? 'environment' : 'user';
+    
+    // Stop current video track
+    const videoTrack = localStream.getVideoTracks()[0];
+    if (videoTrack) {
+      videoTrack.stop();
+    }
+    
+    // Get new video stream with switched camera
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: { facingMode: currentCamera }
+    });
+    
+    // Replace video track in local stream
+    const newVideoTrack = newStream.getVideoTracks()[0];
+    localStream.removeTrack(videoTrack);
+    localStream.addTrack(newVideoTrack);
+    
+    // Update local video preview
+    const localVideo = document.getElementById('localVideo');
+    if (localVideo) {
+      localVideo.srcObject = localStream;
+    }
+    
+    // Replace video track in the peer connection (if in call)
+    if (currentCall && currentCall.peerConnection) {
+      const sender = currentCall.peerConnection
+        .getSenders()
+        .find(s => s.track && s.track.kind === 'video');
+      
+      if (sender) {
+        await sender.replaceTrack(newVideoTrack);
+        console.log('✅ Camera switched successfully');
+      }
+    }
+    
+  } catch (error) {
+    console.error('❌ Error switching camera:', error);
+    alert('❌ Failed to switch camera: ' + error.message);
+  }
+}
+
+
+
+
 
 // ============================================
 // 5. SEND CONSULTATION REQUEST
