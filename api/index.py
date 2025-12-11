@@ -14,7 +14,17 @@ import uuid
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
-CORS(app, resources={r"/api/*": {"origins": ["https://neurobuddyy-ai.onrender.com"]}})
+# Fix CORS - allow your frontend domain specifically
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "https://neurobuddyy-ai.onrender.com",
+            "http://localhost:3000"  # For local dev
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 
 
