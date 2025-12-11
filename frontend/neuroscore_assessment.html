@@ -561,21 +561,36 @@
   let currentUserRole = null;
 
   // Check authentication
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      currentUser = user;
-      // Get user role from localStorage or Firestore
-      currentUserRole = localStorage.getItem('userRole') || 'guest';
-      
-      if (currentUserRole === 'guest') {
-        document.getElementById('accessWarning').classList.add('show');
-        document.getElementById('submitBtn').disabled = true;
-      }
-    } else {
-      document.getElementById('accessWarning').classList.add('show');
-      document.getElementById('submitBtn').disabled = true;
-    }
+ onAuthStateChanged(auth, (user) => {
+  const submitBtn = document.getElementById('submitBtn');
+  const warning  = document.getElementById('accessWarning');
+
+  const storedRole = localStorage.getItem('userRole');
+  const userMode   = localStorage.getItem('userMode'); // 'patient' / 'doctor' / 'guest'
+  let role = storedRole || userMode || 'guest';
+  if (role !== 'patient' && role !== 'doctor') role = 'guest';
+
+  currentUser = user || null;
+  currentUserRole = role;
+
+  console.log('🧠 NeuroScore page auth:', {
+    hasUser: !!user,
+    storedRole,
+    userMode,
+    effectiveRole: role
   });
+
+  if (!user || role === 'guest') {
+    // Block guests only
+    if (warning)   warning.classList.add('show');
+    if (submitBtn) submitBtn.disabled = true;
+  } else {
+    // Logged‑in patient/doctor → allow
+    if (warning)   warning.classList.remove('show');
+    if (submitBtn) submitBtn.disabled = false;
+  }
+});
+
 
   // Slider display updates
   document.getElementById('sleep_hours').addEventListener('input', (e) => {
