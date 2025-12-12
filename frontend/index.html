@@ -7341,17 +7341,22 @@ function cancelPatientRequest() {
 // ✅ PATIENT-INITIATED CALLS
 // ============================================
 
+// ============================================
+// ✅ PATIENT-INITIATED CALLS (FIXED)
+// ============================================
+
 // Patient starts VIDEO call
 async function patientStartVideoCall() {
   const requestData = JSON.parse(localStorage.getItem('activePatientRequest') || sessionStorage.getItem('activeRequestId'));
   
   if (!requestData) {
-    alert("❌ Error: No active consultation found.");
+    alert("❌ Error: No active consultation found. Please request a doctor first.");
     return;
   }
 
   try {
     console.log("Patient starting video call...");
+    console.log("Request data:", requestData);
 
     // Check if PeerJS is ready
     if (!peer || !peer.id) {
@@ -7359,17 +7364,64 @@ async function patientStartVideoCall() {
       return;
     }
 
+    // ✅ GET DOCTOR'S PEER ID FROM FIREBASE
+    const requestId = requestData.id || requestData;
+    const { doc, getDoc } = window.firestoreFunctions;
+    const docRef = doc(window.firebaseDB, 'patientRequests', requestId);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      alert("❌ Consultation request not found. Please try requesting again.");
+      return;
+    }
+    
+    const doctorData = docSnap.data();
+    console.log("Doctor data from Firebase:", doctorData);
+    
+    if (!doctorData.doctorPeerId) {
+      alert("❌ Cannot start call: Doctor is not connected. Please wait for doctor to join.");
+      return;
+    }
+
     // Get local stream (Video + Audio)
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
 
-    // Show calling UI
-    showCallingUI("Doctor", "video");
+    // ✅ ACTUALLY CALL THE DOCTOR
+    console.log("📞 Calling doctor with Peer ID:", doctorData.doctorPeerId);
+    currentCall = peer.call(doctorData.doctorPeerId, localStream, {
+      metadata: { callType: 'video' }
+    });
 
-    console.log("📞 Patient ready to receive call from doctor");
+    // ✅ HANDLE INCOMING REMOTE STREAM
+    currentCall.on('stream', (remoteStream) => {
+      console.log("✅ Call connected! Remote stream received");
+      handleRemoteStream(remoteStream, 'video');
+    });
+
+    // Handle call close
+    currentCall.on('close', () => {
+      console.log("Call closed");
+      endCall();
+    });
+
+    // Handle errors
+    currentCall.on('error', (err) => {
+      console.error("Call error:", err);
+      alert("❌ Call failed: " + err.message);
+      endCall();
+    });
+
+    // Show calling UI
+    showCallingUI(doctorData.doctorName || "Doctor", "video");
 
   } catch (err) {
     console.error("Call failed:", err);
-    alert("❌ Call failed: " + err.message);
+    
+    if (err.name === 'NotAllowedError') {
+      alert("❌ Camera/Microphone access denied. Please allow access in your browser settings.");
+    } else {
+      alert("❌ Call failed: " + err.message);
+    }
   }
 }
 
@@ -7378,12 +7430,13 @@ async function patientStartVoiceCall() {
   const requestData = JSON.parse(localStorage.getItem('activePatientRequest') || sessionStorage.getItem('activeRequestId'));
   
   if (!requestData) {
-    alert("❌ Error: No active consultation found.");
+    alert("❌ Error: No active consultation found. Please request a doctor first.");
     return;
   }
 
   try {
     console.log("Patient starting voice call...");
+    console.log("Request data:", requestData);
 
     // Check PeerJS
     if (!peer || !peer.id) {
@@ -7391,19 +7444,65 @@ async function patientStartVoiceCall() {
       return;
     }
 
+    // ✅ GET DOCTOR'S PEER ID FROM FIREBASE
+    const requestId = requestData.id || requestData;
+    const { doc, getDoc } = window.firestoreFunctions;
+    const docRef = doc(window.firebaseDB, 'patientRequests', requestId);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      alert("❌ Consultation request not found.");
+      return;
+    }
+    
+    const doctorData = docSnap.data();
+    console.log("Doctor data:", doctorData);
+    
+    if (!doctorData.doctorPeerId) {
+      alert("❌ Cannot start call: Doctor is not connected.");
+      return;
+    }
+
     // Get local stream (Audio Only)
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
 
-    // Show calling UI
-    showCallingUI("Doctor", "voice");
+    // ✅ ACTUALLY CALL THE DOCTOR
+    console.log("📞 Calling doctor with Peer ID:", doctorData.doctorPeerId);
+    currentCall = peer.call(doctorData.doctorPeerId, localStream, {
+      metadata: { callType: 'voice' }
+    });
 
-    console.log("📞 Patient ready to receive call from doctor");
+    // ✅ HANDLE INCOMING REMOTE STREAM
+    currentCall.on('stream', (remoteStream) => {
+      console.log("✅ Call connected!");
+      handleRemoteStream(remoteStream, 'voice');
+    });
+
+    currentCall.on('close', () => {
+      console.log("Call closed");
+      endCall();
+    });
+
+    currentCall.on('error', (err) => {
+      console.error("Call error:", err);
+      alert("❌ Call failed: " + err.message);
+      endCall();
+    });
+
+    // Show calling UI
+    showCallingUI(doctorData.doctorName || "Doctor", "voice");
 
   } catch (err) {
     console.error("Call failed:", err);
-    alert("❌ Call failed: " + err.message);
+    
+    if (err.name === 'NotAllowedError') {
+      alert("❌ Microphone access denied. Please allow microphone access.");
+    } else {
+      alert("❌ Call failed: " + err.message);
+    }
   }
 }
+
 
 
 // 3. Helper to handle UI when YOU start a call
