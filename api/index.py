@@ -34,6 +34,336 @@ CORS(app, resources={
     }
 })
 
+# ================================
+# NEUROSCORE ASSESSMENT ENDPOINT
+# ================================
+
+@app.route('/api/neuroscore/submit', methods=['POST', 'OPTIONS'])
+def submit_neuroscore():
+    """Handle NeuroScore assessment submissions"""
+    
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        print("📋 Handling OPTIONS preflight request")
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        print(f"📊 Received NeuroScore submission from user: {data.get('user_email', 'unknown')}")
+        
+        # Extract data
+        user_id = data.get('user_id')
+        user_email = data.get('user_email')
+        user_role = data.get('user_role')
+        responses = data.get('responses', {})
+        timestamp = data.get('timestamp', datetime.now().isoformat())
+        
+        print(f"📝 Processing responses for {user_email} ({user_role})")
+        
+        # Calculate the score
+        score_result = calculate_neuroscore(responses)
+        
+        # Add user metadata
+        score_result['user_id'] = user_id
+        score_result['user_email'] = user_email
+        score_result['user_role'] = user_role
+        score_result['submission_timestamp'] = timestamp
+        score_result['success'] = True
+        
+        print(f"✅ NeuroScore calculated: {score_result['total_score']}/100 - {score_result['category']}")
+        
+        return jsonify(score_result), 200
+        
+    except Exception as e:
+        print(f"❌ Error in NeuroScore submission: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
+        return jsonify({
+            'success': False,
+            'message': f'Server error: {str(e)}'
+        }), 500
+
+
+def calculate_neuroscore(responses):
+    """
+    Calculate comprehensive NeuroScore from user responses
+    Maximum score: 100 (20 points per category)
+    """
+    print("🧮 Starting NeuroScore calculation...")
+    
+    breakdown = {
+        'sleep': 0,
+        'stress': 0,
+        'focus': 0,
+        'lifestyle': 0,
+        'mental': 0
+    }
+    
+    # ==================
+    # SLEEP SCORING (Max 20 points)
+    # ==================
+    sleep_hours = float(responses.get('sleep_hours', 7))
+    sleep_quality = int(responses.get('sleep_quality', 3))
+    
+    # Hours scoring (10 points)
+    if 7 <= sleep_hours <= 9:
+        breakdown['sleep'] += 10  # Optimal
+        print(f"  💤 Sleep hours optimal: {sleep_hours}h = 10pts")
+    elif 6 <= sleep_hours < 7 or 9 < sleep_hours <= 10:
+        breakdown['sleep'] += 7   # Good
+        print(f"  💤 Sleep hours good: {sleep_hours}h = 7pts")
+    elif 5 <= sleep_hours < 6 or 10 < sleep_hours <= 11:
+        breakdown['sleep'] += 5   # Fair
+        print(f"  💤 Sleep hours fair: {sleep_hours}h = 5pts")
+    else:
+        breakdown['sleep'] += 3   # Poor
+        print(f"  💤 Sleep hours poor: {sleep_hours}h = 3pts")
+    
+    # Quality scoring (10 points)
+    breakdown['sleep'] += sleep_quality * 2
+    print(f"  💤 Sleep quality: {sleep_quality}/5 = {sleep_quality * 2}pts")
+    
+    # ==================
+    # STRESS SCORING (Max 20 points)
+    # ==================
+    stress_level = int(responses.get('stress_level', 3))
+    took_breaks = responses.get('took_breaks', False)
+    meditation = responses.get('meditation_done', False)
+    
+    # Inverse stress (12 points)
+    breakdown['stress'] = (6 - stress_level) * 3
+    print(f"  🧘 Stress level: {stress_level}/5 = {breakdown['stress']}pts")
+    
+    # Breaks (4 points)
+    if took_breaks:
+        breakdown['stress'] += 4
+        print(f"  🧘 Took breaks: +4pts")
+    
+    # Meditation (4 points)
+    if meditation:
+        breakdown['stress'] += 4
+        print(f"  🧘 Meditation: +4pts")
+    
+    # ==================
+    # FOCUS SCORING (Max 20 points)
+    # ==================
+    concentration = int(responses.get('concentration', 3))
+    brain_fog = responses.get('brain_fog', False)
+    memory_issues = responses.get('memory_issues', False)
+    
+    # Concentration (10 points)
+    breakdown['focus'] = concentration * 4
+    print(f"  🎯 Concentration: {concentration}/5 = {concentration * 4}pts")
+    
+    # No brain fog (5 points)
+    if not brain_fog:
+        breakdown['focus'] += 5
+        print(f"  🎯 No brain fog: +5pts")
+    
+    # No memory issues (5 points)
+    if not memory_issues:
+        breakdown['focus'] += 5
+        print(f"  🎯 No memory issues: +5pts")
+    
+    # ==================
+    # LIFESTYLE SCORING (Max 20 points)
+    # ==================
+    exercised = responses.get('exercised', False)
+    exercise_duration = int(responses.get('exercise_duration', 0))
+    meals_count = int(responses.get('meals_count', 2))
+    water_intake = int(responses.get('water_intake', 4))
+    screen_before_bed = responses.get('screen_before_bed', False)
+    
+    # Exercise (8 points)
+    if exercised:
+        if exercise_duration >= 30:
+            breakdown['lifestyle'] += 8
+            print(f"  🏃 Exercise {exercise_duration}min: +8pts")
+        else:
+            breakdown['lifestyle'] += 5
+            print(f"  🏃 Exercise {exercise_duration}min: +5pts")
+    
+    # Meals (6 points)
+    breakdown['lifestyle'] += min(meals_count * 2, 6)
+    print(f"  🏃 Meals: {meals_count} = {min(meals_count * 2, 6)}pts")
+    
+    # Water (6 points)
+    if water_intake >= 8:
+        breakdown['lifestyle'] += 6
+        print(f"  🏃 Water: {water_intake} glasses = 6pts")
+    else:
+        water_pts = int(water_intake * 0.75)
+        breakdown['lifestyle'] += water_pts
+        print(f"  🏃 Water: {water_intake} glasses = {water_pts}pts")
+    
+    # No screen before bed (2 points)
+    if not screen_before_bed:
+        breakdown['lifestyle'] += 2
+        print(f"  🏃 No screen before bed: +2pts")
+    
+    # ==================
+    # MENTAL WELLNESS (Max 20 points)
+    # ==================
+    mood_rating = int(responses.get('mood_rating', 3))
+    social_interaction = responses.get('social_interaction', False)
+    
+    # Mood (15 points)
+    breakdown['mental'] = mood_rating * 3
+    print(f"  💚 Mood: {mood_rating}/5 = {mood_rating * 3}pts")
+    
+    # Social interaction (5 points)
+    if social_interaction:
+        breakdown['mental'] += 5
+        print(f"  💚 Social interaction: +5pts")
+    
+    # ==================
+    # CALCULATE TOTALS
+    # ==================
+    total_score = sum(breakdown.values())
+    total_score = round(total_score)
+    
+    print(f"📊 Breakdown: {breakdown}")
+    print(f"📊 Total Score: {total_score}/100")
+    
+    # ==================
+    # DETERMINE CATEGORY & RISK
+    # ==================
+    if total_score >= 85:
+        category = "Excellent Brain Health"
+        risk_level = "low"
+        emoji = "🌟"
+    elif total_score >= 70:
+        category = "Good Brain Health"
+        risk_level = "low"
+        emoji = "✅"
+    elif total_score >= 55:
+        category = "Fair Brain Health"
+        risk_level = "moderate"
+        emoji = "⚠️"
+    elif total_score >= 40:
+        category = "Needs Attention"
+        risk_level = "moderate"
+        emoji = "⚠️"
+    else:
+        category = "Critical - Seek Professional Help"
+        risk_level = "high"
+        emoji = "🚨"
+    
+    print(f"{emoji} Category: {category} (Risk: {risk_level})")
+    
+    # ==================
+    # GENERATE INSIGHTS
+    # ==================
+    insights = []
+    
+    if sleep_hours < 6:
+        insights.append("⚠️ Insufficient sleep detected (less than 6 hours) - This can impair cognitive function")
+    elif sleep_hours > 10:
+        insights.append("⚠️ Excessive sleep detected (more than 10 hours) - May indicate underlying issues")
+    
+    if stress_level >= 4:
+        insights.append("⚠️ High stress levels detected - Consider stress management techniques")
+    
+    if brain_fog:
+        insights.append("⚠️ Brain fog reported - May indicate fatigue, dehydration, or stress")
+    
+    if memory_issues:
+        insights.append("⚠️ Memory difficulties noted - Consider cognitive exercises and adequate rest")
+    
+    if not exercised:
+        insights.append("💡 No exercise today - Physical activity boosts brain health and cognitive function")
+    
+    if water_intake < 6:
+        insights.append("💧 Low water intake detected - Dehydration affects brain performance")
+    
+    if mood_rating <= 2:
+        insights.append("⚠️ Low mood detected - Consider reaching out to support systems or professionals")
+    
+    if screen_before_bed:
+        insights.append("💡 Screen time before bed can disrupt sleep quality - Try reading instead")
+    
+    if not social_interaction:
+        insights.append("💡 Social connection is important for mental wellness")
+    
+    print(f"💡 Generated {len(insights)} insights")
+    
+    # ==================
+    # GENERATE RECOMMENDATIONS
+    # ==================
+    recommendations = []
+    
+    if breakdown['sleep'] < 15:
+        recommendations.append({
+            'area': 'Sleep Quality',
+            'tip': 'Aim for 7-9 hours of quality sleep. Maintain a consistent sleep schedule and create a relaxing bedtime routine.'
+        })
+    
+    if breakdown['stress'] < 15:
+        recommendations.append({
+            'area': 'Stress Management',
+            'tip': 'Practice daily meditation (10-15 minutes), deep breathing exercises, or yoga. Take regular breaks during work.'
+        })
+    
+    if breakdown['focus'] < 15:
+        recommendations.append({
+            'area': 'Cognitive Focus',
+            'tip': 'Try brain training exercises, limit multitasking, take focus breaks every 50 minutes, and ensure proper nutrition.'
+        })
+    
+    if breakdown['lifestyle'] < 15:
+        recommendations.append({
+            'area': 'Lifestyle Habits',
+            'tip': 'Exercise 30+ minutes daily, eat 3 balanced meals, stay hydrated (8+ glasses of water), limit screen time before bed.'
+        })
+    
+    if breakdown['mental'] < 15:
+        recommendations.append({
+            'area': 'Mental Wellness',
+            'tip': 'Connect with friends/family regularly, practice gratitude, engage in hobbies, seek professional support if needed.'
+        })
+    
+    print(f"📋 Generated {len(recommendations)} recommendations")
+    
+    # ==================
+    # RISK FLAGS
+    # ==================
+    risk_flags = []
+    
+    if risk_level == "high":
+        risk_flags.append("Immediate consultation with a healthcare professional is recommended")
+    
+    if sleep_hours < 4:
+        risk_flags.append("Severe sleep deprivation - Urgent attention needed")
+    
+    if stress_level == 5 and not took_breaks and not meditation:
+        risk_flags.append("Critical stress levels without coping mechanisms - Seek support")
+    
+    if mood_rating == 1:
+        risk_flags.append("Very low mood detected - Please reach out to mental health support")
+    
+    if brain_fog and memory_issues and concentration <= 2:
+        risk_flags.append("Multiple cognitive symptoms - Consider neurological consultation")
+    
+    if risk_flags:
+        print(f"🚨 Risk flags: {len(risk_flags)}")
+    
+    # ==================
+    # RETURN RESULT
+    # ==================
+    result = {
+        'total_score': total_score,
+        'category': category,
+        'risk_level': risk_level,
+        'breakdown': breakdown,
+        'insights': insights,
+        'recommendations': recommendations,
+        'risk_flags': risk_flags
+    }
+    
+    print("✅ NeuroScore calculation complete")
+    return result
+
 
 
 GMAIL_SENDER = "ariyanabedin00."
