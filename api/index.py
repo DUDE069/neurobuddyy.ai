@@ -1735,52 +1735,6 @@ def calculate_neuroscore(responses):
         'timestamp': datetime.now().isoformat()
     }
 
-# API endpoint to submit NeuroScore assessment
-@app.route('/api/neuroscore/submit', methods=['POST', 'OPTIONS'])
-def submit_neuroscore():
-    if request.method == 'OPTIONS':  # ✅ Handle preflight
-        return Response('', status=200)
-    ...
-
-    """Submit daily NeuroScore assessment"""
-    try:
-        data = request.json
-        user_id = data.get('user_id')  # Firebase UID
-        user_role = data.get('user_role')  # 'doctor' or 'patient'
-        
-        # Check if user is logged in and verified
-        if not user_id:
-            return jsonify({
-                'success': False,
-                'message': 'Please login to access NeuroScore feature',
-                'action': 'login_required'
-            }), 401
-        
-        # Guest users cannot access
-        if user_role == 'guest':
-            return jsonify({
-                'success': False,
-                'message': 'NeuroScore feature is only available for registered Doctors and Patients',
-                'action': 'upgrade_required'
-            }), 403
-        
-        # Calculate score
-        responses = data.get('responses', {})
-        result = calculate_neuroscore(responses)
-        
-        # Add user info to result
-        result['user_id'] = user_id
-        result['user_role'] = user_role
-        result['assessment_date'] = datetime.now().strftime('%Y-%m-%d')
-        
-        print(f"✅ NeuroScore calculated for {user_id}: {result['total_score']}/100")
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        print(f"❌ NeuroScore error: {str(e)}")
-        return jsonify({'success': False, 'message': str(e)}), 500
-
 # Get NeuroScore history
 @app.route('/api/neuroscore/history/<user_id>', methods=['GET'])
 def get_neuroscore_history(user_id):
