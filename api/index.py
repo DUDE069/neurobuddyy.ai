@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, Response
+from flask import Flask, request, jsonify, send_from_directory, Response, make_response  # ← ADD make_response
 from flask_cors import CORS
 import json
 import random
@@ -35,17 +35,22 @@ CORS(app, resources={
 })
 
 # ================================
-# NEUROSCORE ASSESSMENT ENDPOINT
+# NEUROSCORE ASSESSMENT ENDPOINT (FIXED)
 # ================================
 
 @app.route('/api/neuroscore/submit', methods=['POST', 'OPTIONS'])
 def submit_neuroscore():
-    """Handle NeuroScore assessment submissions"""
+    """Handle NeuroScore assessment submissions with proper CORS"""
     
-    # Handle preflight OPTIONS request
+    # Handle preflight OPTIONS request with explicit headers
     if request.method == 'OPTIONS':
-        print("📋 Handling OPTIONS preflight request")
-        return '', 200
+        print("📋 Handling OPTIONS preflight request for NeuroScore")
+        response = make_response('', 200)
+        response.headers['Access-Control-Allow-Origin'] = 'https://neurobuddyy-ai.onrender.com'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept'
+        response.headers['Access-Control-Max-Age'] = '3600'
+        return response
     
     try:
         data = request.get_json()
@@ -72,17 +77,22 @@ def submit_neuroscore():
         
         print(f"✅ NeuroScore calculated: {score_result['total_score']}/100 - {score_result['category']}")
         
-        return jsonify(score_result), 200
+        # Return with explicit CORS headers (belt and suspenders approach)
+        response = make_response(jsonify(score_result), 200)
+        response.headers['Access-Control-Allow-Origin'] = 'https://neurobuddyy-ai.onrender.com'
+        return response
         
     except Exception as e:
         print(f"❌ Error in NeuroScore submission: {str(e)}")
         import traceback
         traceback.print_exc()
         
-        return jsonify({
+        error_response = make_response(jsonify({
             'success': False,
             'message': f'Server error: {str(e)}'
-        }), 500
+        }), 500)
+        error_response.headers['Access-Control-Allow-Origin'] = 'https://neurobuddyy-ai.onrender.com'
+        return error_response
 
 
 def calculate_neuroscore(responses):
