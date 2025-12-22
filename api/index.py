@@ -11,53 +11,72 @@ import os
 import hashlib
 import uuid
 
-
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
+# ============================================
+# AGGRESSIVE CORS FIX - THREE LAYERS
+# ============================================
 
-# ✅ CRITICAL FIX: Handle ALL OPTIONS requests BEFORE routing
+# Layer 1: Handle OPTIONS preflight BEFORE any routing
 @app.before_request
 def handle_preflight():
     """Handle CORS preflight OPTIONS requests globally"""
     if request.method == "OPTIONS":
-        print(f"📋 Global OPTIONS handler for: {request.path}")
-        response = make_response('', 200)
-        response.headers['Access-Control-Allow-Origin'] = 'https://neurobuddyy-ai.onrender.com'
+        origin = request.headers.get('Origin', 'https://neurobuddyy-ai.onrender.com')
+        print(f"📋 Global OPTIONS handler for: {request.path} from origin: {origin}")
+        
+        response = make_response('', 204)  # ← Changed from 200 to 204 (No Content)
+        response.headers['Access-Control-Allow-Origin'] = origin
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, DELETE'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept'
-        response.headers['Access-Control-Max-Age'] = '3600'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept, X-Requested-With'
+        response.headers['Access-Control-Max-Age'] = '7200'  # 2 hours cache
+        response.headers['Vary'] = 'Origin'
         return response
 
-
-# ✅ Backup: Add CORS headers to all responses
+# Layer 2: Add CORS headers to ALL responses
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'https://neurobuddyy-ai.onrender.com')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+    origin = request.headers.get('Origin')
+    
+    # Allow both production and localhost
+    allowed_origins = [
+        'https://neurobuddyy-ai.onrender.com',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000'
+    ]
+    
+    if origin in allowed_origins:
+        response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, DELETE'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept, X-Requested-With'
+        response.headers['Access-Control-Expose-Headers'] = 'Content-Type'
+        response.headers['Vary'] = 'Origin'
+    
     return response
 
-
-# ✅ Flask-CORS configuration (triple protection)
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "https://neurobuddyy-ai.onrender.com",
-            "http://localhost:3000"  # For local dev
-        ],
-        "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
-        "allow_headers": ["Content-Type", "Authorization", "Accept"],
-        "expose_headers": ["Content-Type"],
-        "supports_credentials": False
-    }
-})
-
+# Layer 3: Flask-CORS as final backup
+CORS(app, 
+     resources={
+         r"/api/*": {
+             "origins": [
+                 "https://neurobuddyy-ai.onrender.com",
+                 "http://localhost:3000",
+                 "http://127.0.0.1:3000"
+             ],
+             "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+             "allow_headers": ["Content-Type", "Authorization", "Accept", "X-Requested-With"],
+             "expose_headers": ["Content-Type"],
+             "supports_credentials": False,
+             "send_wildcard": False,
+             "max_age": 7200
+         }
+     })
 
 # ================================
 # NEUROSCORE ASSESSMENT ENDPOINT
 # ================================
 
-@app.route('/api/neuroscore/submit', methods=['POST'])  # ← OPTIONS removed (handled by before_request)
+@app.route('/api/neuroscore/submit', methods=['POST'])  # ← OPTIONS handled by before_request
 def submit_neuroscore():
     """Handle NeuroScore assessment submissions"""
     

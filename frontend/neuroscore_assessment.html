@@ -323,24 +323,33 @@
       text-decoration: underline;
     }
 
+    .back-to-home-bottom,
+.back-link {
+  display: none !important;
+}
+
+
     /* ============================================
        FULLSCREEN RESULT MODAL
        ============================================ */
     
     .result-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.95);
-      justify-content: center;
-      align-items: center;
-      z-index: 100000;
-      padding: 20px;
-      overflow-y: auto;
-    }
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* Old: background: rgba(0,0,0,0.95); */
+  background: radial-gradient(circle at top, #eef2ff 0%, #e0f2fe 40%, #f9fafb 100%);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 100000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
 
     .result-modal.show {
       display: flex !important;
@@ -725,8 +734,8 @@
       Calculate My NeuroScore
     </button>
   </form>
+<a href="index.html" class="back-link back-to-home-bottom">← Back to Home</a>
 
-  <a href="index.html" class="back-link">← Back to Home</a>
 </div>
 
 <!-- FULLSCREEN Result Modal -->

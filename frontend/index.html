@@ -1025,7 +1025,114 @@
   color: #4f46e5;
 }
 
+.has-submenu {
+  position: relative;
+}
 
+.history-main-btn {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  padding: 6px 0;
+  min-width: 210px;
+  z-index: 2000;
+}
+
+.submenu button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.submenu button:hover {
+  background: #eef2ff;
+}
+
+
+.side-panel {
+  position: fixed;
+  top: 0;
+  right: -360px;
+  width: 320px;
+  height: 100vh;
+  background: #f9fafb;
+  box-shadow: -4px 0 18px rgba(0,0,0,0.2);
+  z-index: 9999;
+  transition: right 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.side-panel.open {
+  right: 0;
+}
+
+.side-panel-header {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.side-panel-body {
+  padding: 12px 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.close-side-panel {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.neuro-history-item {
+  background: white;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  font-size: 0.9rem;
+}
+
+.neuro-history-item .date {
+  font-weight: 600;
+  color: #374151;
+}
+
+.neuro-history-item .score {
+  font-weight: 700;
+  color: #2563eb;
+  margin-top: 2px;
+}
+
+.neuro-history-item .category {
+  color: #4b5563;
+  margin-top: 2px;
+  font-size: 0.85rem;
+}
 
 
 
@@ -1475,11 +1582,6 @@
       </div>
       <!-- ⬆️ END DOCTOR DETAILS ⬆️ -->
 
-      <div class="dashboard-actions">
-        <button class="btn-logout" onclick="logoutUser()">
-          🚪 Logout
-        </button>
-      </div>
     </div>
   </div>
 </div>
@@ -1524,6 +1626,18 @@
     </p>
   </div>
 </div>
+
+<!-- NeuroScore History Panel -->
+<div id="neuroHistoryPanel" class="side-panel">
+  <div class="side-panel-header">
+    <h3>🧠 NeuroScore History</h3>
+    <button id="closeNeuroHistory" class="close-side-panel">✕</button>
+  </div>
+  <div id="neuroHistoryList" class="side-panel-body">
+    Loading...
+  </div>
+</div>
+
 
 
 
@@ -4772,7 +4886,14 @@ async function requestResetCode() {
 <ul class="menu" style="display: flex; flex-direction: column; height: 100%;">
   
   <!-- TOP ITEMS -->
-  <li onclick="toggleChatHistory()">🕒 Search History</li>
+  <li class="has-submenu">
+    <button id="historyBtn" class="history-main-btn">🕒 History ▾</button>
+    <div id="historySubmenu" class="submenu">
+      <button id="chatHistoryBtn">💬 Chat History</button>
+      <button id="patientHistoryBtn">👥 Patient History</button>
+      <button id="neuroHistoryBtn">🧠 NeuroScore History</button>
+    </div>
+  </li>
   <li onclick="toggleGallery()">🖼️ Symptoms Gallery</li>
   <!-- Inside .menu list -->
 <li onclick="openNeuroScore()">🧠 NeuroScore Assessment</li>
@@ -6104,77 +6225,96 @@ function keepPeerAlive() {
 initializePeerJS();
 keepPeerAlive();
 
+const historyBtn = document.getElementById('historyBtn');
+const historySubmenu = document.getElementById('historySubmenu');
+
+if (historyBtn && historySubmenu) {
+  historyBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    historySubmenu.style.display =
+      historySubmenu.style.display === 'block' ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', () => {
+    historySubmenu.style.display = 'none';
+  });
+}
+
+document.getElementById('chatHistoryBtn')?.addEventListener('click', () => {
+  toggleChatHistory();
+});
+
+document.getElementById('patientHistoryBtn')?.addEventListener('click', () => {
+  alert('Patient/Doctor history view will be added later.');
+});
+
+document.getElementById('neuroHistoryBtn')?.addEventListener('click', () => {
+  // will open NeuroScore side panel in next step
+  openNeuroHistoryPanel();
+});
 
 
- function toggleChatHistory() {
-  const panel = document.getElementById('chatHistoryPanel');
-  const sidebar = document.getElementById('sidebar');
-  
-  if (panel.classList.contains('open')) {
-    panel.classList.remove('open');
-  } else {
-    panel.classList.add('open');
-    sidebar.classList.remove('open');
-    displayChatHistory();
+// NeuroScore History Panel
+const neuroHistoryPanel = document.getElementById('neuroHistoryPanel');
+const neuroHistoryList = document.getElementById('neuroHistoryList');
+const closeNeuroHistory = document.getElementById('closeNeuroHistory');
+
+async function openNeuroHistoryPanel() {
+  const auth = window.firebaseAuth;
+  const db = window.firebaseDB;
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert('Please login to view your NeuroScore history.');
+    return;
   }
-}
 
-// ✅ NEW: Close history independently
-function closeChatHistory() {
-  const panel = document.getElementById('chatHistoryPanel');
-  panel.classList.remove('open');
-}
+  neuroHistoryPanel.classList.add('open');
+  neuroHistoryList.innerHTML = '<p style="text-align:center;color:#666;">Loading...</p>';
 
-  function displayChatHistory() {
-    const historyList = document.getElementById('historyList');
-    
-    if (chatHistory.length === 0) {
-      historyList.innerHTML = '<div class="no-history">No chat history yet.<br>Start a conversation!</div>';
+  try {
+    const { collection, query, where, orderBy, limit, getDocs } = window.firestoreFunctions;
+    const q = query(
+      collection(db, 'neuroscores'),
+      where('userId', '==', user.uid),
+      orderBy('timestamp', 'desc'),
+      limit(30)
+    );
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      neuroHistoryList.innerHTML = '<p style="text-align:center;color:#666;">No NeuroScore history yet.</p>';
       return;
     }
-    
+
     let html = '';
-    chatHistory.forEach(item => {
-      const timeAgo = getTimeAgo(new Date(item.timestamp));
-      
+    snap.forEach(docSnap => {
+      const d = docSnap.data();
+      const ts = d.timestamp?.toDate ? d.timestamp.toDate() : null;
+      const dateText = ts ? ts.toLocaleString() : 'Unknown date';
+      const score = d.score ?? d.total_score ?? '--';
+
       html += `
-        <div class="history-item" onclick="loadConversation('${item.id}')">
-          <div class="history-title">${item.title}</div>
-          <div class="history-time">${timeAgo}</div>
+        <div class="neuro-history-item">
+          <div class="date">${dateText}</div>
+          <div class="score">Score: ${score}/100</div>
+          <div class="category">${d.category || ''}</div>
         </div>
       `;
     });
-    
-    historyList.innerHTML = html;
-  }
 
-  function getTimeAgo(date) {
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-    
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    return date.toLocaleDateString();
+    neuroHistoryList.innerHTML = html;
+  } catch (err) {
+    console.error('NeuroScore history load error:', err);
+    neuroHistoryList.innerHTML = '<p style="text-align:center;color:#666;">Error loading history.</p>';
   }
+}
 
-  function loadConversation(id) {
-    alert('Conversation loading feature coming soon!\n\nConversation ID: ' + id);
-  }
+closeNeuroHistory?.addEventListener('click', () => {
+  neuroHistoryPanel.classList.remove('open');
+});
 
-  function clearChatHistory() {
-    const confirmed = confirm('Are you sure you want to clear all chat history?');
-    if (confirmed) {
-      chatHistory = [];
-      saveChatHistory();
-      displayChatHistory();
-    }
-  }
+
 
   // Add this function to your JavaScript section
 async function sendPasswordResetEmail(email) {
