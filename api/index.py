@@ -14,74 +14,105 @@ import uuid
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
 # ============================================
-# AGGRESSIVE CORS FIX - THREE LAYERS
+# ENHANCED CORS FIX FOR RENDER.COM
 # ============================================
 
-# Layer 1: Handle OPTIONS preflight BEFORE any routing
-@app.before_request
-def handle_preflight():
-    """Handle CORS preflight OPTIONS requests globally"""
-    if request.method == "OPTIONS":
-        origin = request.headers.get('Origin', 'https://neurobuddyy-ai.onrender.com')
-        print(f"📋 Global OPTIONS handler for: {request.path} from origin: {origin}")
-        
-        response = make_response('', 204)  # ← Changed from 200 to 204 (No Content)
-        response.headers['Access-Control-Allow-Origin'] = origin
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, DELETE'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept, X-Requested-With'
-        response.headers['Access-Control-Max-Age'] = '7200'  # 2 hours cache
-        response.headers['Vary'] = 'Origin'
-        return response
+# Define allowed origins
+ALLOWED_ORIGINS = [
+    'https://neurobuddyy-ai.onrender.com',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000'
+]
 
-# Layer 2: Add CORS headers to ALL responses
-@app.after_request
-def after_request(response):
-    origin = request.headers.get('Origin')
-    
-    # Allow both production and localhost
-    allowed_origins = [
-        'https://neurobuddyy-ai.onrender.com',
-        'http://localhost:3000',
-        'http://127.0.0.1:3000'
-    ]
-    
-    if origin in allowed_origins:
-        response.headers['Access-Control-Allow-Origin'] = origin
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, DELETE'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept, X-Requested-With'
-        response.headers['Access-Control-Expose-Headers'] = 'Content-Type'
-        response.headers['Vary'] = 'Origin'
-    
-    return response
-
-# Layer 3: Flask-CORS as final backup
+# Layer 1: Flask-CORS (Primary method)
 CORS(app, 
      resources={
-         r"/api/*": {
-             "origins": [
-                 "https://neurobuddyy-ai.onrender.com",
-                 "http://localhost:3000",
-                 "http://127.0.0.1:3000"
-             ],
-             "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+         r"/*": {  # ← Changed from r"/api/*" to r"/*" to catch ALL routes
+             "origins": ALLOWED_ORIGINS,
+             "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"],
              "allow_headers": ["Content-Type", "Authorization", "Accept", "X-Requested-With"],
              "expose_headers": ["Content-Type"],
              "supports_credentials": False,
              "send_wildcard": False,
-             "max_age": 7200
+             "max_age": 3600
          }
      })
+
+# Layer 2: Manual OPTIONS handler (BEFORE any route processing)
+@app.before_request
+def handle_options():
+    """Handle OPTIONS preflight requests"""
+    if request.method == "OPTIONS":
+        origin = request.headers.get('Origin', 'https://neurobuddyy-ai.onrender.com')
+        
+        # Check if origin is allowed
+        if origin in ALLOWED_ORIGINS or origin is None:
+            print(f"✅ CORS preflight from: {origin} for {request.path}")
+            
+            response = make_response('', 204)
+            response.headers['Access-Control-Allow-Origin'] = origin if origin else ALLOWED_ORIGINS[0]
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS, PATCH'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept, X-Requested-With'
+            response.headers['Access-Control-Max-Age'] = '3600'
+            response.headers['Access-Control-Allow-Credentials'] = 'false'
+            return response
+        else:
+            print(f"❌ CORS preflight BLOCKED from: {origin}")
+            return make_response('Forbidden', 403)
+
+# Layer 3: Add CORS headers to ALL responses (AFTER route processing)
+@app.after_request
+def add_cors_headers(response):
+    """Add CORS headers to every response"""
+    origin = request.headers.get('Origin')
+    
+    # If origin is in allowed list, add it to response
+    if origin in ALLOWED_ORIGINS:
+        response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS, PATCH'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept, X-Requested-With'
+        response.headers['Access-Control-Expose-Headers'] = 'Content-Type'
+    elif not origin:  # If no origin header (same-origin or direct access)
+        response.headers['Access-Control-Allow-Origin'] = ALLOWED_ORIGINS[0]
+    
+    return response
+
+# ============================================
+# HEALTH CHECK ENDPOINT (for debugging)
+# ============================================
+@app.route('/api/health', methods=['GET', 'OPTIONS'])
+def health_check():
+    """Simple health check to test CORS"""
+    return jsonify({
+        'status': 'healthy',
+        'message': 'CORS is working!',
+        'timestamp': datetime.now().isoformat()
+    }), 200
 
 # ================================
 # NEUROSCORE ASSESSMENT ENDPOINT
 # ================================
 
-@app.route('/api/neuroscore/submit', methods=['POST'])  # ← OPTIONS handled by before_request
+@app.route('/api/neuroscore/submit', methods=['POST', 'OPTIONS'])  # ← Added OPTIONS explicitly
 def submit_neuroscore():
     """Handle NeuroScore assessment submissions"""
     
+    # Log the request for debugging
+    print(f"📨 Received {request.method} request to /api/neuroscore/submit")
+    print(f"📨 Origin: {request.headers.get('Origin', 'No origin header')}")
+    print(f"📨 Content-Type: {request.headers.get('Content-Type', 'No content-type')}")
+    
     try:
         data = request.get_json()
+        
+        if not data:
+            return jsonify({
+                'success': False,
+                'message': 'No data received'
+            }), 400
+        
         print(f"📊 Received NeuroScore submission from user: {data.get('user_email', 'unknown')}")
         
         # Extract data
@@ -116,6 +147,7 @@ def submit_neuroscore():
             'success': False,
             'message': f'Server error: {str(e)}'
         }), 500
+
 
 
 def calculate_neuroscore(responses):

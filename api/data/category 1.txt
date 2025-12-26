@@ -2400,8 +2400,6 @@
       "answer": "Ethosuximide T-type Ca channel block thalamic absence seizures. Treatment & Solution: GI side effects.",
       "category": "neuropharmacology"
     },
-{
-  "questions": [
     {
       "id": 301,
       "question": "What is phenytoin mechanism?",
@@ -6602,8 +6600,6 @@
       "answer": "CYP27A1 bile acid synthesis ataxia cataracts xanthomas treatable MRI improvement. Treatment & Solution: Chenodeoxycholic acid 750mg daily lifelong.",
       "category": "metabolic"
     },
- {
-  "questions": [
     {
       "id": 1001,
       "question": "What is anti-DPPA2 encephalitis?",
@@ -6951,4 +6947,6 @@
       "question": "What is ALZ-801 Alzheimer's?",
       "answer": "Oral prodrug tramiprosate amyloid oligomerization APOE4 homozygotes phase 3. Treatment & Solution: Alzheon oral daily.",
       "category": "neuropharmacology"
-    },
+    }
+  ]
+ }
