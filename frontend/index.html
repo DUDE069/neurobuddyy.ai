@@ -1283,7 +1283,7 @@
 <!-- Doctor Registration Modal -->
 <div id="doctorRegModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
-    <button class="modal-close" onclick="closeDoctorRegister()">❌•</button>
+    <button class="modal-close" onclick="closeDoctorRegister()">❌</button>
     <h2>🪪 Doctor Registration</h2>
     <p style="color: #666; margin-bottom: 20px;">Join our network of healthcare professionals</p>
     
@@ -1343,7 +1343,7 @@
 <!-- Doctor Login Modal -->
 <div id="doctorLoginModal" class="modal-overlay" style="display: none;">
   <div class="modal-content doctor-form-modal">
-    <button class="modal-close" onclick="closeDoctorLogin()">❌–</button>
+    <button class="modal-close" onclick="closeDoctorLogin()">❌</button>
     <h2>🪪 Doctor Login</h2>
     <p style="color: #666; margin-bottom: 20px;">Access your professional dashboard</p>
     
@@ -1529,26 +1529,104 @@
   </div>
 </div>
 
-<!-- ✅ ENHANCED PROFILE MODAL (Replace existing userProfileModal) -->
+<!-- ✅ ENHANCED PATIENT PROFILE MODAL -->
 <div id="userProfileModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content doctor-dashboard">
+  <div class="modal-content doctor-dashboard" style="max-width: 550px;">
     <button class="modal-close" onclick="closeUserProfile()">×</button>
     
     <div class="doctor-profile">
-      <div class="profile-header">
-        <div class="profile-avatar">👤</div>
-        <div class="profile-info">
-          <h3 id="profileName">Loading...</h3>
-          <p id="profileEmail">loading@example.com</p>
-          <span id="profileRoleBadge" style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold;">
-            User
-          </span>
+      <!-- Profile Header -->
+      <div class="profile-header" style="flex-direction: column; text-align: center;">
+        <!-- Profile Photo -->
+        <div class="profile-avatar" style="width: 100px; height: 100px; font-size: 3rem; margin: 0 auto 15px;">
+          <span id="profileAvatarInitial">👤</span>
+        </div>
+        
+        <div class="profile-info" style="width: 100%;">
+          <h3 id="profileName" style="margin: 0 0 8px 0;">Loading...</h3>
+          <p id="profileEmail" style="margin: 0 0 8px 0; color: #6b7280;">loading@example.com</p>
+          <span id="profileRoleBadge" style="background: #dbeafe; color: #1e40af; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">User</span>
         </div>
       </div>
 
-      <!-- ⬇️ NEW: DOCTOR SPECIFIC DETAILS SECTION ⬇️ -->
+      <!-- PATIENT INFORMATION SECTION -->
+      <div id="patientProfileDetails" style="margin-top: 25px;">
+        <!-- Personal Information Card -->
+        <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #0ea5e9;">
+          <h4 style="color: #0369a1; margin: 0 0 15px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.3rem;">👤</span> Personal Information
+          </h4>
+          
+          <div style="display: grid; gap: 12px;">
+            <!-- Full Name -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border-radius: 8px;">
+              <span style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Full Name</span>
+              <span id="profileFullName" style="color: #1e293b; font-weight: 600;">-</span>
+            </div>
+            
+            <!-- Age -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border-radius: 8px;">
+              <span style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Age</span>
+              <span id="profileAge" style="color: #1e293b; font-weight: 600;">-</span>
+            </div>
+            
+            <!-- Gender -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border-radius: 8px;">
+              <span style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Gender</span>
+              <span id="profileGender" style="color: #1e293b; font-weight: 600;">Not specified</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Information Card -->
+        <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #f59e0b;">
+          <h4 style="color: #92400e; margin: 0 0 15px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.3rem;">📧</span> Account Details
+          </h4>
+          
+          <div style="display: grid; gap: 12px;">
+            <!-- Email -->
+            <div style="padding: 10px; background: white; border-radius: 8px;">
+              <div style="color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Email Address</div>
+              <div id="profileEmailDetail" style="color: #1e293b; font-weight: 500; word-break: break-all;">-</div>
+            </div>
+            
+            <!-- User ID -->
+            <div style="padding: 10px; background: white; border-radius: 8px;">
+              <div style="color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Patient ID</div>
+              <div id="profileUserId" style="color: #1e293b; font-size: 0.85rem; font-family: monospace;">-</div>
+            </div>
+            
+            <!-- Member Since -->
+            <div style="padding: 10px; background: white; border-radius: 8px;">
+              <div style="color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Member Since</div>
+              <div id="profileMemberSince" style="color: #1e293b; font-weight: 500;">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health Stats Card -->
+        <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #10b981;">
+          <h4 style="color: #065f46; margin: 0 0 15px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.3rem;">📊</span> Health Statistics
+          </h4>
+          
+          <div style="display: grid; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 8px;">
+              <span style="color: #64748b; font-size: 0.9rem;">Consultations</span>
+              <span id="profileConsultations" style="color: #059669; font-weight: 700; font-size: 1.1rem;">0</span>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 8px;">
+              <span style="color: #64748b; font-size: 0.9rem;">NeuroScores Taken</span>
+              <span id="profileNeuroScores" style="color: #0ea5e9; font-weight: 700; font-size: 1.1rem;">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCTOR DETAILS SECTION (Keep for doctor mode) -->
       <div id="doctorProfileDetails" style="display: none; margin-bottom: 20px; text-align: left; background: #f9fafb; padding: 15px; border-radius: 8px;">
-        
         <div class="form-group">
           <label style="font-size:0.85rem; color:#666;">🆔 Doctor ID (Unique)</label>
           <input type="text" id="profileDocId" readonly style="background:#e5e7eb; cursor:not-allowed;">
@@ -1580,8 +1658,13 @@
           </select>
         </div>
       </div>
-      <!-- ⬆️ END DOCTOR DETAILS ⬆️ -->
 
+      <!-- Logout Button -->
+      <div class="dashboard-actions" style="margin-top: 25px;">
+        <button class="btn-logout" onclick="logoutUser()" style="width: 100%; padding: 14px; background: #dc2626; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s;">
+          🚪 Logout
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -2252,6 +2335,200 @@ function toggleMute() {
   }
 }
 
+// =============================================
+// 📜 CHAT HISTORY FUNCTIONS - COMPLETE
+// =============================================
+
+// Toggle Chat History Panel
+function toggleChatHistory() {
+  console.log('🗨️ toggleChatHistory called');
+  const panel = document.getElementById('chatHistoryPanel');
+  const sidebar = document.getElementById('sidebar');
+  
+  if (!panel) {
+    console.error('chatHistoryPanel not found!');
+    return;
+  }
+  
+  // Toggle panel open/close
+  if (panel.classList.contains('open')) {
+    panel.classList.remove('open');
+    console.log('Chat history panel closed');
+  } else {
+    panel.classList.add('open');
+    console.log('Chat history panel opened');
+    loadChatHistoryUI(); // Load history when opening
+  }
+}
+
+// Close Chat History Panel
+function closeChatHistory() {
+  const panel = document.getElementById('chatHistoryPanel');
+  if (panel) {
+    panel.classList.remove('open');
+    console.log('Chat history panel closed');
+  }
+}
+
+// Load and Display Chat History
+function loadChatHistoryUI() {
+  const historyList = document.getElementById('historyList');
+  
+  if (!historyList) {
+    console.error('historyList element not found');
+    return;
+  }
+  
+  // Get history from localStorage
+  const saved = localStorage.getItem('chatHistory');
+  
+  if (!saved) {
+    historyList.innerHTML = '<div class="no-history">No chat history yet</div>';
+    return;
+  }
+  
+  try {
+    const history = JSON.parse(saved);
+    
+    if (history.length === 0) {
+      historyList.innerHTML = '<div class="no-history">No chat history yet</div>';
+      return;
+    }
+    
+    // Create history items
+    let html = '';
+    history.forEach(item => {
+      const date = new Date(item.timestamp);
+      const timeAgo = getTimeAgo(date);
+      
+      html += `
+        <div class="history-item" onclick="loadHistoryItem(${item.id})">
+          <div class="history-title">${item.title}</div>
+          <div class="history-time">${timeAgo}</div>
+        </div>
+      `;
+    });
+    
+    historyList.innerHTML = html;
+  } catch (error) {
+    console.error('Error loading chat history:', error);
+    historyList.innerHTML = '<div class="no-history">Error loading history</div>';
+  }
+}
+
+// Load a specific history item when clicked
+function loadHistoryItem(id) {
+  const saved = localStorage.getItem('chatHistory');
+  
+  if (!saved) return;
+  
+  try {
+    const history = JSON.parse(saved);
+    const item = history.find(h => h.id === id);
+    
+    if (item) {
+      // Put the question in the input field
+      const userInput = document.getElementById('userInput');
+      if (userInput) {
+        userInput.value = item.title;
+      }
+      
+      // Close the history panel
+      closeChatHistory();
+      
+      // Optional: Auto-send the message
+      // sendMessage();
+    }
+  } catch (error) {
+    console.error('Error loading history item:', error);
+  }
+}
+
+// Clear all chat history
+function clearChatHistory() {
+  if (!confirm('Are you sure you want to clear all chat history?')) {
+    return;
+  }
+  
+  localStorage.removeItem('chatHistory');
+  loadChatHistoryUI();
+  alert('Chat history cleared!');
+}
+
+// Helper: Get time ago text (e.g., "2 hours ago")
+function getTimeAgo(date) {
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+  
+  if (seconds < 60) return 'Just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+  
+  return date.toLocaleDateString();
+}
+
+
+// =============================================
+// 👥 PATIENT HISTORY (Doctor View) - PLACEHOLDER
+// =============================================
+function togglePatientHistory() {
+  console.log('📋 Patient History clicked');
+  
+  const userMode = localStorage.getItem('userMode');
+  
+  if (userMode === 'doctor') {
+    // TODO: Implement doctor's patient history view
+    alert('Patient History: Shows all patients you\'ve consulted with.\n\nComing soon in next update!');
+  } else {
+    // For patients: show their own consultation history
+    alert('Your Consultation History:\n\nShows all doctors you\'ve consulted with.\n\nComing soon in next update!');
+  }
+}
+
+
+// =============================================
+// 🧠 NEUROSCORE HISTORY - ALREADY IMPLEMENTED
+// =============================================
+// (Your existing openNeuroHistoryPanel function handles this)
+
+
+// =============================================
+// 📊 INITIALIZE HISTORY SYSTEM
+// =============================================
+function initializeHistorySystem() {
+  console.log('📊 Initializing history system...');
+  
+  // Load chat history from localStorage
+  loadChatHistory();
+  
+  // Set up event listeners for history buttons
+  const chatHistoryBtn = document.getElementById('chatHistoryBtn');
+  const patientHistoryBtn = document.getElementById('patientHistoryBtn');
+  const neuroHistoryBtn = document.getElementById('neuroHistoryBtn');
+  
+  if (chatHistoryBtn) {
+    chatHistoryBtn.addEventListener('click', toggleChatHistory);
+  }
+  
+  if (patientHistoryBtn) {
+    patientHistoryBtn.addEventListener('click', togglePatientHistory);
+  }
+  
+  if (neuroHistoryBtn) {
+    neuroHistoryBtn.addEventListener('click', openNeuroHistoryPanel);
+  }
+  
+  console.log('✅ History system initialized');
+}
+
+// Call this when page loads
+window.addEventListener('DOMContentLoaded', () => {
+  initializeHistorySystem();
+});
+
+
+
 // Toggle video
 function toggleVideo() {
   if (!localStream) return;
@@ -2600,7 +2877,7 @@ function showDoctorConnectionModal(doctor) {
   const modalHTML = `
     <div id="doctorConnectionModal" class="modal-overlay" style="display: flex;">
       <div class="modal-content" style="max-width: 450px;">
-        <button class="modal-close" onclick="closeDoctorConnectionModal()">❌•</button>
+        <button class="modal-close" onclick="closeDoctorConnectionModal()">❌</button>
         
         <div style="text-align: center; padding: 20px 0;">
           <div style="font-size: 4rem; margin-bottom: 15px;">👨‍⚕️</div>
@@ -2640,7 +2917,7 @@ function showDoctorConnectionModal(doctor) {
           </button>
           <button onclick="confirmDoctorConnection('${doctor.id}', '${doctor.name}', '${doctor.specialty}')" 
                   style="flex: 1; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-            ❌ Connect Now
+            ✅ Connect Now
           </button>
         </div>
       </div>
@@ -8507,72 +8784,143 @@ function closeAbout() {
 async function openUserProfile() {
   const modal = document.getElementById('userProfileModal');
   
-  // 1. Safety Check: Does the modal exist in HTML?
   if (!modal) {
-      console.error("❌ Error: 'userProfileModal' not found in HTML!");
-      alert("Profile modal is missing from the page code. Please check index.html");
-      return;
+    console.error('Error: userProfileModal not found in HTML!');
+    alert('Profile modal is missing from the page code.');
+    return;
   }
 
   const userMode = localStorage.getItem('userMode');
   const user = window.firebaseAuth.currentUser;
   
-  // 2. Get UI Elements
+  // Get UI Elements
   const nameEl = document.getElementById('profileName');
   const emailEl = document.getElementById('profileEmail');
+  const emailDetailEl = document.getElementById('profileEmailDetail');
   const roleEl = document.getElementById('profileRoleBadge');
-  const docDetails = document.getElementById('doctorProfileDetails'); // This is the new section
-
-  // 3. Logic for PATIENTS / GUESTS
-  if (userMode === 'patient' || userMode === 'guest') {
-    if (nameEl) nameEl.textContent = user ? (user.displayName || "Patient") : "Guest User";
-    if (emailEl) emailEl.textContent = user ? user.email : "Not logged in";
-    if (roleEl) roleEl.textContent = "Patient";
-    
-    // Hide doctor-specific fields
-    if (docDetails) docDetails.style.display = 'none';
-  } 
+  const avatarEl = document.getElementById('profileAvatarInitial');
+  const fullNameEl = document.getElementById('profileFullName');
+  const ageEl = document.getElementById('profileAge');
+  const userIdEl = document.getElementById('profileUserId');
+  const memberSinceEl = document.getElementById('profileMemberSince');
   
-  // 4. Logic for DOCTORS
+  const patientDetails = document.getElementById('patientProfileDetails');
+  const docDetails = document.getElementById('doctorProfileDetails');
+  
+  // PATIENT/GUEST MODE
+  if (userMode === 'patient' || userMode === 'guest') {
+    if (user) {
+      try {
+        // Fetch patient data from Firestore
+        const { collection, query, where, getDocs } = window.firestoreFunctions;
+        const q = query(
+          collection(window.firebaseDB, 'patients'),
+          where('userId', '==', user.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const data = querySnapshot.docs[0].data();
+          
+          // Fill in details
+          if (nameEl) nameEl.textContent = data.name || 'Patient';
+          if (fullNameEl) fullNameEl.textContent = data.name || '-';
+          if (emailEl) emailEl.textContent = user.email || '-';
+          if (emailDetailEl) emailDetailEl.textContent = user.email || '-';
+          if (ageEl) ageEl.textContent = data.age ? `${data.age} years` : 'Not provided';
+          if (userIdEl) userIdEl.textContent = user.uid.substring(0, 12) + '...';
+          if (roleEl) roleEl.textContent = '🩺 Patient';
+          
+          // Avatar initial (first letter of name)
+          if (avatarEl && data.name) {
+            avatarEl.textContent = data.name.charAt(0).toUpperCase();
+          }
+          
+          // Member since
+          if (memberSinceEl && data.registeredAt) {
+            const date = data.registeredAt.toDate ? data.registeredAt.toDate() : new Date(data.registeredAt);
+            memberSinceEl.textContent = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+          } else if (memberSinceEl) {
+            memberSinceEl.textContent = 'Recently joined';
+          }
+          
+          // Load consultation and neuroscore counts (placeholder for now)
+          const consultEl = document.getElementById('profileConsultations');
+          const neuroEl = document.getElementById('profileNeuroScores');
+          if (consultEl) consultEl.textContent = '0';
+          if (neuroEl) neuroEl.textContent = '0';
+          
+        } else {
+          // Fallback if no Firestore data
+          if (nameEl) nameEl.textContent = user.email.split('@')[0];
+          if (fullNameEl) fullNameEl.textContent = user.email.split('@')[0];
+          if (emailEl) emailEl.textContent = user.email;
+          if (emailDetailEl) emailDetailEl.textContent = user.email;
+          if (userIdEl) userIdEl.textContent = user.uid.substring(0, 12) + '...';
+        }
+      } catch (error) {
+        console.error('Error loading patient profile:', error);
+        if (nameEl) nameEl.textContent = 'Error loading data';
+      }
+    } else {
+      // Guest mode (not logged in)
+      if (nameEl) nameEl.textContent = 'Guest User';
+      if (fullNameEl) fullNameEl.textContent = 'Guest User';
+      if (emailEl) emailEl.textContent = 'Not logged in';
+      if (emailDetailEl) emailDetailEl.textContent = 'Not logged in';
+      if (roleEl) roleEl.textContent = '👤 Guest';
+      if (avatarEl) avatarEl.textContent = '👤';
+    }
+    
+    // Show patient fields, hide doctor fields
+    if (patientDetails) patientDetails.style.display = 'block';
+    if (docDetails) docDetails.style.display = 'none';
+  }
+  
+  // DOCTOR MODE
   else if (userMode === 'doctor') {
-    // Get latest doctor data
     let docData = window.currentDoctor;
     
-    // Fallback: Try to get from storage if global var is empty
     if (!docData) {
-        try {
-            docData = JSON.parse(localStorage.getItem('activeDoctorSession'));
-        } catch(e) {
-            console.log("No doctor session found in storage");
-        }
+      try {
+        docData = JSON.parse(localStorage.getItem('activeDoctorSession'));
+      } catch(e) {
+        console.log('No doctor session found');
+      }
     }
-
+    
     if (docData) {
       if (nameEl) nameEl.textContent = docData.name;
       if (emailEl) emailEl.textContent = docData.email;
-      if (roleEl) roleEl.textContent = "Doctor";
+      if (emailDetailEl) emailDetailEl.textContent = docData.email;
+      if (roleEl) roleEl.textContent = '⚕️ Doctor';
       
-      // SHOW DOCTOR FIELDS (ID, Phone, Specialty)
-      if (docDetails) {
-          docDetails.style.display = 'block';
-          
-          // Fill the inputs safely
-          if(document.getElementById('profileDocId')) 
-             document.getElementById('profileDocId').value = docData.id || "N/A";
-             
-          if(document.getElementById('profilePhone')) 
-             document.getElementById('profilePhone').value = docData.phone || "N/A";
-             
-          if(document.getElementById('profileSpecialty')) 
-             document.getElementById('profileSpecialty').value = docData.specialty || "General";
-             
-          if(document.getElementById('doctorStatusSelect')) 
-             document.getElementById('doctorStatusSelect').value = docData.status || "available";
+      // Avatar initial
+      if (avatarEl && docData.name) {
+        avatarEl.textContent = docData.name.charAt(0).toUpperCase();
+      }
+      
+      // Show doctor fields
+      if (docDetails) docDetails.style.display = 'block';
+      if (patientDetails) patientDetails.style.display = 'none';
+      
+      // Fill doctor-specific fields
+      if (document.getElementById('profileDocId')) {
+        document.getElementById('profileDocId').value = docData.id || 'N/A';
+      }
+      if (document.getElementById('profilePhone')) {
+        document.getElementById('profilePhone').value = docData.phone || 'N/A';
+      }
+      if (document.getElementById('profileSpecialty')) {
+        document.getElementById('profileSpecialty').value = docData.specialty || 'General';
+      }
+      if (document.getElementById('doctorStatusSelect')) {
+        document.getElementById('doctorStatusSelect').value = docData.status || 'available';
       }
     }
   }
-
-  // 5. Finally, show the modal
+  
+  // Finally, show the modal
   modal.style.display = 'flex';
 }
 
