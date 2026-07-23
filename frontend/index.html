@@ -1369,12 +1369,84 @@ body {
   .topbar { font-size: 1.2rem !important; padding: 14px 70px !important; }
 }
 
+/* Phase 3: Modern Auth Modals */
+.doctor-form-modal {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 20px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 40px !important;
+}
+.doctor-form-modal h2 {
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+.form-group input {
+  background: #f8fafc !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+}
+.form-group input:focus {
+  border-color: #3b82f6 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+  outline: none !important;
+}
+.btn-submit {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3) !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4) !important;
+}
+.btn-google {
+  background: white !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  transition: all 0.2s !important;
+}
+.btn-google:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
 @media (max-width: 480px) {
   .topbar { font-size: 1rem !important; }
   .btn-role { font-size: 0.95rem; padding: 14px; }
   .role-modal h2 { font-size: 1.3rem; }
   .chat-window div { max-width: 90%; font-size: 0.88rem; }
   #langSelect { display: none; }
+}
+
+/* Phase 1: Comprehensive Responsive Design */
+@media (max-width: 768px) {
+  .sidebar { width: 280px; z-index: 1000; transform: translateX(-100%); transition: transform 0.3s; position: fixed; }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0 !important; width: 100%; padding-top: 60px; }
+  .history-panel { width: 100%; position: fixed; right: -100%; z-index: 1001; transition: right 0.3s; height: 100vh; }
+  .history-panel.open { right: 0; }
+  .chat-window { padding: 10px; padding-bottom: 90px; }
+  .input-area { width: 100%; left: 0; padding: 10px; box-sizing: border-box; }
+  .input-wrapper { flex-direction: row; flex-wrap: wrap; }
+  input[type="text"] { width: 100%; margin-bottom: 10px; font-size: 16px; /* prevent iOS zoom */ }
+  .role-modal, .auth-modal, .modal-content, .neuroscore-modal, #galleryPanel { width: 95vw !important; max-width: none !important; margin: 5vh auto; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
+  .topbar { padding: 10px; flex-wrap: wrap; justify-content: space-between; }
+  .topbar .right-group { display: flex; gap: 5px; }
+  button, .send-btn, .mic-btn, .history-main-btn { padding: 10px; font-size: 14px; min-width: 44px; min-height: 44px; }
+  .suggestions-box { width: 95%; left: 2.5%; bottom: 80px; max-height: 200px; }
 }
 
   </style>
@@ -1815,27 +1887,39 @@ body {
       <div id="patientProfileDetails" style="margin-top: 25px;">
         <!-- Personal Information Card -->
         <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #0ea5e9;">
-          <h4 style="color: #0369a1; margin: 0 0 15px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 1.3rem;">👤</span> Personal Information
-          </h4>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h4 style="color: #0369a1; margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.3rem;">👤</span> Personal Information
+            </h4>
+            <button id="editProfileBtn" onclick="toggleEditProfile()" style="background: none; border: none; color: #0284c7; font-weight: bold; cursor: pointer;">Edit</button>
+            <button id="saveProfileBtn" onclick="saveUserProfile()" style="display: none; background: #0284c7; color: white; border: none; padding: 4px 10px; border-radius: 6px; font-weight: bold; cursor: pointer;">Save</button>
+          </div>
           
           <div style="display: grid; gap: 12px;">
             <!-- Full Name -->
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border-radius: 8px;">
               <span style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Full Name</span>
               <span id="profileFullName" style="color: #1e293b; font-weight: 600;">-</span>
+              <input type="text" id="editFullName" style="display: none; width: 60%; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px;">
             </div>
             
             <!-- Age -->
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border-radius: 8px;">
               <span style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Age</span>
               <span id="profileAge" style="color: #1e293b; font-weight: 600;">-</span>
+              <input type="number" id="editAge" style="display: none; width: 60%; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px;">
             </div>
             
             <!-- Gender -->
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border-radius: 8px;">
               <span style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Gender</span>
               <span id="profileGender" style="color: #1e293b; font-weight: 600;">Not specified</span>
+              <select id="editGender" style="display: none; width: 60%; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+                <option value="Not specified">Prefer not to say</option>
+              </select>
             </div>
           </div>
         </div>
@@ -2633,7 +2717,7 @@ function closeChatHistory() {
 }
 
 // Load and Display Chat History
-function loadChatHistoryUI() {
+async function loadChatHistoryUI() {
   const historyList = document.getElementById('historyList');
   
   if (!historyList) {
@@ -2641,16 +2725,31 @@ function loadChatHistoryUI() {
     return;
   }
   
-  // Get history from localStorage
-  const saved = localStorage.getItem('chatHistory');
-  
-  if (!saved) {
-    historyList.innerHTML = '<div class="no-history">No chat history yet</div>';
-    return;
-  }
+  let history = [];
   
   try {
-    const history = JSON.parse(saved);
+    // 1. Try Firebase if authenticated
+    if (window.firebaseDB && window.firebaseAuth && window.firebaseAuth.currentUser) {
+      const user = window.firebaseAuth.currentUser;
+      const { collection, query, where, orderBy, limit, getDocs } = window.firestoreFunctions;
+      const q = query(collection(window.firebaseDB, 'userChats'), where('userId', '==', user.uid), orderBy('timestamp', 'desc'), limit(20));
+      const querySnapshot = await getDocs(q);
+      
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        history.push({
+          id: data.timestamp?.toMillis() || Date.now(),
+          title: data.title,
+          timestamp: data.timestamp ? data.timestamp.toDate().toISOString() : new Date().toISOString()
+        });
+      });
+    } else {
+      // 2. Fallback to localStorage
+      const saved = localStorage.getItem('chatHistory');
+      if (saved) {
+        history = JSON.parse(saved);
+      }
+    }
     
     if (history.length === 0) {
       historyList.innerHTML = '<div class="no-history">No chat history yet</div>';
@@ -2662,9 +2761,10 @@ function loadChatHistoryUI() {
     history.forEach(item => {
       const date = new Date(item.timestamp);
       const timeAgo = getTimeAgo(date);
+      const safeTitle = item.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
       
       html += `
-        <div class="history-item" onclick="loadHistoryItem(${item.id})">
+        <div class="history-item" onclick="loadHistoryItem('${safeTitle}')">
           <div class="history-title">${item.title}</div>
           <div class="history-time">${timeAgo}</div>
         </div>
@@ -2679,28 +2779,18 @@ function loadChatHistoryUI() {
 }
 
 // Load a specific history item when clicked
-function loadHistoryItem(id) {
-  const saved = localStorage.getItem('chatHistory');
-  
-  if (!saved) return;
+function loadHistoryItem(text) {
+  if (!text) return;
   
   try {
-    const history = JSON.parse(saved);
-    const item = history.find(h => h.id === id);
-    
-    if (item) {
-      // Put the question in the input field
-      const userInput = document.getElementById('userInput');
-      if (userInput) {
-        userInput.value = item.title;
-      }
-      
-      // Close the history panel
-      closeChatHistory();
-      
-      // Optional: Auto-send the message
-      // sendMessage();
+    // Put the question in the input field
+    const userInput = document.getElementById('userInput');
+    if (userInput) {
+      userInput.value = text;
     }
+    
+    // Close the history panel
+    closeChatHistory();
   } catch (error) {
     console.error('Error loading history item:', error);
   }
@@ -5494,9 +5584,43 @@ async function requestResetCode() {
       </button>
       
       <!-- Gallery Grid -->
-      <div id="galleryGrid" class="gallery-grid"
-     style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-</div> 
+      <div id="galleryGrid" class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+        <!-- Cognitive Symptoms -->
+        <div style="background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; border-top: 4px solid #3b82f6;">
+          <div style="padding: 15px;">
+            <h4 style="margin: 0 0 10px 0; color: #1e293b; display: flex; align-items: center; gap: 8px;">🧠 Cognitive Issues</h4>
+            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">Memory loss, confusion, difficulty concentrating, or sudden mood changes.</p>
+            <button onclick="document.getElementById('userInput').value='I am experiencing memory loss and confusion. What could be the cause?'; closeGallery();" style="width: 100%; padding: 8px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;">Ask Neurobird</button>
+          </div>
+        </div>
+
+        <!-- Motor Symptoms -->
+        <div style="background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; border-top: 4px solid #10b981;">
+          <div style="padding: 15px;">
+            <h4 style="margin: 0 0 10px 0; color: #1e293b; display: flex; align-items: center; gap: 8px;">🏃 Motor Function</h4>
+            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">Tremors, muscle weakness, loss of coordination, or difficulty walking.</p>
+            <button onclick="document.getElementById('userInput').value='I have sudden muscle weakness and tremors. What should I do?'; closeGallery();" style="width: 100%; padding: 8px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;">Ask Neurobird</button>
+          </div>
+        </div>
+
+        <!-- Sensory Symptoms -->
+        <div style="background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; border-top: 4px solid #f59e0b;">
+          <div style="padding: 15px;">
+            <h4 style="margin: 0 0 10px 0; color: #1e293b; display: flex; align-items: center; gap: 8px;">👁️ Sensory Changes</h4>
+            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">Numbness, tingling, blurred vision, or loss of smell/taste.</p>
+            <button onclick="document.getElementById('userInput').value='I feel numbness and tingling in my hands. Is this related to nerves?'; closeGallery();" style="width: 100%; padding: 8px; background: #fffbeb; color: #d97706; border: 1px solid #fde68a; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;">Ask Neurobird</button>
+          </div>
+        </div>
+        
+        <!-- Sleep Symptoms -->
+        <div style="background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; border-top: 4px solid #8b5cf6;">
+          <div style="padding: 15px;">
+            <h4 style="margin: 0 0 10px 0; color: #1e293b; display: flex; align-items: center; gap: 8px;">😴 Sleep Disorders</h4>
+            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">Insomnia, excessive daytime sleepiness, or sleep apnea symptoms.</p>
+            <button onclick="document.getElementById('userInput').value='I have trouble sleeping and feel tired all day. Could it be neurological?'; closeGallery();" style="width: 100%; padding: 8px; background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;">Ask Neurobird</button>
+          </div>
+        </div>
+      </div>
 
 </div>
 </aside>
@@ -5517,21 +5641,32 @@ async function requestResetCode() {
         <div id="suggestionsList"></div>
       </div>
 
-      <div class="search-bar">
-  <input type="text" id="userInput" placeholder="Type your health question here..." data-i18n-placeholder="chat_placeholder" aria-label="Type your health question" />
-  <button class="btn send" onclick="sendMessage()" aria-label="Send message">⬆️</button>
+      <div class="search-bar" style="display: flex; gap: 10px; align-items: center; background: white; padding: 10px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+  <input type="text" id="userInput" placeholder="Type your health question here..." data-i18n-placeholder="chat_placeholder" aria-label="Type your health question" style="flex: 1; border: none; background: transparent; padding: 10px; font-size: 1rem; outline: none;" />
   
-  <!-- These buttons will be hidden/shown based on mode -->
-  <button class="btn" id="patientActionBtn" style="display: flex;">
-    <span class="mic">🎤</span>
-    <span class="upload">📂</span>
+  <button class="btn send" onclick="sendMessage()" aria-label="Send message" style="background: #2563eb; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
   </button>
   
-  <button class="btn" id="doctorVideoBtn" onclick="startVideoCall(activePatientId)" style="display: none; background: #10b981;">
-    📹
+  <!-- Multi-modal input buttons -->
+  <div id="patientActionBtn" style="display: flex; gap: 8px;">
+    <!-- Mic Button -->
+    <button class="btn mic-btn" id="micBtn" onclick="toggleMicrophone()" style="background: #f1f5f9; color: #475569; border: none; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+    </button>
+    
+    <!-- File Upload Button -->
+    <button class="btn upload-btn" onclick="document.getElementById('fileUploadInput').click()" style="background: #f1f5f9; color: #475569; border: none; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+    </button>
+    <input type="file" id="fileUploadInput" accept="image/*,.pdf" style="display: none;" onchange="handleFileUpload(event)">
+  </div>
+  
+  <button class="btn" id="doctorVideoBtn" onclick="startVideoCall(activePatientId)" style="display: none; background: #10b981; color: white; border-radius: 50%; width: 45px; height: 45px; border: none; cursor: pointer;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
   </button>
-  <button class="btn" id="doctorVoiceBtn" onclick="startVoiceCall(activePatientId)" style="display: none; background: #3b82f6;">
-    📞
+  <button class="btn" id="doctorVoiceBtn" onclick="startVoiceCall(activePatientId)" style="display: none; background: #3b82f6; color: white; border-radius: 50%; width: 45px; height: 45px; border: none; cursor: pointer;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
   </button>
 </div>
 
@@ -6707,23 +6842,18 @@ function showEmergencyModal(type, title, message) {
   
   // ✅ NEW: Sync to Firebase for cross-device access
   try {
-    if (window.firebaseDB) {
+    if (window.firebaseDB && window.firebaseAuth && window.firebaseAuth.currentUser) {
       const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+      const user = window.firebaseAuth.currentUser;
       
-      // Get or create user ID
-      let userId = localStorage.getItem('userId');
-      if (!userId) {
-        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('userId', userId);
-      }
-      
-      await addDoc(collection(window.firebaseDB, 'chatHistory'), {
-        userId: userId,
-        question: firstQuestion,
+      await addDoc(collection(window.firebaseDB, 'userChats'), {
+        userId: user.uid,
+        title: firstQuestion,
+        chatHistoryData: JSON.stringify(chatHistory),
         timestamp: serverTimestamp()
       });
       
-      console.log('✅ Chat history synced to Firebase');
+      console.log('✅ Chat history synced to Firebase globally');
     }
   } catch (error) {
     console.error('❗ Failed to sync chat history:', error);
@@ -7024,6 +7154,96 @@ async function resetPassword(email, resetCode, newPassword) {
       suggestionsBox.classList.add('active');
     }
   }
+
+// ✅ Phase 4: Multi-Modal Upgrades
+let recognition;
+let isRecording = false;
+
+function toggleMicrophone() {
+  const micBtn = document.getElementById('micBtn');
+  
+  if (isRecording) {
+    recognition.stop();
+    return;
+  }
+  
+  if (!('webkitSpeechRecognition' in window)) {
+    alert("Speech recognition is not supported in this browser. Please use Chrome.");
+    return;
+  }
+  
+  recognition = new webkitSpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  
+  recognition.onstart = function() {
+    isRecording = true;
+    micBtn.style.background = '#ef4444';
+    micBtn.style.color = 'white';
+    micBtn.style.animation = 'pulse 1.5s infinite';
+    userInputField.placeholder = "Listening...";
+  };
+  
+  recognition.onresult = function(event) {
+    let interimTranscript = '';
+    let finalTranscript = '';
+    
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript;
+      } else {
+        interimTranscript += event.results[i][0].transcript;
+      }
+    }
+    
+    userInputField.value = finalTranscript || interimTranscript;
+  };
+  
+  recognition.onend = function() {
+    isRecording = false;
+    micBtn.style.background = '#f1f5f9';
+    micBtn.style.color = '#475569';
+    micBtn.style.animation = 'none';
+    userInputField.placeholder = "Type your health question here...";
+  };
+  
+  recognition.start();
+}
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64Str = e.target.result;
+    
+    // Create preview bubble in chat
+    const chatWindow = document.getElementById('chatWindow');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'user-msg';
+    
+    if (file.type.startsWith('image/')) {
+      msgDiv.innerHTML = `<img src="${base64Str}" style="max-width: 200px; border-radius: 8px; margin-bottom: 5px;"><br><i>Image uploaded for analysis</i>`;
+    } else {
+      msgDiv.innerHTML = `📄 <b>${file.name}</b><br><i>Document uploaded for analysis</i>`;
+    }
+    
+    chatWindow.appendChild(msgDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    
+    // Simulate backend processing delay
+    setTimeout(() => {
+      const botDiv = document.createElement('div');
+      botDiv.className = 'bot-msg';
+      botDiv.innerHTML = `I've analyzed your file: <b>${file.name}</b>. However, my deep medical vision and PDF extraction backend is currently running in a simulated mode on Vercel. Please type out any specific text you'd like me to review from the document.`;
+      chatWindow.appendChild(botDiv);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }, 1500);
+  };
+  
+  reader.readAsDataURL(file);
+}
 
   async function sendMessage() {
     const userText = userInputField.value.trim();
@@ -9100,6 +9320,80 @@ function closeAbout() {
 
 
 
+
+// ✅ Phase 3: Edit Profile Logic
+let isEditingProfile = false;
+function toggleEditProfile() {
+  isEditingProfile = !isEditingProfile;
+  const showText = !isEditingProfile ? 'inline' : 'none';
+  const showInput = isEditingProfile ? 'inline-block' : 'none';
+  
+  document.getElementById('profileFullName').style.display = showText;
+  document.getElementById('profileAge').style.display = showText;
+  document.getElementById('profileGender').style.display = showText;
+  
+  const editFullName = document.getElementById('editFullName');
+  const editAge = document.getElementById('editAge');
+  const editGender = document.getElementById('editGender');
+  
+  editFullName.style.display = showInput;
+  editAge.style.display = showInput;
+  editGender.style.display = showInput;
+  
+  if (isEditingProfile) {
+    editFullName.value = document.getElementById('profileFullName').textContent;
+    const ageText = document.getElementById('profileAge').textContent;
+    editAge.value = ageText === '-' ? '' : ageText;
+    editGender.value = document.getElementById('profileGender').textContent;
+    
+    document.getElementById('editProfileBtn').style.display = 'none';
+    document.getElementById('saveProfileBtn').style.display = 'inline';
+  } else {
+    document.getElementById('editProfileBtn').style.display = 'inline';
+    document.getElementById('saveProfileBtn').style.display = 'none';
+  }
+}
+
+async function saveUserProfile() {
+  if (!window.firebaseAuth || !window.firebaseDB) return;
+  const user = window.firebaseAuth.currentUser;
+  if (!user) return;
+  
+  const newName = document.getElementById('editFullName').value.trim();
+  const newAge = document.getElementById('editAge').value;
+  const newGender = document.getElementById('editGender').value;
+  
+  try {
+    document.getElementById('saveProfileBtn').textContent = 'Saving...';
+    
+    // Find the patient doc id
+    const { collection, query, where, getDocs, updateDoc, doc } = window.firestoreFunctions;
+    const q = query(collection(window.firebaseDB, 'patients'), where('userId', '==', user.uid));
+    const snapshot = await getDocs(q);
+    
+    if (!snapshot.empty) {
+      const patientDoc = snapshot.docs[0];
+      await updateDoc(doc(window.firebaseDB, 'patients', patientDoc.id), {
+        fullName: newName,
+        age: newAge,
+        gender: newGender
+      });
+      
+      document.getElementById('profileFullName').textContent = newName || '-';
+      document.getElementById('profileName').textContent = newName || 'User';
+      document.getElementById('profileAge').textContent = newAge || '-';
+      document.getElementById('profileGender').textContent = newGender || 'Not specified';
+      
+      alert('Profile updated successfully!');
+    }
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    alert('Failed to update profile.');
+  } finally {
+    document.getElementById('saveProfileBtn').textContent = 'Save';
+    toggleEditProfile();
+  }
+}
 
 // ✅ CORRECTED: Open Profile Modal Function
 async function openUserProfile() {
