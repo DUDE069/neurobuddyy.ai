@@ -1339,14 +1339,46 @@ def get_suggestions():
         if not questions_database or check_greeting(user_input):
             return jsonify({'suggestions': []})
         
-        search_words = user_input.split()
-        matching = [q['question'] for q in questions_database if all(w in q.get('question', '').lower() for w in search_words)][:10]
+        import difflib
+        import re
         
-        if not matching:
-            matching = [q['question'] for q in questions_database if any(w in q.get('question', '').lower() for w in search_words)][:10]
+        user_input_lower = user_input
+        search_words = user_input_lower.split()
         
-        matching.sort(key=len)
-        return jsonify({'suggestions': matching[:10]})
+        if not search_words:
+            return jsonify({'suggestions': []})
+            
+        matches = []
+        for q in questions_database:
+            db_question = q.get('question', '').lower().strip()
+            db_clean = re.sub(r'[^\w\s]', '', db_question)
+            q_words = db_clean.split()
+            
+            if not q_words:
+                continue
+                
+            if user_input_lower in db_clean:
+                matches.append((100.0, q.get('question')))
+                continue
+                
+            score = 0
+            for w in search_words:
+                if w in q_words:
+                    score += 1
+                else:
+                    best = difflib.get_close_matches(w, q_words, n=1, cutoff=0.6)
+                    if best:
+                        score += 1
+                        
+            normalized_score = score / len(search_words)
+            if normalized_score > 0:
+                ratio = difflib.SequenceMatcher(None, user_input_lower, db_clean).ratio()
+                matches.append((normalized_score + (ratio * 0.1), q.get('question')))
+        
+        matches.sort(key=lambda x: x[0], reverse=True)
+        top_suggestions = [m[1] for m in matches[:10]]
+        
+        return jsonify({'suggestions': top_suggestions})
     except Exception:
         return jsonify({'suggestions': []})
 

@@ -520,6 +520,7 @@ def check_greeting(user_input):
 @limiter.limit("30 per minute")
 def get_suggestions():
     try:
+        import difflib
         user_input  = request.json['text'].lower().strip()
         search_words = [w for w in user_input.split() if w]
 
@@ -531,50 +532,39 @@ def get_suggestions():
         if greeting_response:
             return jsonify({'suggestions': []})
 
-        exact_matches = []   # (question_text, sort_key)
-        fuzzy_matches = []   # (question_text, total_edit_distance)
-
+        fuzzy_matches = []
         for q in questions_database:
             question_lower = q['question'].lower()
-
-            # ── PASS 1: Exact substring match (original behaviour, highest priority) ──
-            if all(word in question_lower for word in search_words):
-                exact_matches.append((q['question'], len(q['question'])))
-                continue  # Don't re-check in fuzzy pass
-
-            # ── PASS 2: Fuzzy match via Levenshtein (threshold = 2) ──
-            total_dist = 0
-            is_fuzzy   = True
-            for word in search_words:
-                if fuzzy_word_match(word, question_lower, threshold=2):
-                    # Approximate distance contribution for sorting
-                    best_dist = min(
-                        levenshtein_distance(word, q_word)
-                        for q_word in question_lower.split()
-                        if len(q_word) >= 3 and len(word) >= 3
-                    ) if any(len(w) >= 3 for w in question_lower.split()) else 2
-                    total_dist += best_dist
+            q_words = question_lower.split()
+            
+            if not q_words:
+                continue
+                
+            if user_input in question_lower:
+                fuzzy_matches.append((q['question'], 100.0))
+                continue
+                
+            score = 0
+            for w in search_words:
+                if w in q_words:
+                    score += 1
                 else:
-                    is_fuzzy = False
-                    break
+                    best = difflib.get_close_matches(w, q_words, n=1, cutoff=0.6)
+                    if best:
+                        score += 1
+            
+            normalized_score = score / len(search_words)
+            if normalized_score > 0:
+                ratio = difflib.SequenceMatcher(None, user_input, question_lower).ratio()
+                fuzzy_matches.append((q['question'], normalized_score + (ratio * 0.1)))
 
-            if is_fuzzy:
-                fuzzy_matches.append((q['question'], total_dist))
-
-        # Sort: exact by length (shorter = more direct), fuzzy by edit distance (lower = better)
-        exact_matches.sort(key=lambda x: x[1])
-        fuzzy_matches.sort(key=lambda x: x[1])
-
-        # Merge: exact first, fuzzy appended. Cap at 10 total.
-        results = (
-            [q for q, _ in exact_matches[:7]]
-            + [q for q, _ in fuzzy_matches if q not in [r for r, _ in exact_matches[:7]]]
-        )
-        top_10 = results[:10]
+        # Sort: highest score first
+        fuzzy_matches.sort(key=lambda x: x[1], reverse=True)
+        top_10 = [q for q, _ in fuzzy_matches[:10]]
 
         print(
             f"User: '{user_input}' | Words: {search_words} | "
-            f"Exact: {len(exact_matches)} | Fuzzy: {len(fuzzy_matches)} | Showing: {len(top_10)}"
+            f"Matches: {len(fuzzy_matches)} | Showing: {len(top_10)}"
         )
 
         return jsonify({'suggestions': top_10})
