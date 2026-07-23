@@ -1463,12 +1463,13 @@ body {
     overflow-y: auto !important;
     border: none !important;
     padding: 20px !important;
-    display: none; /* toggled via JS */
+    display: none !important; /* toggled via JS */
   }
   
   /* Show modal when active class is added */
   #galleryPanel.active-modal, #doctorListContainer.active-modal, .hospital-section.active-modal, #chatHistoryPanel.active-modal {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
   
   /* Chat Interface Scaling */
