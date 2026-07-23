@@ -605,30 +605,37 @@ def get_answer():
         print(f"✗ No exact match for: {selected_question}. Trying fuzzy search.")
         
         # Fuzzy search logic
+        import difflib
         user_input = selected_question.lower().strip()
         search_words = [w for w in user_input.split() if w]
         
         fuzzy_matches = []
         for q in questions_database:
             question_lower = q['question'].lower()
-            total_dist = 0
-            is_fuzzy = True
-            for word in search_words:
-                if fuzzy_word_match(word, question_lower, threshold=2):
-                    best_dist = min(
-                        levenshtein_distance(word, q_word)
-                        for q_word in question_lower.split()
-                        if len(q_word) >= 3 and len(word) >= 3
-                    ) if any(len(w) >= 3 for w in question_lower.split()) else 2
-                    total_dist += best_dist
-                else:
-                    is_fuzzy = False
-                    break
+            q_words = question_lower.split()
             
-            if is_fuzzy:
-                fuzzy_matches.append((q['question'], total_dist))
+            if not q_words or not search_words:
+                continue
                 
-        fuzzy_matches.sort(key=lambda x: x[1])
+            if user_input in question_lower:
+                fuzzy_matches.append((q['question'], 100.0))
+                continue
+                
+            score = 0
+            for w in search_words:
+                if w in q_words:
+                    score += 1
+                else:
+                    best = difflib.get_close_matches(w, q_words, n=1, cutoff=0.6)
+                    if best:
+                        score += 1
+            
+            normalized_score = score / len(search_words)
+            if normalized_score > 0:
+                ratio = difflib.SequenceMatcher(None, user_input, question_lower).ratio()
+                fuzzy_matches.append((q['question'], normalized_score + (ratio * 0.1)))
+                
+        fuzzy_matches.sort(key=lambda x: x[1], reverse=True)
         top_suggestions = [q for q, _ in fuzzy_matches[:5]]
         
         if top_suggestions:
