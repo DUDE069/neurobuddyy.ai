@@ -3160,7 +3160,7 @@ function displayPatients(patients) {
     card.innerHTML = `
       <div class="doctor-info">
         <div class="doctor-name">${patient.patientName || 'Anonymous Patient'}</div>
-        <div class="doctor-specialty">Age: ${patient.age || 'N/A'} â€¢ ${patient.urgency || 'Normal'}</div>
+        <div class="doctor-specialty">Age: ${patient.age || 'N/A'} ${patient.urgency || 'Normal'}</div>
         <div style="font-size: 0.75rem; color: #666; margin-top: 4px;">${patient.message || 'Waiting for consultation'}</div>
       </div>
       <div class="status-indicator status-available"></div>
@@ -4677,7 +4677,7 @@ function showDoctorConnectionModal(doctor) {
         </button>
         <button id="confirmConnBtn" 
                 style="flex: 1; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-          ❌ Connect Now
+          🔗Connect Now
         </button>
       </div>
     </div>
@@ -6066,7 +6066,7 @@ async function requestResetCode() {
         
         displaySavedLocation(locationData, result.hospital);
         
-       showEmergencyModal('success', '✅ Location Saved!', 'Your nearest hospital has been configured successfully. Emergency button is now ready to use.');
+       showEmergencyModal('success', ' Location Saved!', 'Your nearest hospital has been configured successfully. Emergency button is now ready to use.');
 
       } else {
         alert("❗ Failed to save location: " + result.message);
