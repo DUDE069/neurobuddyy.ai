@@ -1432,21 +1432,65 @@ body {
 }
 
 /* Phase 1: Comprehensive Responsive Design */
+/* Desktop default hides mobile-only elements */
+.mobile-only-btn { display: none; }
+
 @media (max-width: 768px) {
+  /* Hide Rightbar */
+  .rightbar { display: none !important; }
+  
+  /* Make main content full width and allow scrolling */
+  .main-content { margin-left: 0 !important; width: 100%; padding-top: 60px; overflow-y: auto !important; height: 100vh; }
+  .layout-container { display: flex; flex-direction: column; overflow-y: auto !important; }
+  
+  /* Sidebar and Modals */
   .sidebar { width: 280px; z-index: 1000; transform: translateX(-100%); transition: transform 0.3s; position: fixed; }
   .sidebar.open { transform: translateX(0); }
-  .main-content { margin-left: 0 !important; width: 100%; padding-top: 60px; }
-  .history-panel { width: 100%; position: fixed; right: -100%; z-index: 1001; transition: right 0.3s; height: 100vh; }
-  .history-panel.open { right: 0; }
-  .chat-window { padding: 10px; padding-bottom: 90px; }
-  .input-area { width: 100%; left: 0; padding: 10px; box-sizing: border-box; }
-  .input-wrapper { flex-direction: row; flex-wrap: wrap; }
-  input[type="text"] { width: 100%; margin-bottom: 10px; font-size: 16px; /* prevent iOS zoom */ }
-  .role-modal, .auth-modal, .modal-content, .neuroscore-modal, #galleryPanel { width: 95vw !important; max-width: none !important; margin: 5vh auto; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
+  .mobile-only-btn { display: list-item; margin: 5px 0; padding: 12px; border-radius: 8px; background: #f8fafc; }
+  
+  /* Convert panels to modals */
+  #galleryPanel, #doctorListContainer, .hospital-section, #chatHistoryPanel {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90vw !important;
+    max-height: 85vh !important;
+    background: white !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3) !important;
+    z-index: 9999 !important;
+    overflow-y: auto !important;
+    border: none !important;
+    padding: 20px !important;
+    display: none; /* toggled via JS */
+  }
+  
+  /* Show modal when active class is added */
+  #galleryPanel.active-modal, #doctorListContainer.active-modal, .hospital-section.active-modal, #chatHistoryPanel.active-modal {
+    display: block !important;
+  }
+  
+  /* Chat Interface Scaling */
+  .chat-section { width: 100% !important; flex: 1 !important; display: flex; flex-direction: column; height: calc(100vh - 60px); }
+  .chat-window { padding: 10px; padding-bottom: 90px; flex: 1; overflow-y: auto; }
+  .chat-window div { max-width: 90%; font-size: 0.9rem; padding: 10px 14px; margin-bottom: 12px; }
+  
+  /* Search bar scaling */
+  .search-bar { width: 95%; left: 2.5%; padding: 6px; box-sizing: border-box; bottom: 10px; border-radius: 20px; }
+  .search-bar input { font-size: 0.9rem !important; padding: 6px !important; }
+  .search-bar .btn { width: 38px !important; height: 38px !important; padding: 6px !important; }
+  .search-bar svg { width: 16px; height: 16px; }
+  
+  /* Modals generic */
+  .role-modal, .auth-modal, .modal-content, .neuroscore-modal { width: 95vw !important; max-width: none !important; margin: 5vh auto; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
   .topbar { padding: 10px; flex-wrap: wrap; justify-content: space-between; }
   .topbar .right-group { display: flex; gap: 5px; }
-  button, .send-btn, .mic-btn, .history-main-btn { padding: 10px; font-size: 14px; min-width: 44px; min-height: 44px; }
+  button, .send-btn, .mic-btn, .history-main-btn { font-size: 14px; }
   .suggestions-box { width: 95%; left: 2.5%; bottom: 80px; max-height: 200px; }
+  
+  #historySubmenu { display: none; padding-left: 15px; background: #f8fafc; border-radius: 8px; margin-top: 5px; overflow: hidden; }
+  #historySubmenu button { display: block; width: 100%; text-align: left; padding: 10px; border: none; background: transparent; }
 }
 
   </style>
@@ -5516,16 +5560,20 @@ async function requestResetCode() {
   
   <!-- TOP ITEMS -->
   <li class="has-submenu">
-    <button id="historyBtn" class="history-main-btn">🕒 History ▾</button>
+    <button id="historyBtn" class="history-main-btn" onclick="toggleMobileAccordion('historySubmenu')">🕒 History ▾</button>
     <div id="historySubmenu" class="submenu">
       <button id="chatHistoryBtn">💬 Chat History</button>
       <button id="patientHistoryBtn">👥 Patient History</button>
       <button id="neuroHistoryBtn">🧠 NeuroScore History</button>
     </div>
   </li>
-  <li onclick="toggleGallery()">🖼️ Symptoms Gallery</li>
-  <!-- Inside .menu list -->
-<li onclick="openNeuroScore()">🧠 NeuroScore Assessment</li>
+  <li onclick="toggleGalleryMobileSafe()">🖼️ Symptoms Gallery</li>
+  <li onclick="openNeuroScore()">🧠 NeuroScore Assessment</li>
+
+  <!-- MOBILE ONLY ITEMS (Hidden on desktop via CSS) -->
+  <li class="mobile-only-btn" onclick="showEmergencyConfirmation()" style="color: #ef4444; font-weight: bold;">🚨 Emergency SOS</li>
+  <li class="mobile-only-btn" onclick="toggleDoctorModalMobileSafe()">👤 Connect Doctor</li>
+  <li class="mobile-only-btn" onclick="toggleHospitalModalMobileSafe()">🏥 Hospital Locator</li>
 
   
   <!-- SPACER (This pushes everything below it to the bottom) -->
@@ -10650,6 +10698,117 @@ console.log(
   }
 
 })();
+</script>
+
+<!-- Mobile Redesign JavaScript -->
+<script>
+  function toggleMobileAccordion(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      if (el.style.display === 'block') {
+        el.style.display = 'none';
+      } else {
+        el.style.display = 'block';
+      }
+    }
+  }
+
+  function toggleGalleryMobileSafe() {
+    if (window.innerWidth <= 768) {
+      const panel = document.getElementById('galleryPanel');
+      panel.classList.toggle('active-modal');
+      // If closing the sidebar
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (sidebar) sidebar.classList.remove('open');
+      if (overlay) overlay.style.display = 'none';
+    } else {
+      // standard desktop logic
+      if (typeof toggleGallery === 'function') {
+        toggleGallery();
+      }
+    }
+  }
+
+  function toggleDoctorModalMobileSafe() {
+    if (window.innerWidth <= 768) {
+      const panel = document.getElementById('doctorListContainer');
+      panel.classList.toggle('active-modal');
+      if (panel.classList.contains('active-modal') && typeof loadRealDoctors === 'function') {
+        loadRealDoctors();
+      }
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (sidebar) sidebar.classList.remove('open');
+      if (overlay) overlay.style.display = 'none';
+    } else {
+      if (typeof togglePatientList === 'function') togglePatientList();
+    }
+  }
+
+  function toggleHospitalModalMobileSafe() {
+    if (window.innerWidth <= 768) {
+      const panel = document.querySelector('.hospital-section');
+      if (panel) panel.classList.toggle('active-modal');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (sidebar) sidebar.classList.remove('open');
+      if (overlay) overlay.style.display = 'none';
+    }
+  }
+
+  // Override History buttons logic for mobile modals
+  document.addEventListener('DOMContentLoaded', () => {
+    const chatHistoryBtn = document.getElementById('chatHistoryBtn');
+    if (chatHistoryBtn) {
+      const oldOnclick = chatHistoryBtn.onclick;
+      chatHistoryBtn.onclick = (e) => {
+        if (window.innerWidth <= 768) {
+          const panel = document.getElementById('chatHistoryPanel');
+          panel.classList.add('active-modal');
+          const sidebar = document.getElementById('sidebar');
+          const overlay = document.getElementById('sidebarOverlay');
+          if (sidebar) sidebar.classList.remove('open');
+          if (overlay) overlay.style.display = 'none';
+          if (typeof loadChatHistoryUI === 'function') loadChatHistoryUI();
+        } else {
+          if (typeof toggleChatHistory === 'function') toggleChatHistory();
+        }
+      };
+    }
+  });
+
+  // Close modals when clicking outside
+  document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768) {
+      const gallery = document.getElementById('galleryPanel');
+      const doctors = document.getElementById('doctorListContainer');
+      const hospital = document.querySelector('.hospital-section');
+      const chatHistory = document.getElementById('chatHistoryPanel');
+      
+      const isClickInsideGallery = gallery && gallery.contains(e.target);
+      const isClickInsideDoctors = doctors && doctors.contains(e.target);
+      const isClickInsideHospital = hospital && hospital.contains(e.target);
+      const isClickInsideHistory = chatHistory && chatHistory.contains(e.target);
+      const isGalleryBtn = e.target.closest('[onclick="toggleGalleryMobileSafe()"]');
+      const isDoctorBtn = e.target.closest('[onclick="toggleDoctorModalMobileSafe()"]');
+      const isHospitalBtn = e.target.closest('[onclick="toggleHospitalModalMobileSafe()"]');
+      const isHistoryBtn = e.target.closest('#chatHistoryBtn');
+      
+      if (gallery && gallery.classList.contains('active-modal') && !isClickInsideGallery && !isGalleryBtn) {
+        gallery.classList.remove('active-modal');
+      }
+      if (doctors && doctors.classList.contains('active-modal') && !isClickInsideDoctors && !isDoctorBtn) {
+        doctors.classList.remove('active-modal');
+      }
+      if (hospital && hospital.classList.contains('active-modal') && !isClickInsideHospital && !isHospitalBtn) {
+        hospital.classList.remove('active-modal');
+      }
+      if (chatHistory && chatHistory.classList.contains('active-modal') && !isClickInsideHistory && !isHistoryBtn) {
+        chatHistory.classList.remove('active-modal');
+      }
+    }
+  });
 </script>
 
 </body>
