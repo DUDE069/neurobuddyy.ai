@@ -1,0 +1,36 @@
+{
+  "name": "NEUROBUDDYY.AI",
+  "short_name": "NeuroBuddyy",
+  "description": "AI-powered neurological health assistant by Zero Day Coders",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060000",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "scope": "/",
+  "categories": ["health", "medical"],
+  "icons": [
+    {
+      "src": "images/neurobuddyy-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/neurobuddyy-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Emergency SOS",
+      "short_name": "SOS",
+      "description": "Send an emergency alert instantly",
+      "url": "/?action=emergency",
+      "icons": [{ "src": "images/neurobuddyy-logo.png", "sizes": "192x192" }]
+    }
+  ]
+}

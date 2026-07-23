@@ -2,14 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-  <title>NEUROBUDDYY.ai</title>
-  
-    <!-- ✅ FAVICON (Browser Tab Logo) -->
+  <title>NEUROBUDDYY.AI — AI-Powered Neurological Health Assistant</title>
+  <meta name="description" content="NEUROBUDDYY.AI is an intelligent, AI-powered healthcare platform for neurological conditions, brain health, and general medical inquiries. Available in English, Assamese, and Hindi.">
+  <meta property="og:title" content="NEUROBUDDYY.AI">
+  <meta property="og:description" content="AI-powered brain health and neurological care platform by Zero Day Coders">
+  <meta property="og:image" content="images/neurobuddyy-logo.png">
+
+  <!-- ✅ FAVICON (Browser Tab Logo) -->
   <link rel="icon" type="image/png" href="images/neurobuddyy-logo.png">
   <link rel="shortcut icon" type="image/png" href="images/neurobuddyy-logo.png">
   <link rel="apple-touch-icon" href="images/neurobuddyy-logo.png">
+
+  <!-- ✅ PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NeuroBuddyy">
+
+  <!-- ✅ Google Fonts — Noto Sans supports Assamese Unicode -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   
@@ -19,8 +35,8 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
     import { getFirestore, collection, addDoc, getDocs,getDoc, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ✅ ADD THIS LINE - Firebase Authentication
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    // ✅ Firebase Authentication — includes GoogleAuthProvider for one-click Google Sign-In
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDnsuheauVnhqUcIhCyEXCNSNBdS1PQkII",
@@ -41,11 +57,13 @@
     window.firebaseAuth = auth;
     window.firestoreFunctions = { collection, addDoc, getDocs,getDoc, query, where, updateDoc, doc, serverTimestamp, orderBy, limit, deleteDoc, onSnapshot };
     window.authFunctions = {
-    createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential
+      createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+      sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential,
+      GoogleAuthProvider, signInWithPopup
     };
 
-    console.log("✅ Firebase initialized successfully!");
-    console.log("ðŸ“Š Firestore Auth ready:", auth);
+    console.log("✅ Firebase initialized successfully! GoogleAuthProvider ready.");
+    console.log("🔊 Firestore Auth ready:", auth);
     
   </script>
   <!-- ========== END FIREBASE INTEGRATION ========== -->
@@ -1135,41 +1153,272 @@
 }
 
 
+/* ============================================================
+   NEUROBUDDYY.AI v2 — NEW CSS UPGRADES
+============================================================ */
 
+/* ── i18n Font Override (supports Assamese/Devanagari Unicode) ── */
+body {
+  font-family: 'Noto Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ── Language Selector in Topbar ── */
+#langSelect {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  color: white;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  backdrop-filter: blur(6px);
+  transition: background 0.2s;
+  font-family: 'Noto Sans', 'Segoe UI', Tahoma, sans-serif;
+}
+#langSelect option { background: #060000; color: white; }
+#langSelect:hover  { background: rgba(255,255,255,0.28); }
+
+/* ── Emergency SOS Pulsing Glow ── */
+@keyframes sosGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(220,38,38,0.4), 0 0 0 0 rgba(220,38,38,0.6); }
+  50%       { box-shadow: 0 0 18px rgba(220,38,38,0.9), 0 0 24px rgba(220,38,38,0.3); }
+}
+.emergency {
+  animation: sosGlow 2s ease-in-out infinite !important;
+  width: 100%;
+  transition: transform 0.15s ease !important;
+}
+.emergency:hover {
+  animation: none !important;
+  background: #b91c1c !important;
+  transform: scale(1.03);
+}
+
+/* ── Frosted Glass Modals ── */
+.modal-overlay {
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  background: rgba(0,0,0,0.62) !important;
+}
+.modal-content {
+  animation: glassSlideIn 0.36s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes glassSlideIn {
+  from { transform: translateY(-38px) scale(0.95); opacity: 0; }
+  to   { transform: translateY(0)      scale(1);   opacity: 1; }
+}
+
+/* ── Skeleton Loaders ── */
+.skeleton-pulse {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: skeletonLoad 1.5s infinite;
+  border-radius: 8px;
+  height: 60px;
+  margin-bottom: 8px;
+}
+@keyframes skeletonLoad {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Google Sign-In Button ── */
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.btn-google:hover {
+  background: #f9fafb;
+  border-color: #2563eb;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.2);
+  transform: translateY(-1px);
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 16px 0;
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+.auth-divider::before, .auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* ── Sidebar Mobile Overlay ── */
+#sidebarOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 8999;
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+}
+
+/* ── Offline SOS Modal ── */
+#offlineSOSOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 22000;
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ─────────────────────────────────────────────────────────
+   MOBILE RESPONSIVENESS — @media queries
+───────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 60px);
+  }
+  .rightbar {
+    width: 100% !important;
+    border-left: none !important;
+    border-top: 3px solid #e5e7eb;
+    padding: 12px 14px !important;
+    max-height: 42vh;
+    overflow-y: auto;
+    order: 2;
+  }
+  .chat-section {
+    order: 1;
+    min-height: 55vh;
+    max-height: 58vh;
+  }
+  .chat-window { max-height: 38vh; }
+  .leftbar.open {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 78vw !important;
+    max-width: 300px !important;
+    height: 100vh;
+    z-index: 9000;
+    box-shadow: 4px 0 30px rgba(0,0,0,0.35);
+    overflow-y: auto;
+    padding: 20px 15px !important;
+  }
+  #doctorListContainer.expanded {
+    max-height: 180px !important;
+    height: 180px !important;
+  }
+  .emergency {
+    padding: 16px !important;
+    font-size: 1.1rem !important;
+  }
+  .modal-content {
+    width: 96% !important;
+    max-height: 95vh;
+    overflow-y: auto;
+    margin: 10px;
+  }
+  #activeCallModal .modal-content {
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+  #remoteVideo { max-height: 38vh !important; width: 100% !important; }
+  #localVideo {
+    width: 90px !important;
+    height: 72px !important;
+    top: 10px !important;
+    right: 10px !important;
+  }
+  .search-bar { flex-wrap: wrap; padding: 8px; }
+  .search-bar input { flex: 1 1 100%; margin-bottom: 6px; }
+  #langSelect { font-size: 0.75rem; padding: 4px 7px; right: 10px; }
+  #galleryPanel.open {
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 100vw !important;
+    height: 100vh;
+    z-index: 9000;
+  }
+  .gallery-grid { grid-template-columns: 1fr !important; }
+  .topbar { font-size: 1.2rem !important; padding: 14px 70px !important; }
+}
+
+@media (max-width: 480px) {
+  .topbar { font-size: 1rem !important; }
+  .btn-role { font-size: 0.95rem; padding: 14px; }
+  .role-modal h2 { font-size: 1.3rem; }
+  .chat-window div { max-width: 90%; font-size: 0.88rem; }
+  #langSelect { display: none; }
+}
 
   </style>
 </head>
 <body>
 
-  <header class="topbar">
-    <button class="hamburger" onclick="toggleMenu()">☰</button>
-    🎀 NEURO BUDDYY
+<!-- ✅ Mobile sidebar backdrop — closes sidebar when tapping outside -->
+<div id="sidebarOverlay" onclick="toggleMenu()" aria-hidden="true"></div>
+
+  <header class="topbar" role="banner">
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu" id="hamburgerBtn">☰</button>
+    <span data-i18n="brand">🧠 NEURO BUDDYY</span>
+    <!-- Language Selector Dropdown -->
+    <select id="langSelect" aria-label="Select language / ভাষা বাছক / भाषा चुनें" title="Change language">
+      <option value="en">🌐 EN</option>
+      <option value="as">অ AS</option>
+      <option value="hi">अ HI</option>
+    </select>
   </header>
 
 <!-- Role Selection Modal - First Visit -->
-<div id="roleModal" class="modal-overlay" style="display: none;">
+<div id="roleModal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="roleModalTitle">
   <div class="modal-content role-modal">
-    <h2>Welcome to NEUROBUDDYY.AI</h2>
-    <p style="font-size: 1.1rem; color: #666; margin: 20px 0;">Are you a healthcare professional or a patient?</p>
+    <h2 id="roleModalTitle" data-i18n="welcome_title">Welcome to NEUROBUDDYY.AI</h2>
+    <p style="font-size: 1.1rem; color: #666; margin: 20px 0;" data-i18n="welcome_subtitle">Are you a healthcare professional or a patient?</p>
     
     <div class="role-buttons">
       <!-- Doctor Option -->
-      <button class="btn-role btn-doctor" onclick="showDoctorLogin()">
-       👨‍⚕️ I'm a Doctor
+      <button class="btn-role btn-doctor" onclick="showDoctorLogin()" id="roleDocBtn">
+        <span data-i18n="role_doctor">👨‍⚕️ I'm a Doctor</span>
       </button>
       
       <!-- Patient Login Option -->
-      <button class="btn-role" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;" onclick="showPatientAuth()">
-       🧑‍🤝‍🧑 I'm a Patient (Login/Register)
+      <button class="btn-role" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;" onclick="showPatientAuth()" id="rolePatientBtn">
+        <span data-i18n="role_patient">🧑‍🤝‍🧑 I'm a Patient (Login/Register)</span>
       </button>
       
       <!-- Guest Option -->
-      <button class="btn-role btn-guest" onclick="continueAsGuest()">
-        👤Continue as Guest (No Login Required)
+      <button class="btn-role btn-guest" onclick="continueAsGuest()" id="roleGuestBtn">
+        <span data-i18n="role_guest">👤 Continue as Guest (No Login Required)</span>
       </button>
     </div>
     
-    <p style="margin-top: 20px; font-size: 0.9rem; color: #999;">
+    <p style="margin-top: 20px; font-size: 0.9rem; color: #999;" data-i18n="welcome_benefits">
       <strong>Benefits of Creating an Account:</strong><br>
       ~ Access consultation history from any device<br>
       ~ Save chat history permanently<br>
@@ -1185,28 +1434,41 @@
     
     <!-- Login Form -->
     <div id="patientLoginForm">
-      <h2>Patient Login</h2>
-      <p style="color: #666; margin-bottom: 20px;">Access your consultation history</p>
+      <h2 data-i18n="patient_login_title">Patient Login</h2>
+      <p style="color: #666; margin-bottom: 15px;" data-i18n="patient_login_subtitle">Access your consultation history</p>
+
+      <!-- ✅ Google One-Click Sign-In -->
+      <button class="btn-google" onclick="signInWithGoogle('patient')" id="googlePatientLoginBtn" type="button">
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        <span data-i18n="google_signin">Continue with Google</span>
+      </button>
+
+      <div class="auth-divider">or sign in with email</div>
       
       <form onsubmit="loginPatient(event)">
         <div class="form-group">
-          <label>Email</label>
+          <label data-i18n="label_email">Email</label>
           <input type="email" id="patientLoginEmail" placeholder="you@example.com" required>
         </div>
         
         <div class="form-group">
-          <label>Password</label>
+          <label data-i18n="label_password">Password</label>
           <input type="password" id="patientLoginPassword" placeholder="Enter your password" required>
           <p style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
-            <a href="#" onclick="showPatientPasswordReset(); event.preventDefault();" style="color: #2563eb; font-size: 0.9rem; text-decoration: none; font-weight: 600;">
+            <a href="#" onclick="showPatientPasswordReset(); event.preventDefault();" style="color: #2563eb; font-size: 0.9rem; text-decoration: none; font-weight: 600;" data-i18n="forgot_password">
               Forgot Password?
             </a>
           </p>
         </div>
         
         <div class="form-buttons">
-          <button type="submit" class="btn-submit">
-            <span id="patientLoginBtnText">Login</span>
+          <button type="submit" class="btn-submit" id="patientLoginSubmitBtn">
+            <span id="patientLoginBtnText" data-i18n="btn_login">Login</span>
             <span id="patientLoginBtnLoader" style="display: none;">Logging in...</span>
           </button>
           <button type="button" class="btn-cancel" onclick="closePatientAuth()">Cancel</button>
@@ -5246,18 +5508,18 @@ async function requestResetCode() {
         <div id="topTypingContent"></div>
       </div>
 
-      <div class="chat-window" id="chatWindow">
-        <div class="bot-msg"> 👋 Hello dear! Type your health question below and I'll help you find answers.</div>
+      <div class="chat-window" id="chatWindow" role="log" aria-live="polite" aria-label="Chat conversation">
+        <div class="bot-msg" data-i18n="chat_greeting"> 👋 Hello dear! Type your health question below and I'll help you find answers.</div>
       </div>
 
-      <div class="suggestions-box" id="suggestionsBox">
-        <div class="suggestions-title">💡Related Questions (click to select):</div>
+      <div class="suggestions-box" id="suggestionsBox" role="listbox" aria-label="Question suggestions">
+        <div class="suggestions-title" data-i18n="suggestions_title">💡 Related Questions (click to select):</div>
         <div id="suggestionsList"></div>
       </div>
 
       <div class="search-bar">
-  <input type="text" id="userInput" placeholder="Type your health question here..." />
-  <button class="btn send" onclick="sendMessage()">⬆️</button>
+  <input type="text" id="userInput" placeholder="Type your health question here..." data-i18n-placeholder="chat_placeholder" aria-label="Type your health question" />
+  <button class="btn send" onclick="sendMessage()" aria-label="Send message">⬆️</button>
   
   <!-- These buttons will be hidden/shown based on mode -->
   <button class="btn" id="patientActionBtn" style="display: flex;">
@@ -5276,7 +5538,7 @@ async function requestResetCode() {
     </main>
 
     <aside class="rightbar">
-     <button class="emergency" onclick="showEmergencyConfirmation()">🚨 Emergency</button>
+     <button class="emergency" id="emergencyBtn" onclick="showEmergencyConfirmation()" data-i18n="btn_emergency" aria-label="Send emergency SOS alert">🚨 Emergency SOS</button>
 
       
       <button class="connect-doctor" onclick="togglePatientList()" id="connectDoctorBtn" style="position: relative;">
@@ -5293,7 +5555,7 @@ async function requestResetCode() {
 
       <!-- HOSPITAL LOCATION SECTION -->
       <div class="hospital-section">
-        <h2 class="location-title" id="hospitalSectionTitle">🏥 Setup Nearest Hospital</h2>
+        <h2 class="location-title" id="hospitalSectionTitle" data-i18n="hospital_setup_title">🏥 Setup Nearest Hospital</h2>
         
         <div class="location-form" id="locationForm">
           <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">
@@ -5321,7 +5583,7 @@ async function requestResetCode() {
             <option value="">Select Area</option>
           </select>
           
-          <button class="save-location-btn" onclick="saveUserLocation()">
+          <button class="save-location-btn" onclick="saveUserLocation()" id="saveLocationBtn" data-i18n="btn_save_location">
            💾 Save Location
           </button>
         </div>
@@ -9048,6 +9310,516 @@ function openNeuroScore() {
 
 
 
+</script>
+
+<!-- ============================================================
+     NEUROBUDDYY.AI v2 — UPGRADE FEATURES SCRIPT
+     A. sanitizeHTML()     — XSS prevention
+     B. TRANSLATIONS       — i18n dictionary EN / AS / HI
+     C. LanguageController — DOM translation engine
+     D. Offline SOS        — SMS URI fallback when offline
+     E. Google Auth        — Firebase GoogleAuthProvider
+     F. PWA                — Service Worker registration
+     G. Patches            — sidebar overlay, skeleton loader
+============================================================ -->
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════
+// A. sanitizeHTML — XSS Prevention Utility
+// Use instead of direct user-data → innerHTML injection.
+// ═══════════════════════════════════════════════════════════
+function sanitizeHTML(str) {
+  if (str === null || str === undefined) return '';
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(String(str)));
+  return div.innerHTML;
+}
+
+// Patch displayMessageInChat to sanitize messages from Firebase
+// (The original is defined earlier in the main script)
+(function patchDisplayMessageInChat() {
+  // Wait for DOM and original function to be available
+  const _try = () => {
+    const _original = window.displayMessageInChat;
+    if (typeof _original === 'function') {
+      window.displayMessageInChat = function(message, sender) {
+        const safeMessage = sanitizeHTML(message);
+        const chatWindow  = document.getElementById('chatWindow');
+        if (!chatWindow) return;
+        const isDoctorMode = window.activePatient != null;
+        const className = isDoctorMode
+          ? (sender === 'patient' ? 'bot-msg' : 'user-msg')
+          : (sender === 'doctor'  ? 'bot-msg' : 'user-msg');
+        chatWindow.innerHTML += `<div class="${className}">${safeMessage}</div>`;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      };
+    } else {
+      setTimeout(_try, 200);
+    }
+  };
+  _try();
+})();
+
+
+// ═══════════════════════════════════════════════════════════
+// B. TRANSLATION DICTIONARY — Phase 1 Scope
+// Keys: en (English), as (Assamese), hi (Hindi)
+// ═══════════════════════════════════════════════════════════
+const TRANSLATIONS = {
+  brand: {
+    en: '🧠 NEURO BUDDYY',
+    as: '🧠 নিউৰ\' বাডি',
+    hi: '🧠 न्यूरो बडी'
+  },
+  welcome_title: {
+    en: 'Welcome to NEUROBUDDYY.AI',
+    as: 'NEUROBUDDYY.AI-লৈ স্বাগতম',
+    hi: 'NEUROBUDDYY.AI में आपका स्वागत है'
+  },
+  welcome_subtitle: {
+    en: 'Are you a healthcare professional or a patient?',
+    as: 'আপুনি স্বাস্থ্য পেছাদাৰ নে ৰোগী?',
+    hi: 'क्या आप एक स्वास्थ्य पेशेवर हैं या एक मरीज़?'
+  },
+  role_doctor: {
+    en: '👨‍⚕️ I\'m a Doctor',
+    as: '👨‍⚕️ মই এজন চিকিৎসক',
+    hi: '👨‍⚕️ मैं एक डॉक्टर हूँ'
+  },
+  role_patient: {
+    en: '🧑‍🤝‍🧑 I\'m a Patient (Login/Register)',
+    as: '🧑‍🤝‍🧑 মই এজন ৰোগী (লগইন/নিৱন্ধন)',
+    hi: '🧑‍🤝‍🧑 मैं एक मरीज़ हूँ (लॉगिन/पंजीकरण)'
+  },
+  role_guest: {
+    en: '👤 Continue as Guest (No Login Required)',
+    as: '👤 অতিথি হিচাপে অব্যাহত ৰাখক',
+    hi: '👤 अतिथि के रूप में जारी रखें'
+  },
+  welcome_benefits: {
+    en: '<strong>Benefits of Creating an Account:</strong><br>~ Access consultation history from any device<br>~ Save chat history permanently<br>~ Faster future consultations',
+    as: '<strong>একাউণ্ট বনোৱাৰ সুবিধা:</strong><br>~ যিকোনো ডিভাইচৰ পৰা ইতিহাস চাওক<br>~ চেট ইতিহাস স্থায়ীভাৱে সংৰক্ষণ কৰক',
+    hi: '<strong>अकाउंट बनाने के फायदे:</strong><br>~ किसी भी डिवाइस से परामर्श इतिहास देखें<br>~ चैट इतिहास स्थायी रूप से सहेजें'
+  },
+  patient_login_title: {
+    en: 'Patient Login',
+    as: 'ৰোগীৰ লগইন',
+    hi: 'मरीज़ लॉगिन'
+  },
+  patient_login_subtitle: {
+    en: 'Access your consultation history',
+    as: 'আপোনাৰ পৰামৰ্শৰ ইতিহাস চাওক',
+    hi: 'अपना परामर्श इतिहास देखें'
+  },
+  google_signin: {
+    en: 'Continue with Google',
+    as: 'Google ৰে অব্যাহত ৰাখক',
+    hi: 'Google से जारी रखें'
+  },
+  label_email:    { en: 'Email',    as: 'ইমেইল',    hi: 'ईमेल'     },
+  label_password: { en: 'Password', as: 'পাছৱৰ্ড',  hi: 'पासवर्ड'  },
+  forgot_password:{ en: 'Forgot Password?', as: 'পাছৱৰ্ড পাহৰিলে?', hi: 'पासवर्ड भूल गए?' },
+  btn_login:      { en: 'Login',    as: 'লগইন',     hi: 'लॉगिन'    },
+  btn_cancel:     { en: 'Cancel',   as: 'বাতিল',    hi: 'रद्द करें' },
+  no_account:     { en: 'Don\'t have an account?', as: 'একাউণ্ট নাই?', hi: 'कोई अकाउंट नहीं है?' },
+  register_here:  { en: 'Register here', as: 'ইয়াত নিৱন্ধন কৰক', hi: 'यहाँ पंजीकरण करें' },
+  chat_greeting: {
+    en: '👋 Hello dear! Type your health question below and I\'ll help you find answers.',
+    as: '👋 নমস্কাৰ! তলত আপোনাৰ স্বাস্থ্য প্ৰশ্ন লিখক, মই উত্তৰ বিচাৰি পাবলৈ সহায় কৰিম।',
+    hi: '👋 नमस्ते! नीचे अपना स्वास्थ्य प्रश्न लिखें, मैं आपको उत्तर खोजने में मदद करूँगा।'
+  },
+  suggestions_title: {
+    en: '💡 Related Questions (click to select):',
+    as: '💡 সম্পৰ্কিত প্ৰশ্নসমূহ (ক্লিক কৰি বাছনি কৰক):',
+    hi: '💡 संबंधित प्रश्न (चुनने के लिए क्लिक करें):'
+  },
+  chat_placeholder: {
+    en: 'Type your health question here...',
+    as: 'ইয়াত আপোনাৰ স্বাস্থ্য প্ৰশ্ন লিখক...',
+    hi: 'यहाँ अपना स्वास्थ्य प्रश्न लिखें...'
+  },
+  btn_send:          { en: '⬆️', as: '⬆️', hi: '⬆️' },
+  btn_emergency: {
+    en: '🚨 Emergency SOS',
+    as: '🚨 জৰুৰীকালীন SOS',
+    hi: '🚨 आपातकालीन SOS'
+  },
+  hospital_setup_title: {
+    en: '🏥 Setup Nearest Hospital',
+    as: '🏥 নিকটতম চিকিৎসালয় ছেটআপ কৰক',
+    hi: '🏥 निकटतम अस्पताल सेट करें'
+  },
+  btn_save_location: {
+    en: '💾 Save Location',
+    as: '💾 স্থান সংৰক্ষণ কৰক',
+    hi: '💾 स्थान सहेजें'
+  }
+};
+
+
+// ═══════════════════════════════════════════════════════════
+// C. LanguageController
+// Applies translations to all [data-i18n] and
+// [data-i18n-placeholder] elements.
+// ═══════════════════════════════════════════════════════════
+class LanguageController {
+  constructor() {
+    this.currentLang = 'en';
+    this.storageKey  = 'nb_lang';
+  }
+
+  init() {
+    const saved = localStorage.getItem(this.storageKey) || 'en';
+    const sel   = document.getElementById('langSelect');
+    if (sel) sel.value = saved;
+    this.setLanguage(saved);
+  }
+
+  setLanguage(lang) {
+    if (!['en', 'as', 'hi'].includes(lang)) lang = 'en';
+    this.currentLang = lang;
+    localStorage.setItem(this.storageKey, lang);
+    this.applyTranslations();
+    document.documentElement.lang = lang;
+    console.log(`🌐 Language switched to: ${lang}`);
+  }
+
+  applyTranslations() {
+    const lang     = this.currentLang;
+    const richKeys = ['welcome_benefits', 'chat_greeting'];
+
+    // Translate textContent / innerHTML
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key  = el.getAttribute('data-i18n');
+      const dict = TRANSLATIONS[key];
+      if (!dict) return;
+      const text = dict[lang] || dict['en'];
+      if (richKeys.includes(key)) {
+        el.innerHTML = text;
+      } else {
+        el.textContent = text;
+      }
+    });
+
+    // Translate placeholder attributes
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key  = el.getAttribute('data-i18n-placeholder');
+      const dict = TRANSLATIONS[key];
+      if (!dict) return;
+      el.placeholder = dict[lang] || dict['en'];
+    });
+  }
+}
+
+// ── Boot Language Controller after DOM is ready ──
+const LC = new LanguageController();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    LC.init();
+    const sel = document.getElementById('langSelect');
+    if (sel) sel.addEventListener('change', e => LC.setLanguage(e.target.value));
+  });
+} else {
+  LC.init();
+  const sel = document.getElementById('langSelect');
+  if (sel) sel.addEventListener('change', e => LC.setLanguage(e.target.value));
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// D. OFFLINE SOS FALLBACK
+// Intercepts confirmEmergency() to check navigator.onLine.
+// If offline: generates pre-filled SMS URI as fallback.
+// Priority: hospital phone from localStorage > 108 (national)
+// ═══════════════════════════════════════════════════════════
+
+// Override confirmEmergency (original is in the main script block above)
+function confirmEmergency() {
+  console.log('🚨 Emergency confirmed — checking network status...');
+
+  const confirmModal = document.getElementById('emergencyConfirmModal');
+  if (confirmModal) confirmModal.style.display = 'none';
+
+  if (!navigator.onLine) {
+    console.warn('📵 OFFLINE — activating SMS fallback');
+    offlineSOS();
+    return;
+  }
+
+  // Online: delegate to the original triggerEmergency()
+  if (typeof triggerEmergency === 'function') {
+    triggerEmergency();
+  } else {
+    console.error('triggerEmergency() not found in main script');
+  }
+}
+
+function offlineSOS() {
+  let savedLocation = {};
+  let hospital      = null;
+
+  try { savedLocation = JSON.parse(localStorage.getItem('userLocation') || '{}'); } catch(e) {}
+  try {
+    const raw = localStorage.getItem('nearestHospital');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      hospital = Array.isArray(parsed) ? parsed[0] : parsed;
+    }
+  } catch(e) {}
+
+  const locationStr = savedLocation.area
+    ? `${savedLocation.area}, ${savedLocation.district}, ${savedLocation.state}`
+    : 'Location not set in app';
+
+  const hospitalPhone = (hospital?.phone || '').replace(/\D/g, '');
+  const targetNumber  = hospitalPhone.length >= 10 ? hospitalPhone : '108';
+  const hospitalName  = hospital?.hospital || 'Emergency Services';
+
+  const smsBody = encodeURIComponent(
+    `🚨 NEUROLOGICAL EMERGENCY! Patient needs IMMEDIATE help at: ${locationStr}. ` +
+    `Please send ambulance immediately. Sent via NEUROBUDDYY.AI`
+  );
+
+  showOfflineSOSModal(
+    `sms:${targetNumber}?body=${smsBody}`,
+    locationStr,
+    targetNumber,
+    hospitalName
+  );
+}
+
+function showOfflineSOSModal(smsURI, locationStr, targetNumber, hospitalName) {
+  const existing = document.getElementById('offlineSOSOverlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'offlineSOSOverlay';
+
+  overlay.innerHTML = `
+    <div style="
+      background: white;
+      border-radius: 20px;
+      max-width: 480px;
+      width: 92%;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.5);
+      overflow: hidden;
+      animation: glassSlideIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    ">
+      <div style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding: 30px; text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 8px;">📵</div>
+        <h2 style="color: white; margin: 0; font-size: 1.6rem; font-family: 'Noto Sans', sans-serif;">You Are Offline</h2>
+        <p style="color: #fecaca; margin: 8px 0 0 0; font-size: 0.95rem;">Internet connection lost — SMS fallback activated</p>
+      </div>
+      <div style="padding: 28px;">
+        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 14px; border-radius: 8px; margin-bottom: 20px;">
+          <p style="margin: 0; color: #92400e; font-size: 0.9rem;">📍 <strong>Location:</strong> ${sanitizeHTML(locationStr)}</p>
+          <p style="margin: 6px 0 0 0; color: #92400e; font-size: 0.9rem;">🏥 <strong>Hospital:</strong> ${sanitizeHTML(hospitalName)}</p>
+          <p style="margin: 6px 0 0 0; color: #92400e; font-size: 0.9rem;">📞 <strong>Alert number:</strong> ${sanitizeHTML(targetNumber)}</p>
+        </div>
+        <p style="color: #374151; font-size: 0.9rem; text-align: center; margin-bottom: 20px;">
+          Tap <strong>Send Emergency SMS</strong> to open your messaging app with a pre-filled emergency message.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <a href="${smsURI}" style="
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 16px;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white; border-radius: 12px; font-weight: bold; font-size: 1.05rem;
+            text-decoration: none; box-shadow: 0 4px 15px rgba(220,38,38,0.4);
+          ">📱 Send Emergency SMS to ${sanitizeHTML(targetNumber)}</a>
+          <a href="tel:108" style="
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 16px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white; border-radius: 12px; font-weight: bold; font-size: 1.05rem;
+            text-decoration: none; box-shadow: 0 4px 15px rgba(37,99,235,0.3);
+          ">📞 Call 108 (National Emergency)</a>
+          <button onclick="document.getElementById('offlineSOSOverlay').remove()" style="
+            padding: 12px; background: #6b7280; color: white; border: none;
+            border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: 600;
+          ">Dismiss</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+// ── Online/Offline status listeners ──
+window.addEventListener('offline', () => {
+  if (typeof showAppNotification === 'function') {
+    showAppNotification('📵 You are offline. Emergency SMS fallback is active.');
+  }
+  const btn = document.getElementById('emergencyBtn');
+  if (btn) { btn.title = 'OFFLINE — Will send SMS instead'; btn.style.background = '#7c2d12'; }
+});
+
+window.addEventListener('online', () => {
+  if (typeof showAppNotification === 'function') {
+    showAppNotification('✅ Back online. Emergency system fully operational.');
+  }
+  const btn = document.getElementById('emergencyBtn');
+  if (btn) { btn.title = ''; btn.style.background = ''; }
+});
+
+
+// ═══════════════════════════════════════════════════════════
+// E. GOOGLE AUTH — Firebase GoogleAuthProvider
+// One-click Google sign-in for patients (and doctors).
+// ═══════════════════════════════════════════════════════════
+async function signInWithGoogle(role) {
+  console.log(`🔵 Google Sign-In initiated — role: ${role}`);
+
+  try {
+    // Wait for Firebase module script to initialize (it's type="module")
+    let attempts = 0;
+    while ((!window.authFunctions || !window.authFunctions.GoogleAuthProvider) && attempts < 40) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+
+    if (!window.authFunctions?.GoogleAuthProvider) {
+      throw new Error('Firebase not ready. Please wait a moment and try again.');
+    }
+
+    const { GoogleAuthProvider, signInWithPopup } = window.authFunctions;
+    const provider = new GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
+
+    const result = await signInWithPopup(window.firebaseAuth, provider);
+    const user   = result.user;
+    console.log('✅ Google Sign-In success:', user.displayName, user.email);
+
+    // Close auth modals
+    if (typeof closePatientAuth === 'function')     closePatientAuth();
+    if (typeof closeDoctorLoginModal === 'function') closeDoctorLoginModal();
+
+    // Set role
+    localStorage.setItem('userMode', role === 'doctor' ? 'doctor' : 'patient');
+
+    // Auto-upsert patient profile in Firestore
+    if (role !== 'doctor' && window.firebaseDB && window.firestoreFunctions) {
+      try {
+        const { collection, query, where, getDocs, addDoc, updateDoc, doc, serverTimestamp } = window.firestoreFunctions;
+        const q    = query(collection(window.firebaseDB, 'patients'), where('userId', '==', user.uid));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          await addDoc(collection(window.firebaseDB, 'patients'), {
+            userId: user.uid,
+            name: user.displayName || 'Patient',
+            email: user.email,
+            photoURL: user.photoURL || '',
+            age: '',
+            registeredAt: serverTimestamp(),
+            authProvider: 'google'
+          });
+          console.log('✅ New patient profile created (Google)');
+        } else {
+          await updateDoc(doc(window.firebaseDB, 'patients', snap.docs[0].id), {
+            lastLogin: serverTimestamp(),
+            email: user.email,
+            name: user.displayName || snap.docs[0].data().name
+          });
+          console.log('✅ Existing patient profile updated (Google)');
+        }
+      } catch(fsErr) {
+        console.warn('⚠️ Firestore upsert failed (non-critical):', fsErr);
+      }
+    }
+
+    const displayName = user.displayName || user.email?.split('@')[0] || 'User';
+    if (typeof showAppNotification === 'function') {
+      showAppNotification(`✅ Welcome, ${sanitizeHTML(displayName)}! Signed in with Google.`);
+    }
+
+    // Update UI buttons
+    const authBtn    = document.getElementById('authBtn');
+    const profileBtn = document.getElementById('myProfileBtn');
+    if (authBtn)    { authBtn.innerHTML = '🚪 Logout'; authBtn.style.color = '#dc2626'; }
+    if (profileBtn) { profileBtn.style.display = 'block'; }
+
+    setTimeout(() => location.reload(), 800);
+
+  } catch(error) {
+    console.error('❌ Google Sign-In error:', error);
+    if (error.code === 'auth/popup-closed-by-user') return;
+    if (error.code === 'auth/popup-blocked') {
+      alert('❗ Popup blocked. Please allow popups for this site and try again.');
+      return;
+    }
+    alert('❗ Google Sign-In failed: ' + (error.message || 'Unknown error'));
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// F. PWA — Service Worker Registration
+// ═══════════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('✅ Service Worker registered. Scope:', reg.scope))
+      .catch(err => console.warn('⚠️ Service Worker registration failed (non-critical):', err));
+  });
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// G. PATCHES
+// ═══════════════════════════════════════════════════════════
+
+// ── Mobile sidebar overlay toggle ──
+(function patchToggleMenu() {
+  const _wait = () => {
+    const _orig = window.toggleMenu;
+    if (typeof _orig === 'function') {
+      window.toggleMenu = function() {
+        _orig.apply(this, arguments);
+        const overlay = document.getElementById('sidebarOverlay');
+        const sidebar = document.getElementById('sidebar');
+        if (overlay && sidebar) {
+          const isMobile = window.innerWidth <= 768;
+          overlay.style.display = (isMobile && sidebar.classList.contains('open')) ? 'block' : 'none';
+        }
+      };
+    } else {
+      setTimeout(_wait, 150);
+    }
+  };
+  _wait();
+})();
+
+// ── Skeleton loader for loadRealDoctors ──
+(function patchLoadRealDoctors() {
+  const _wait = () => {
+    const _orig = window.loadRealDoctors;
+    if (typeof _orig === 'function') {
+      window.loadRealDoctors = async function() {
+        const doctorList = document.getElementById('doctorList');
+        if (doctorList) {
+          doctorList.innerHTML = `
+            <div class="skeleton-pulse"></div>
+            <div class="skeleton-pulse"></div>
+            <div class="skeleton-pulse" style="height:45px;"></div>
+          `;
+        }
+        return _orig.apply(this, arguments);
+      };
+    } else {
+      setTimeout(_wait, 200);
+    }
+  };
+  _wait();
+})();
+
+console.log(
+  '%c✅ NEUROBUDDYY.AI v2 Loaded',
+  'background:#2563eb;color:white;padding:4px 10px;border-radius:4px;font-weight:bold;',
+  '| i18n ✔ | Offline SOS ✔ | Google Auth ✔ | PWA ✔ | XSS sanitize ✔ | Mobile CSS ✔'
+);
 </script>
 </body>
 </html>
