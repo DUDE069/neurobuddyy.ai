@@ -18,6 +18,7 @@
   <!-- ✅ PWA Manifest -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2563eb">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="NeuroBuddyy">
@@ -2132,7 +2133,7 @@ let availableCameras = [];
 // Initialize PeerJS (safe, single instance)
 function initializePeerJS(userId) {
   // ✅ Prevent double initialization
-  if (peer && !peer.destroyed) {
+  if (peer && !peer.destroyed && !peer.disconnected) {
     console.log('⚠️ PeerJS already initialized with ID:', peer.id);
     return;
   }
@@ -2159,6 +2160,13 @@ function initializePeerJS(userId) {
       console.error('❗ PeerJS error:', error);
     });
 
+    // ✅ Auto-reconnect: when server connection drops, reinitialize on next call
+    peer.on('disconnected', () => {
+      console.warn('⚠️ PeerJS disconnected from server. Will reinitialize on next call.');
+      // Don't call peer.reconnect() here — it causes issues if the peer is destroyed.
+      // Instead we let reinitializePeerIfNeeded() handle it before each call.
+    });
+
     // Listen for incoming calls
     peer.on('call', (incomingCall) => {
       console.log('📞 Incoming call from:', incomingCall.peer);
@@ -2170,6 +2178,60 @@ function initializePeerJS(userId) {
   } catch (error) {
     console.error('❗ Failed to initialize PeerJS:', error);
   }
+}
+
+// ✅ Reinitialize PeerJS if it was destroyed or disconnected.
+// Returns a Promise that resolves with the peer ID when ready.
+function reinitializePeerIfNeeded() {
+  return new Promise((resolve, reject) => {
+    // Peer is healthy and connected — use it immediately
+    if (peer && !peer.destroyed && !peer.disconnected && peer.id) {
+      resolve(peer.id);
+      return;
+    }
+
+    console.log('🔄 PeerJS needs reinitializing...');
+
+    // Destroy stale peer cleanly
+    if (peer && !peer.destroyed) {
+      try { peer.destroy(); } catch(e) {}
+    }
+    peer = null;
+
+    // Create fresh peer with a new random ID
+    try {
+      peer = new Peer(undefined, {
+        debug: 2,
+        config: {
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+          ]
+        }
+      });
+
+      const timeout = setTimeout(() => {
+        reject(new Error('PeerJS reconnection timed out after 10s'));
+      }, 10000);
+
+      peer.on('open', (id) => {
+        clearTimeout(timeout);
+        console.log('✅ PeerJS reconnected with new ID:', id);
+        // Re-attach call listener
+        peer.on('call', (incomingCall) => handleIncomingCall(incomingCall));
+        peer.on('disconnected', () => console.warn('⚠️ PeerJS disconnected again.'));
+        resolve(id);
+      });
+
+      peer.on('error', (err) => {
+        clearTimeout(timeout);
+        reject(err);
+      });
+
+    } catch(e) {
+      reject(e);
+    }
+  });
 }
 
 // ========== WEBRTC CALL FUNCTIONS ==========
@@ -2209,6 +2271,14 @@ async function startVideoCall() {
   try {
     console.log('Starting video call...');
     console.log('🔍 Patient request ID:', window.activePatient.id);
+
+    // ✅ FIX: Reinitialize PeerJS if it disconnected (e.g. after network drop)
+    try {
+      await reinitializePeerIfNeeded();
+    } catch (peerErr) {
+      alert('❌ Could not establish P2P connection: ' + peerErr.message + '\n\nPlease refresh the page and try again.');
+      return;
+    }
     
     // Get patient's Peer ID from the request
     const patientData = await getPatientFromRequest(window.activePatient.id);
@@ -2240,6 +2310,10 @@ async function startVideoCall() {
     currentCall = peer.call(patientData.patientPeerId, localStream, {
       metadata: { callType: 'video' }
     });
+
+    if (!currentCall) {
+      throw new Error('peer.call() returned null — peer may still be disconnected.');
+    }
     
     // Handle incoming stream
     currentCall.on('stream', (remoteStream) => {
@@ -2294,13 +2368,21 @@ async function startVoiceCall() {
   
   try {
     console.log('Starting voice call...');
-    console.log('🔍 Patient request ID:', window.activePatient.id); // DEBUG
+    console.log('🔍 Patient request ID:', window.activePatient.id);
     
+    // ✅ FIX: Reinitialize PeerJS if it disconnected (e.g. after network drop)
+    try {
+      await reinitializePeerIfNeeded();
+    } catch (peerErr) {
+      alert('❌ Could not establish P2P connection: ' + peerErr.message + '\n\nPlease refresh the page and try again.');
+      return;
+    }
+
     // ✅ Get patient's Peer ID
     const patientData = await getPatientFromRequest(window.activePatient.id);
     
-    console.log('📦 Patient data from Firebase:', patientData); // DEBUG
-    console.log('🆔 Patient Peer ID:', patientData?.patientPeerId); // DEBUG
+    console.log('📦 Patient data from Firebase:', patientData);
+    console.log('🆔 Patient Peer ID:', patientData?.patientPeerId);
     
     if (!patientData || !patientData.patientPeerId) {
       alert('❌ Cannot start call: Patient\'s connection ID not found.');
@@ -2313,9 +2395,12 @@ async function startVoiceCall() {
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     
     currentCall = peer.call(patientData.patientPeerId, localStream, {
-  metadata: { callType: 'voice' }
-});
+      metadata: { callType: 'voice' }
+    });
 
+    if (!currentCall) {
+      throw new Error('peer.call() returned null — peer may still be disconnected.');
+    }
     
     currentCall.on('stream', (remoteStream) => {
       handleRemoteStream(remoteStream, 'voice');
