@@ -5551,6 +5551,13 @@ async function requestResetCode() {
     <li id="authBtn" onclick="handleAuthClick()" style="font-size: 0.9rem;">
       🔐 Login
     </li>
+
+    <!-- 4. INSTALL APP (Mobile only — hidden on desktop via JS) -->
+    <li id="installAppBtn"
+        onclick="triggerPWAInstall()"
+        style="display: none; font-size: 0.9rem; color: #059669; font-weight: bold; border-top: 1px solid #e5e7eb; margin-top: 6px; padding-top: 10px;">
+      📲 Install App
+    </li>
     
   </div>
 </ul>
@@ -10174,5 +10181,468 @@ console.log(
   '| i18n ✔ | Offline SOS ✔ | Google Auth ✔ | PWA ✔ | XSS sanitize ✔ | Mobile CSS ✔'
 );
 </script>
+
+<!-- ============================================================
+     PWA INSTALL FEATURE
+     • Install App button (Settings menu, mobile-only)
+     • Native beforeinstallprompt (Android/Chrome)
+     • Fallback tutorial modal (iOS + other browsers)
+============================================================ -->
+
+<!-- ── FALLBACK TUTORIAL MODAL ── -->
+<div id="pwaInstallModal" style="display:none; position:fixed; inset:0; z-index:25000;
+  background:rgba(6,0,0,0.75); backdrop-filter:blur(10px);
+  display:none; justify-content:center; align-items:flex-end;
+  padding:0;" role="dialog" aria-modal="true" aria-labelledby="pwaModalTitle">
+
+  <div id="pwaInstallSheet" style="
+    background: white;
+    border-radius: 24px 24px 0 0;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 0 env(safe-area-inset-bottom, 20px) 0;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.3);
+    animation: sheetSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    overflow: hidden;
+  ">
+
+    <!-- Header bar -->
+    <div style="
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      padding: 22px 24px 18px;
+      position: relative;
+    ">
+      <!-- Drag handle -->
+      <div style="width:40px; height:4px; background:rgba(255,255,255,0.4);
+        border-radius:2px; margin:0 auto 16px; display:block;"></div>
+
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="
+          width:52px; height:52px; background:white; border-radius:14px;
+          display:flex; align-items:center; justify-content:center;
+          font-size:1.8rem; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-shrink:0;
+        ">🧠</div>
+        <div>
+          <h2 id="pwaModalTitle" style="color:white; margin:0; font-size:1.15rem; font-weight:700;">
+            Add NEUROBUDDYY.AI to Home Screen
+          </h2>
+          <p style="color:rgba(255,255,255,0.8); margin:4px 0 0; font-size:0.85rem;">
+            Get instant access — no App Store needed
+          </p>
+        </div>
+      </div>
+
+      <!-- Close button -->
+      <button onclick="closePWAModal()" aria-label="Close" style="
+        position:absolute; top:16px; right:16px;
+        background:rgba(255,255,255,0.2); border:none; color:white;
+        width:32px; height:32px; border-radius:50%; font-size:1rem;
+        cursor:pointer; display:flex; align-items:center; justify-content:center;
+        transition:background 0.2s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.35)'"
+         onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div style="padding: 24px;">
+
+      <!-- iOS guide (shown by default; Android guide shown if needed) -->
+      <div id="pwaGuideIOS">
+        <p style="font-size:0.85rem; color:#6b7280; margin:0 0 20px; text-align:center;">
+          Follow these 3 quick steps in <strong>Safari</strong>
+        </p>
+
+        <!-- Step 1 -->
+        <div class="pwa-step" style="animation-delay:0.05s">
+          <div class="pwa-step-num">1</div>
+          <div class="pwa-step-body">
+            <div class="pwa-step-icon">
+              <!-- Share icon SVG -->
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <div>
+              <strong style="font-size:0.95rem; color:#111827;">Tap the Share button</strong>
+              <p style="margin:2px 0 0; font-size:0.82rem; color:#6b7280;">
+                The <strong>□↑</strong> icon at the bottom of your Safari browser bar
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="pwa-step" style="animation-delay:0.12s">
+          <div class="pwa-step-num">2</div>
+          <div class="pwa-step-body">
+            <div class="pwa-step-icon">
+              <!-- Scroll icon -->
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="3"/>
+                <line x1="12" y1="18" x2="12" y2="14"/>
+                <polyline points="9 15 12 18 15 15"/>
+              </svg>
+            </div>
+            <div>
+              <strong style="font-size:0.95rem; color:#111827;">Scroll down in the menu</strong>
+              <p style="margin:2px 0 0; font-size:0.82rem; color:#6b7280;">
+                Swipe left on the icons row, then scroll down in the list
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="pwa-step" style="animation-delay:0.19s">
+          <div class="pwa-step-num">3</div>
+          <div class="pwa-step-body">
+            <div class="pwa-step-icon">
+              <!-- Plus icon -->
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            </div>
+            <div>
+              <strong style="font-size:0.95rem; color:#111827;">Tap "Add to Home Screen"</strong>
+              <p style="margin:2px 0 0; font-size:0.82rem; color:#6b7280;">
+                Tap <strong>Add</strong> in the top-right corner to confirm
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Android/Other guide (shown when not iOS) -->
+      <div id="pwaGuideAndroid" style="display:none;">
+        <p style="font-size:0.85rem; color:#6b7280; margin:0 0 20px; text-align:center;">
+          Follow these 3 quick steps in <strong>Chrome</strong>
+        </p>
+
+        <div class="pwa-step" style="animation-delay:0.05s">
+          <div class="pwa-step-num">1</div>
+          <div class="pwa-step-body">
+            <div class="pwa-step-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+              </svg>
+            </div>
+            <div>
+              <strong style="font-size:0.95rem; color:#111827;">Tap the ⋮ menu</strong>
+              <p style="margin:2px 0 0; font-size:0.82rem; color:#6b7280;">
+                Three dots in the top-right corner of Chrome
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pwa-step" style="animation-delay:0.12s">
+          <div class="pwa-step-num">2</div>
+          <div class="pwa-step-body">
+            <div class="pwa-step-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </div>
+            <div>
+              <strong style="font-size:0.95rem; color:#111827;">Tap "Add to Home screen"</strong>
+              <p style="margin:2px 0 0; font-size:0.82rem; color:#6b7280;">
+                You'll see this option in the dropdown menu
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pwa-step" style="animation-delay:0.19s">
+          <div class="pwa-step-num">3</div>
+          <div class="pwa-step-body">
+            <div class="pwa-step-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div>
+              <strong style="font-size:0.95rem; color:#111827;">Tap "Add" to confirm</strong>
+              <p style="margin:2px 0 0; font-size:0.82rem; color:#6b7280;">
+                The app icon will appear on your home screen instantly
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Benefits chips -->
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; justify-content:center;">
+        <span class="pwa-chip">⚡ Instant Launch</span>
+        <span class="pwa-chip">📵 Works Offline</span>
+        <span class="pwa-chip">🔔 Notifications</span>
+        <span class="pwa-chip">🔒 Secure</span>
+      </div>
+
+      <!-- CTA button (shown for Android only — iOS has no programmatic trigger) -->
+      <button id="pwaNativeBtn" onclick="closePWAModal()" style="
+        display:none; width:100%; margin-top:20px;
+        padding:15px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color:white; border:none; border-radius:14px; font-size:1rem;
+        font-weight:700; cursor:pointer; transition:transform 0.15s;
+        box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+      " onmouseover="this.style.transform='translateY(-2px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        Got it — Close
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── PWA INSTALL CSS ── -->
+<style>
+/* Sheet slide-up animation */
+@keyframes sheetSlideUp {
+  from { transform: translateY(100%); opacity: 0.6; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* Step cards */
+.pwa-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  animation: pwaStepFadeIn 0.4s ease both;
+}
+@keyframes pwaStepFadeIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.pwa-step-num {
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 700;
+}
+.pwa-step-body {
+  display: flex; align-items: flex-start; gap: 12px; flex: 1;
+}
+.pwa-step-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  background: #eff6ff; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Benefit chips */
+.pwa-chip {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Install button pulse in settings menu */
+#installAppBtn {
+  position: relative;
+  overflow: hidden;
+}
+#installAppBtn::after {
+  content: 'NEW';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #10b981;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+</style>
+
+<!-- ── PWA INSTALL JAVASCRIPT ── -->
+<script>
+(function() {
+  'use strict';
+
+  // ── State ──
+  let _deferredPrompt  = null; // holds the beforeinstallprompt event
+  let _isIOS           = false;
+  let _isMobile        = false;
+  let _isInstalled     = false;
+
+  // ── Device detection ──
+  function detectDevice() {
+    const ua = navigator.userAgent || '';
+    _isIOS     = /iphone|ipad|ipod/i.test(ua);
+    _isMobile  = /android|iphone|ipad|ipod|windows phone|mobile/i.test(ua)
+                 || (navigator.maxTouchPoints > 1 && window.innerWidth <= 1024);
+    _isInstalled = window.matchMedia('(display-mode: standalone)').matches
+                   || window.navigator.standalone === true;
+  }
+
+  // ── Show/hide the Install button ──
+  function updateInstallButton() {
+    const btn = document.getElementById('installAppBtn');
+    if (!btn) return;
+
+    if (!_isMobile) {
+      // Desktop: always hide
+      btn.style.display = 'none';
+      return;
+    }
+
+    if (_isInstalled) {
+      // Already installed as PWA: hide the button
+      btn.style.display = 'none';
+      return;
+    }
+
+    // Mobile and not installed: show the button
+    btn.style.display = 'block';
+  }
+
+  // ── Capture the browser's native install prompt (Android/Chrome) ──
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();               // Don't show the mini-bar automatically
+    _deferredPrompt = e;              // Save it for when the user clicks Install
+    updateInstallButton();            // Make sure button is visible
+    console.log('[PWA] beforeinstallprompt captured — native install ready.');
+  });
+
+  // ── Hide button once app is installed ──
+  window.addEventListener('appinstalled', function() {
+    _isInstalled     = true;
+    _deferredPrompt  = null;
+    updateInstallButton();
+    if (typeof showAppNotification === 'function') {
+      showAppNotification('✅ NEUROBUDDYY.AI installed! Find it on your home screen.');
+    }
+    console.log('[PWA] App installed successfully.');
+  });
+
+  // ── Main entry point — called when user taps "Install App" ──
+  window.triggerPWAInstall = async function() {
+    console.log('[PWA] Install button tapped.');
+
+    // Case 1: Native prompt available (Android Chrome / Edge)
+    if (_deferredPrompt) {
+      try {
+        _deferredPrompt.prompt();
+        const { outcome } = await _deferredPrompt.userChoice;
+        console.log('[PWA] User choice:', outcome);
+        _deferredPrompt = null;
+        if (outcome === 'accepted') {
+          updateInstallButton();
+        }
+      } catch (err) {
+        console.warn('[PWA] Native prompt failed — showing fallback:', err);
+        showPWAFallbackModal();
+      }
+      return;
+    }
+
+    // Case 2: No native prompt — show the step-by-step guide
+    showPWAFallbackModal();
+  };
+
+  // ── Show the fallback tutorial modal ──
+  function showPWAFallbackModal() {
+    const modal        = document.getElementById('pwaInstallModal');
+    const iosGuide     = document.getElementById('pwaGuideIOS');
+    const androidGuide = document.getElementById('pwaGuideAndroid');
+    const nativeBtn    = document.getElementById('pwaNativeBtn');
+
+    if (!modal) return;
+
+    // Show correct guide based on OS
+    if (_isIOS) {
+      iosGuide.style.display     = 'block';
+      androidGuide.style.display = 'none';
+      nativeBtn.style.display    = 'none'; // iOS can't trigger install programmatically
+    } else {
+      iosGuide.style.display     = 'none';
+      androidGuide.style.display = 'block';
+      nativeBtn.style.display    = 'block';
+    }
+
+    modal.style.display     = 'flex';
+    // Prevent body scroll while modal is open
+    document.body.style.overflow = 'hidden';
+  }
+
+  // ── Close the fallback modal ──
+  window.closePWAModal = function() {
+    const modal = document.getElementById('pwaInstallModal');
+    if (modal) {
+      // Slide out animation before hiding
+      const sheet = document.getElementById('pwaInstallSheet');
+      if (sheet) {
+        sheet.style.animation = 'sheetSlideDown 0.3s ease forwards';
+        setTimeout(() => {
+          modal.style.display = 'none';
+          sheet.style.animation = '';
+          document.body.style.overflow = '';
+        }, 280);
+      } else {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    }
+  };
+
+  // Close when tapping the dark backdrop
+  document.addEventListener('click', function(e) {
+    const modal = document.getElementById('pwaInstallModal');
+    if (e.target === modal) {
+      window.closePWAModal();
+    }
+  });
+
+  // Slide down keyframe (for close animation)
+  const closeStyle = document.createElement('style');
+  closeStyle.textContent = `
+    @keyframes sheetSlideDown {
+      from { transform: translateY(0);    opacity: 1; }
+      to   { transform: translateY(100%); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(closeStyle);
+
+  // ── Initialize on DOM ready ──
+  function init() {
+    detectDevice();
+    updateInstallButton();
+
+    // Also re-check on resize (tablet landscape → portrait, etc.)
+    window.addEventListener('resize', function() {
+      detectDevice();
+      updateInstallButton();
+    });
+
+    console.log('[PWA] Install manager ready. Mobile:', _isMobile, '| iOS:', _isIOS, '| Installed:', _isInstalled);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+
 </body>
 </html>
