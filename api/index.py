@@ -1384,8 +1384,7 @@ def get_answer():
         
         # Fuzzy matching
         print("⚠️ No exact match, trying fuzzy...")
-        best_match = None
-        highest_similarity = 0
+        matches = []
         
         for q in questions_database:
             db_question = q.get('question', '').lower().strip()
@@ -1397,18 +1396,25 @@ def get_answer():
             
             if len(user_words) > 0:
                 similarity = len(common) / len(user_words)
-                if similarity > highest_similarity:
-                    highest_similarity = similarity
-                    best_match = q
+                if similarity > 0:
+                    matches.append((similarity, q.get('question')))
         
-        print(f"🎯 Best similarity: {highest_similarity:.1%}")
+        matches.sort(key=lambda x: x[0], reverse=True)
+        top_suggestions = [m[1] for m in matches[:5]]
         
-        if highest_similarity >= 0.4 and best_match:
-            print(f"✅ FUZZY MATCH: '{best_match.get('question')}'")
-            return jsonify({'answer': best_match.get('answer', 'Answer not found')})
+        if top_suggestions:
+            return jsonify({
+                'error': True,
+                'message': 'Your typed words were wrong or unrecognized.',
+                'suggestions': top_suggestions
+            })
         
         print("❌ NO MATCH FOUND")
-        return jsonify({'answer': 'I am not able to identify your question. Please try selecting from suggested questions.'})
+        return jsonify({
+            'error': True,
+            'message': 'I am not able to identify your question. Please try asking about health issues, neurology, or brain-related problems.',
+            'suggestions': []
+        })
         
     except Exception as e:
         print(f"❌ ERROR: {str(e)}")

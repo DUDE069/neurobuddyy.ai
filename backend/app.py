@@ -602,18 +602,51 @@ def get_answer():
                 print(f"✓ Found answer for: {selected_question}")
                 return jsonify({'answer': q['answer']})
 
-        print(f"✗ No answer found for: {selected_question}")
-        return jsonify({
-            'answer': (
-                'I am not able to identify your question. '
-                'Please try selecting from the suggested questions or '
-                'ask about health issues, neurology, or brain-related problems.'
-            )
-        })
+        print(f"✗ No exact match for: {selected_question}. Trying fuzzy search.")
+        
+        # Fuzzy search logic
+        user_input = selected_question.lower().strip()
+        search_words = [w for w in user_input.split() if w]
+        
+        fuzzy_matches = []
+        for q in questions_database:
+            question_lower = q['question'].lower()
+            total_dist = 0
+            is_fuzzy = True
+            for word in search_words:
+                if fuzzy_word_match(word, question_lower, threshold=2):
+                    best_dist = min(
+                        levenshtein_distance(word, q_word)
+                        for q_word in question_lower.split()
+                        if len(q_word) >= 3 and len(word) >= 3
+                    ) if any(len(w) >= 3 for w in question_lower.split()) else 2
+                    total_dist += best_dist
+                else:
+                    is_fuzzy = False
+                    break
+            
+            if is_fuzzy:
+                fuzzy_matches.append((q['question'], total_dist))
+                
+        fuzzy_matches.sort(key=lambda x: x[1])
+        top_suggestions = [q for q, _ in fuzzy_matches[:5]]
+        
+        if top_suggestions:
+            return jsonify({
+                'error': True,
+                'message': 'Your typed words were wrong or unrecognized.',
+                'suggestions': top_suggestions
+            })
+        else:
+            return jsonify({
+                'error': True,
+                'message': 'I am not able to identify your question. Please try asking about health issues, neurology, or brain-related problems.',
+                'suggestions': []
+            })
 
     except Exception as e:
         print(f"Error in get-answer: {e}")
-        return jsonify({'answer': 'Error processing request'})
+        return jsonify({'answer': 'Error processing request', 'error': True, 'message': 'Internal Server Error'})
 
 
 # ========================================
