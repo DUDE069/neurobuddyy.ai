@@ -6958,6 +6958,7 @@ async function resetPassword(email, resetCode, newPassword) {
 }
 
 
+  let debounceTimer;
   userInputField.addEventListener('input', function() {
     const text = userInputField.value.trim();
     
@@ -6970,8 +6971,12 @@ async function resetPassword(email, resetCode, newPassword) {
       return;
     }
     
+    clearTimeout(debounceTimer);
+    
     if (text.length >= 1) {
-      getSuggestions(text);
+      debounceTimer = setTimeout(() => {
+        getSuggestions(text);
+      }, 300);
     } else {
       suggestionsBox.classList.remove('active');
     }

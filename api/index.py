@@ -511,6 +511,25 @@ questions_database = load_questions()
 
 print(f"✓ Loaded {len(greetings_database)} greetings, {len(questions_database)} questions")
 
+import re
+import time
+
+print("⚙️ Precomputing vocabulary for high-speed search...")
+start_time = time.time()
+unique_words = set()
+questions_cleaned = []
+for q in questions_database:
+    db_question = q.get('question', '').lower().strip()
+    db_clean = re.sub(r'[^\w\s]', '', db_question)
+    q_words = db_clean.split()
+    unique_words.update(q_words)
+    questions_cleaned.append({
+        'orig': q,
+        'clean': db_clean,
+        'words_set': set(q_words)
+    })
+unique_words = list(unique_words)
+print(f"⚡ Precomputed {len(unique_words)} unique words in {time.time() - start_time:.4f}s.")
 def check_greeting(user_input):
     if not greetings_database:
         return None
@@ -1343,37 +1362,39 @@ def get_suggestions():
         import re
         
         user_input_lower = user_input
-        search_words = user_input_lower.split()
+        user_input_clean = re.sub(r'[^\w\s]', '', user_input_lower)
+        search_words = user_input_clean.split()
         
         if not search_words:
             return jsonify({'suggestions': []})
             
-        matches = []
-        for q in questions_database:
-            db_question = q.get('question', '').lower().strip()
-            db_clean = re.sub(r'[^\w\s]', '', db_question)
-            q_words = db_clean.split()
+        corrected_words = set()
+        for w in search_words:
+            if w in unique_words:
+                corrected_words.add(w)
+            else:
+                best = difflib.get_close_matches(w, unique_words, n=1, cutoff=0.7)
+                if best:
+                    corrected_words.add(best[0])
+                    
+        if not corrected_words:
+            return jsonify({'suggestions': []})
             
-            if not q_words:
+        matches = []
+        for q_dict in questions_cleaned:
+            q_orig = q_dict['orig']
+            q_clean = q_dict['clean']
+            q_words_set = q_dict['words_set']
+            
+            if user_input_clean in q_clean:
+                matches.append((100.0, q_orig.get('question')))
                 continue
                 
-            if user_input_lower in db_clean:
-                matches.append((100.0, q.get('question')))
-                continue
-                
-            score = 0
-            for w in search_words:
-                if w in q_words:
-                    score += 1
-                else:
-                    best = difflib.get_close_matches(w, q_words, n=1, cutoff=0.6)
-                    if best:
-                        score += 1
-                        
-            normalized_score = score / len(search_words)
-            if normalized_score > 0:
-                ratio = difflib.SequenceMatcher(None, user_input_lower, db_clean).ratio()
-                matches.append((normalized_score + (ratio * 0.1), q.get('question')))
+            common = corrected_words.intersection(q_words_set)
+            if common:
+                normalized_score = len(common) / len(search_words)
+                ratio = difflib.SequenceMatcher(None, user_input_clean, q_clean).ratio()
+                matches.append((normalized_score + (ratio * 0.1), q_orig.get('question')))
         
         matches.sort(key=lambda x: x[0], reverse=True)
         top_suggestions = [m[1] for m in matches[:10]]
@@ -1417,36 +1438,35 @@ def get_answer():
         # Fuzzy matching
         print("⚠️ No exact match, trying fuzzy...")
         import difflib
-        matches = []
         user_input_lower = clean_question
         search_words = user_input_lower.split()
         
-        for q in questions_database:
-            db_question = q.get('question', '').lower().strip()
-            db_clean = re.sub(r'[^\w\s]', '', db_question)
-            q_words = db_clean.split()
-            
-            if not q_words or not search_words:
-                continue
+        corrected_words = set()
+        for w in search_words:
+            if w in unique_words:
+                corrected_words.add(w)
+            else:
+                best = difflib.get_close_matches(w, unique_words, n=1, cutoff=0.7)
+                if best:
+                    corrected_words.add(best[0])
+                    
+        matches = []
+        if corrected_words:
+            for q_dict in questions_cleaned:
+                q_orig = q_dict['orig']
+                q_clean = q_dict['clean']
+                q_words_set = q_dict['words_set']
                 
-            if user_input_lower in db_clean:
-                matches.append((100.0, q.get('question')))
-                continue
-                
-            score = 0
-            for w in search_words:
-                if w in q_words:
-                    score += 1
-                else:
-                    best = difflib.get_close_matches(w, q_words, n=1, cutoff=0.6)
-                    if best:
-                        score += 1
-                        
-            normalized_score = score / len(search_words)
-            if normalized_score > 0:
-                ratio = difflib.SequenceMatcher(None, user_input_lower, db_clean).ratio()
-                matches.append((normalized_score + (ratio * 0.1), q.get('question')))
-        
+                if user_input_lower in q_clean:
+                    matches.append((100.0, q_orig.get('question')))
+                    continue
+                    
+                common = corrected_words.intersection(q_words_set)
+                if common:
+                    normalized_score = len(common) / len(search_words)
+                    ratio = difflib.SequenceMatcher(None, user_input_lower, q_clean).ratio()
+                    matches.append((normalized_score + (ratio * 0.1), q_orig.get('question')))
+                    
         matches.sort(key=lambda x: x[0], reverse=True)
         top_suggestions = [m[1] for m in matches[:5]]
         

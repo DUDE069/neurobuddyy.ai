@@ -495,6 +495,26 @@ questions_database = load_questions()
 print(f"\n🎉 Total {len(questions_database)} questions loaded successfully!")
 print(f"💬 Total {len(greetings_database)} greeting groups loaded!\n")
 
+import re
+import time
+
+print("⚙️ Precomputing vocabulary for high-speed search...")
+start_time = time.time()
+unique_words = set()
+questions_cleaned = []
+for q in questions_database:
+    db_question = q.get('question', '').lower().strip()
+    db_clean = re.sub(r'[^\w\s]', '', db_question)
+    q_words = db_clean.split()
+    unique_words.update(q_words)
+    questions_cleaned.append({
+        'orig': q,
+        'clean': db_clean,
+        'words_set': set(q_words)
+    })
+unique_words = list(unique_words)
+print(f"⚡ Precomputed {len(unique_words)} unique words in {time.time() - start_time:.4f}s.")
+
 
 def check_greeting(user_input):
     user_input_clean = (
@@ -522,7 +542,8 @@ def get_suggestions():
     try:
         import difflib
         user_input  = request.json['text'].lower().strip()
-        search_words = [w for w in user_input.split() if w]
+        user_input_clean = re.sub(r'[^\w\s]', '', user_input)
+        search_words = user_input_clean.split()
 
         if not search_words:
             return jsonify({'suggestions': []})
@@ -532,31 +553,34 @@ def get_suggestions():
         if greeting_response:
             return jsonify({'suggestions': []})
 
+        # Precompute typo corrections for the query
+        corrected_words = set()
+        for w in search_words:
+            if w in unique_words:
+                corrected_words.add(w)
+            else:
+                best = difflib.get_close_matches(w, unique_words, n=1, cutoff=0.7)
+                if best:
+                    corrected_words.add(best[0])
+                    
+        if not corrected_words:
+            return jsonify({'suggestions': []})
+
         fuzzy_matches = []
-        for q in questions_database:
-            question_lower = q['question'].lower()
-            q_words = question_lower.split()
+        for q_dict in questions_cleaned:
+            q_orig = q_dict['orig']
+            q_clean = q_dict['clean']
+            q_words_set = q_dict['words_set']
             
-            if not q_words:
+            if user_input_clean in q_clean:
+                fuzzy_matches.append((q_orig['question'], 100.0))
                 continue
                 
-            if user_input in question_lower:
-                fuzzy_matches.append((q['question'], 100.0))
-                continue
-                
-            score = 0
-            for w in search_words:
-                if w in q_words:
-                    score += 1
-                else:
-                    best = difflib.get_close_matches(w, q_words, n=1, cutoff=0.6)
-                    if best:
-                        score += 1
-            
-            normalized_score = score / len(search_words)
-            if normalized_score > 0:
-                ratio = difflib.SequenceMatcher(None, user_input, question_lower).ratio()
-                fuzzy_matches.append((q['question'], normalized_score + (ratio * 0.1)))
+            common = corrected_words.intersection(q_words_set)
+            if common:
+                normalized_score = len(common) / len(search_words)
+                ratio = difflib.SequenceMatcher(None, user_input_clean, q_clean).ratio()
+                fuzzy_matches.append((q_orig['question'], normalized_score + (ratio * 0.1)))
 
         # Sort: highest score first
         fuzzy_matches.sort(key=lambda x: x[1], reverse=True)
@@ -597,34 +621,36 @@ def get_answer():
         # Fuzzy search logic
         import difflib
         user_input = selected_question.lower().strip()
-        search_words = [w for w in user_input.split() if w]
+        user_input_clean = re.sub(r'[^\w\s]', '', user_input)
+        search_words = user_input_clean.split()
         
+        # Precompute typo corrections for the query
+        corrected_words = set()
+        for w in search_words:
+            if w in unique_words:
+                corrected_words.add(w)
+            else:
+                best = difflib.get_close_matches(w, unique_words, n=1, cutoff=0.7)
+                if best:
+                    corrected_words.add(best[0])
+                    
         fuzzy_matches = []
-        for q in questions_database:
-            question_lower = q['question'].lower()
-            q_words = question_lower.split()
-            
-            if not q_words or not search_words:
-                continue
+        if corrected_words:
+            for q_dict in questions_cleaned:
+                q_orig = q_dict['orig']
+                q_clean = q_dict['clean']
+                q_words_set = q_dict['words_set']
                 
-            if user_input in question_lower:
-                fuzzy_matches.append((q['question'], 100.0))
-                continue
-                
-            score = 0
-            for w in search_words:
-                if w in q_words:
-                    score += 1
-                else:
-                    best = difflib.get_close_matches(w, q_words, n=1, cutoff=0.6)
-                    if best:
-                        score += 1
-            
-            normalized_score = score / len(search_words)
-            if normalized_score > 0:
-                ratio = difflib.SequenceMatcher(None, user_input, question_lower).ratio()
-                fuzzy_matches.append((q['question'], normalized_score + (ratio * 0.1)))
-                
+                if user_input_clean in q_clean:
+                    fuzzy_matches.append((q_orig['question'], 100.0))
+                    continue
+                    
+                common = corrected_words.intersection(q_words_set)
+                if common:
+                    normalized_score = len(common) / len(search_words)
+                    ratio = difflib.SequenceMatcher(None, user_input_clean, q_clean).ratio()
+                    fuzzy_matches.append((q_orig['question'], normalized_score + (ratio * 0.1)))
+                    
         fuzzy_matches.sort(key=lambda x: x[1], reverse=True)
         top_suggestions = [q for q, _ in fuzzy_matches[:5]]
         
