@@ -7442,6 +7442,14 @@ async function loadRealDoctors() {
     
     const { collection, getDocs } = window.firestoreFunctions;
     const doctorsRef = collection(window.firebaseDB, 'doctors');
+    
+    // ✅ Check if authenticated
+    const user = window.firebaseAuth && window.firebaseAuth.currentUser;
+    if (!user) {
+      doctorList.innerHTML = '<p style="text-align: center; color: #666; font-size: 0.9rem; padding: 15px;">Please <a href="#" onclick="showPatientLogin(); event.preventDefault();" style="color: #2563eb;">login</a> to view available doctors.</p>';
+      return;
+    }
+    
     const querySnapshot = await getDocs(doctorsRef);
     
     if (querySnapshot.empty) {
